@@ -21,21 +21,31 @@ def ParseMd(file):
     soup = BeautifulSoup(htmlText, 'html.parser')
     return soup
 
-def CountTextSymbols(soup):
+def CountTextSymbols(filename):
+    soup = ParseMd(path + '/' + filename)
     pars = soup.find_all('p')
     allText = ""
     for t in pars:
         allText += t.text
     NONCOUNT_LETTERS = " ,.:;!?"
-    return len([letter for letter in allText if letter not in NONCOUNT_LETTERS])
+    symbolsNum = len([letter for letter in allText if letter not in NONCOUNT_LETTERS])
+    if symbolsNum == 0:
+        print(' ' + filename.ljust(25) + '...\tEmpty!')
+    else:
+        print(' ' + filename.ljust(25) + '...\t' + str(symbolsNum) + ' symbols')
+    return symbolsNum
 
 def CountAllTextSymbols():
-    return CountTextSymbols(ParseMd(path+"/problem.md")) + \
-            CountTextSymbols(ParseMd(path+"/research_object.md")) + \
-            CountTextSymbols(ParseMd(path+"/research_subject.md")) + \
-            CountTextSymbols(ParseMd(path+"/goal.md")) + \
-            CountTextSymbols(ParseMd(path+"/tasks.md")) + \
-            CountTextSymbols(ParseMd(path+"/relevance.md"))
+    allSymbolsNum = CountTextSymbols("problem.md") + \
+            CountTextSymbols("research_object.md") + \
+            CountTextSymbols("research_subject.md") + \
+            CountTextSymbols("goal.md") + \
+            CountTextSymbols("tasks.md") + \
+            CountTextSymbols("relevance.md")
+    if allSymbolsNum == 0:
+        print('All files are empty!')
+    else:
+        print('All files'.ljust(26) + '...\t' + str(allSymbolsNum) + ' symbols')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('path', help='path to directory with .md files')
@@ -55,10 +65,9 @@ if directory.is_dir():
         CheckForFile(path,"goal.md") &
         CheckForFile(path,"tasks.md") &
         CheckForFile(path,"relevance.md") ):
-        print('\nAll required files exist!')
+        print('All required files exist!\nCounting symbols...')
         
-        symbolsNum = CountAllTextSymbols()
-        print(symbolsNum)
+        CountAllTextSymbols()
     else:
         print('\nPlease, add all required files to the directory!')
 else:

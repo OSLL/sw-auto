@@ -281,7 +281,7 @@ def ParseMd(file):
 
 def CountTextSymbols(filename):
     soup = ParseMd(filename)
-    pars = soup.find_all('p')
+    pars = soup.find_all(['p','li'])
     allText = ""
     for t in pars:
         allText += t.text

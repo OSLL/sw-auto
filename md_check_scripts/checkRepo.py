@@ -171,6 +171,7 @@ def CheckForAnalogs(analogsFolderPath):
         
         if analogsH == 'none':
             print("  There is no Analogs title!")
+            newCsvLine.append('0')
         else: # analogs check
             print("  Analogs title!".ljust(26) +  '...\tExists!')
             #find all h3 siblings
@@ -200,6 +201,7 @@ def CheckForAnalogs(analogsFolderPath):
         
         if criteriasH == 'none':
             print("  There is no Criterias title!")
+            newCsvLine.append('0')
         else: #criterias check
             print("  Criterias title!".ljust(26) +  '...\tExists!')
             
@@ -231,6 +233,7 @@ def CheckForAnalogs(analogsFolderPath):
 
         if sourcesH == 'none':
             print("  There is no Sources title!")
+            newCsvLine.append('0')
         else: #sources check
             print("  Sources title!".ljust(26) +  '...\tExists!')
             sourcesOl = sourcesH.find_next('ol')

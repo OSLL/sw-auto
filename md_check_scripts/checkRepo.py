@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 import argparse, os
 import mistune
@@ -17,9 +18,11 @@ def CheckRepo(repoPath):
     directory = Path(repoPath)
     if directory.is_dir():
         print(' Directory'.ljust(26) +  '...\tExists!') # \u2713
-        CheckGroupDirectory(repoPath + '\\3303')
-        CheckGroupDirectory(repoPath + '\\3304')
-        CheckGroupDirectory(repoPath + '\\3381')
+        # Fix for checking any group dirs
+        for subfolder in os.listdir(repoPath):
+            # check for group dir
+            if Path(subfolder).is_dir() and subfolder.isdigit():
+                CheckGroupDirectory(os.path.join(repoPath, subfolder))
     else:
         print(" Directory doesn't exist!")
 
@@ -29,7 +32,7 @@ def CheckGroupDirectory(groupFolderPath):
     if directory.is_dir():
         print(' Directory'.ljust(26) +  '...\tExists!') # \u2713
         for subfolder in os.listdir(groupFolderPath):
-            CheckNamedDirectory(groupFolderPath+'\\'+subfolder)
+            CheckNamedDirectory(os.path.join(groupFolderPath, subfolder))
     else:
         print(" Directory doesn't exist!")
 
@@ -41,7 +44,7 @@ def CheckNamedDirectory(nameFolderPath):
         print(' Directory'.ljust(26) +  '...\tExists!') # \u2713
         #CSV Name
         newCsvLine.append(os.path.basename(nameFolderPath))
-        CheckForPaperBase(nameFolderPath + '\\paper_base')
+        CheckForPaperBase(os.path.join(nameFolderPath, 'paper_base'))
         CheckForFactResult(nameFolderPath)
         CheckPurposeStatementFiles(nameFolderPath)
         CheckForAnalogs(nameFolderPath)
@@ -53,7 +56,7 @@ def CheckNamedDirectory(nameFolderPath):
 
 def CheckForPaperBase(paperBaseFolderPath):
     #.pdf file(s)
-    print("Checking \\paper_base directory for .pdf files")
+    print("Checking /paper_base directory for .pdf files")
     if os.path.isdir(paperBaseFolderPath):
         print(' Directory'.ljust(26) +  '...\tExists!')
         pdfFiles = glob(os.path.join(paperBaseFolderPath,"*.{}".format('pdf')))
@@ -74,11 +77,11 @@ def CheckForPaperBase(paperBaseFolderPath):
 
 def CheckForFactResult(factResFolderPath):
     print("Checking for fact_result.md")
-    if os.path.isfile(factResFolderPath+'\\fact_result.md'):
+    if os.path.isfile(os.path.join(factResFolderPath,'fact_result.md')):
         print(' fact_result.md'.ljust(26) +  '...\tExists!')
         #CSV fact_result.md exists
         newCsvLine.append('1')
-        factSymbolsNum = CountTextSymbols(factResFolderPath+"\\fact_result.md")
+        factSymbolsNum = CountTextSymbols(os.path.join(factResFolderPath,"fact_result.md"))
         if factSymbolsNum >= FACT_RESULT_MIN:
             #CSV fact_result.md enough symbols
             newCsvLine.append('1')
@@ -122,12 +125,12 @@ def CheckPurposeStatementFiles(nameFolderPath):
         newCsvLine.append('0')
 
 def CountPurposeTextSymbols(folderPath):
-    allSymbolsNum = CountTextSymbols(folderPath + "\\problem.md") + \
-            CountTextSymbols(folderPath+"\\research_object.md") + \
-            CountTextSymbols(folderPath+"\\research_subject.md") + \
-            CountTextSymbols(folderPath+"\\goal.md") + \
-            CountTextSymbols(folderPath+"\\tasks.md") + \
-            CountTextSymbols(folderPath+"\\relevance.md")
+    allSymbolsNum = CountTextSymbols(os.path.join(folderPath, "problem.md")) + \
+            CountTextSymbols(os.path.join(folderPath,"research_object.md")) + \
+            CountTextSymbols(os.path.join(folderPath,"research_subject.md")) + \
+            CountTextSymbols(os.path.join(folderPath,"goal.md")) + \
+            CountTextSymbols(os.path.join(folderPath,"tasks.md")) + \
+            CountTextSymbols(os.path.join(folderPath,"relevance.md"))
     if allSymbolsNum == 0:
         print('  All files are empty!')
     else:
@@ -136,11 +139,11 @@ def CountPurposeTextSymbols(folderPath):
 
 def CheckForAnalogs(analogsFolderPath):
     print("Checking for analogs.md")
-    if os.path.isfile(analogsFolderPath+'\\analogs.md'):
+    if os.path.isfile(os.path.join(analogsFolderPath,'analogs.md')):
         #CSV analogs.md exists
         newCsvLine.append('1')
         print(' analogs.md'.ljust(26) +  '...\tExists!')
-        factSymbolsNum = CountTextSymbols(analogsFolderPath+"\\analogs.md")
+        factSymbolsNum = CountTextSymbols(os.path.join(analogsFolderPath,"analogs.md"))
         if factSymbolsNum >= ANALOG_REVIEW_MIN:
             print("  Number of symbols in analogs.md".ljust(50) + '...\tGood.')
             #CSV analogs.md enough symbols
@@ -151,7 +154,7 @@ def CheckForAnalogs(analogsFolderPath):
             print("  Number of symbols in analogs.md".ljust(50) + '...\tNot enough. Min = ' + \
                 str(ANALOG_REVIEW_MIN))
         # .md parsing:
-        soup = ParseMd(analogsFolderPath+'\\analogs.md')
+        soup = ParseMd(os.path.join(analogsFolderPath,'analogs.md'))
         titles = soup.find_all('h2')
 
         analogsH = 'none'
@@ -182,7 +185,7 @@ def CheckForAnalogs(analogsFolderPath):
                     tag_name = ""
                 if tag_name == "h3":
                     analogChildren.append(nextNode)
-                if tag_name == "h2":
+                if tag_name == "h2" or nextNode.find_next_sibling() is None:
                     break
 
             if len(analogChildren) >= ANALOGS_MIN:
@@ -231,8 +234,7 @@ def CheckForAnalogs(analogsFolderPath):
         else: #sources check
             print("  Sources title!".ljust(26) +  '...\tExists!')
             sourcesOl = sourcesH.find_next('ol')
-            sourcesList = sourcesOl.findAll('li')
-            if len(sourcesList) >= 1:
+            if sourcesOl is not None and  len( sourcesOl.findAll('li')) >= 1:
                 print("   Number of sources".ljust(25) + '...\tAt least 1! Good!')
                 #CSV sources num
                 newCsvLine.append('1')

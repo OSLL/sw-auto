@@ -1,39 +1,14 @@
-###Fact results
-
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
-I did nothing. I did nothing. I did nothing. I did nothing. I did nothing. I did nothing.
+## ����������� ���������� ������
+� ���������� ������ ���� ���������������� ������������ ���������� ��� ������ ����� � ������������, �������� �� �������� ����������. �� ������ ����� ���� ��������� ����� ������� ������ ��������, �������������� � ����������� android-����������. � ������ ������ ���� ������ ��������� ������:
+1. ����������� ���������� �������.
+2. ��������� ��������� ��������.
+3. ������� ����������: android sdk, retrofit, google play services, firebase.
+4. ����������� android-���������� � �������������:
+* �����������, ����� � ���������� �������� �� ����� � � ������,
+* ���������� � �������� ����� ����������� � �������,
+* ����� ����� ���������� �������� � ������� ������,
+* ������ �� ������,
+* ���������� ������������ ����� push-�����������,
+* ������ ������ ����������� � �������� ���������� ������,
+* ����������� �������� ��������.
+5. ���������� ��������� � Play Market.

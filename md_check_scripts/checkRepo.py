@@ -274,7 +274,10 @@ def CheckForFile(dirpath, filename):
 
 def ParseMd(file):
     f = open(file, 'r')
-    mdText = f.read()
+    try:
+        mdText = f.read()
+    except:
+        mdText = " "
     htmlText = mistune.markdown(mdText)
     soup = BeautifulSoup(htmlText, 'html.parser')
     return soup

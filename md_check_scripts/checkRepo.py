@@ -21,7 +21,7 @@ def CheckRepo(repoPath):
         # Fix for checking any group dirs
         for subfolder in os.listdir(repoPath):
             # check for group dir
-            if Path(subfolder).is_dir() and subfolder.isdigit():
+            if Path(os.path.join(repoPath, subfolder)).is_dir() and subfolder.isdigit():
                 CheckGroupDirectory(os.path.join(repoPath, subfolder))
     else:
         print(" Directory doesn't exist!")
@@ -301,7 +301,7 @@ parser.add_argument('path', help='path to directory with .md files')
 args = parser.parse_args()
 repo_path = args.path
 
-csvFile  = open('result.csv', "w")
+csvFile = open('result.csv', "w")
 headers = ["Name", "Paper_base pdf", "fact_result.md exists", "fact_result.md enough symbols", \
         "problem.md exists", "research_object.md exists", "research_subject.md exists", \
         "goal.md exists", "tasks.md exists", "relevance.md exists", "Purpose statements enough symbols", \
@@ -311,3 +311,32 @@ csvWriter = csv.writer(csvFile, delimiter=',')
 csvWriter.writerows([headers])
 newCsvLine = []
 CheckRepo(repo_path)
+
+csvFile.close()
+csvFileRead = open('result.csv', "r")
+csvReader = csv.reader(csvFileRead, delimiter=',')
+
+csvResFile = open('sum_result.csv', "w")
+res_headers = ["Name", "Paper_base pdf", "Выбор темы статьи и Фактический результат исследования (2)", \
+        "Подготовка ответов на ключевые вопросы (7)", \
+        "Сравнение аналогов или существующих подходов к решению проблемы (5)", \
+        "Сумма оценок (15)"]
+csvResWriter = csv.writer(csvResFile, delimiter=',')
+csvResWriter.writerows([res_headers])
+counter = 0
+for row in csvReader:
+    if counter == 0:
+        counter = 1
+        continue
+    print(row)
+    numlist = [int(x) for x in row[1:]]
+    newCsvLine.append(row[0])
+    newCsvLine.append(row[1])
+    newCsvLine.append(sum(numlist[1:3]))
+    newCsvLine.append(sum(numlist[3:10]))
+    newCsvLine.append(sum(numlist[10:]))
+    newCsvLine.append(sum(numlist[0:]))
+    csvResWriter.writerow(newCsvLine)
+    newCsvLine.clear()
+
+

@@ -317,7 +317,7 @@ csvFileRead = open('result.csv', "r")
 csvReader = csv.reader(csvFileRead, delimiter=',')
 
 csvResFile = open('sum_result.csv', "w")
-res_headers = ["Name", "Paper_base pdf", "Выбор темы статьи и Фактический результат исследования (2)", \
+res_headers = ["Name", "Выбор темы статьи и Фактический результат исследования (3)", \
         "Подготовка ответов на ключевые вопросы (7)", \
         "Сравнение аналогов или существующих подходов к решению проблемы (5)", \
         "Сумма оценок (15)"]
@@ -331,8 +331,7 @@ for row in csvReader:
     print(row)
     numlist = [int(x) for x in row[1:]]
     newCsvLine.append(row[0])
-    newCsvLine.append(row[1])
-    newCsvLine.append(sum(numlist[1:3]))
+    newCsvLine.append(sum(numlist[0:3]))
     newCsvLine.append(sum(numlist[3:10]))
     newCsvLine.append(sum(numlist[10:]))
     newCsvLine.append(sum(numlist[0:]))

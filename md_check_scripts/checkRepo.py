@@ -32,7 +32,9 @@ def CheckGroupDirectory(groupFolderPath):
     if directory.is_dir():
         print(' Directory'.ljust(26) +  '...\tExists!') # \u2713
         for subfolder in os.listdir(groupFolderPath):
-            CheckNamedDirectory(os.path.join(groupFolderPath, subfolder))
+            print(os.path.join(os.path.basename(groupFolderPath),subfolder))
+            print('__')
+            CheckNamedDirectory(os.path.join(groupFolderPath, subfolder))            
     else:
         print(" Directory doesn't exist!")
 

@@ -12,6 +12,9 @@ FACT_RESULT_MIN = 1200
 ANALOGS_MIN = 3
 CRITERIAS_MIN = 3
 ANALOG_REVIEW_MIN = 2000
+SOL_METHOD_SELECTION_MIN = 1000
+SOL_METHOD_DESCRIPTION_MIN = 3000
+SOL_METHOD_EVALUATION_MIN = 3000
 
 def CheckRepo(repoPath):
     print('Checking for directory "' + repoPath + '"')
@@ -50,6 +53,9 @@ def CheckNamedDirectory(nameFolderPath):
         CheckForFactResult(nameFolderPath)
         CheckPurposeStatementFiles(nameFolderPath)
         CheckForAnalogs(nameFolderPath)
+        CheckForSolutionMethodSelection(nameFolderPath)
+        CheckForSolutionMethodDescription(nameFolderPath)
+        CheckForSolutionMethodEvaluation(nameFolderPath)
         #CSV Write Row
         csvWriter.writerow(newCsvLine)
         newCsvLine.clear()
@@ -260,6 +266,143 @@ def CheckForAnalogs(analogsFolderPath):
         newCsvLine.append('0')
         print(' analogs.md'.ljust(26) +  '...\tdoes not exist!')
 
+def CheckForSolutionMethodSelection(nameFolderPath):
+    print("Checking for solution_method_selection.md")
+    if os.path.isfile(os.path.join(nameFolderPath,'solution_method_selection.md')):
+        print(' solution_method_selection.md'.ljust(36) +  '...\tExists!')
+        #CSV solution_method_selection.md exists
+        newCsvLine.append('1')
+        smSelectionNum = CountTextSymbols(os.path.join(nameFolderPath,"solution_method_selection.md"))
+        if smSelectionNum >= SOL_METHOD_SELECTION_MIN:
+            #CSV solution_method_selection.md enough symbols
+            newCsvLine.append('1')
+            print("  Number of symbols in solution_method_selection.md".ljust(70) + '...\tGood.')
+        else:
+            #CSV solution_method_selection.md enough symbols
+            newCsvLine.append('0')
+            print("  Number of symbols in solution_method_selection.md".ljust(70) + '...\tNot enough. Min = ' + \
+                str(SOL_METHOD_SELECTION_MIN))
+    else:
+        #CSV solution_method_selection.md doesn't exist
+        newCsvLine.append('0')
+        #CSV solution_method_selection.md enough symbols
+        newCsvLine.append('0')
+        print(' solution_method_selection.md'.ljust(36) +  '...\tdoes not exist!')
+
+def CheckForSolutionMethodDescription(nameFolderPath):
+    print("Checking for solution_method_description.md")
+    if os.path.isfile(os.path.join(nameFolderPath,'solution_method_description.md')):
+        #CSV solution_method_description.md exists
+        newCsvLine.append('1')
+        print(' solution_method_description.md'.ljust(36) +  '...\tExists!')
+        smDescSymbolsNum = CountTextSymbols(os.path.join(nameFolderPath,"solution_method_description.md"))
+        if smDescSymbolsNum >= SOL_METHOD_DESCRIPTION_MIN:
+            print("  Number of symbols in solution_method_description.md".ljust(70) + '...\tGood.')
+            #CSV solution_method_description.md enough symbols
+            newCsvLine.append('1')
+        else:
+            #CSV solution_method_description.md enough symbols
+            newCsvLine.append('0')
+            print("  Number of symbols in solution_method_description.md".ljust(70) + '...\tNot enough. Min = ' + \
+                str(SOL_METHOD_DESCRIPTION_MIN))
+        # .md parsing:
+        soup = ParseMd(os.path.join(nameFolderPath,'solution_method_description.md'))
+        titles = soup.find_all('h2')
+
+        descriptionH = 'none'
+        sourcesH = 'none'
+
+        for title in titles:
+            if title.text.find("Описание метода решения") != -1:
+                descriptionH = title
+            if title.text.find("Источники") != -1:
+                sourcesH = title
+        
+        if descriptionH == 'none':
+            print("  There is no Description title!")
+        else: # analogs check
+            print("  Description title!".ljust(26) +  '...\tExists!')
+                
+        if sourcesH == 'none':
+            print("  There is no Sources title!")
+            newCsvLine.append('0')
+        else: #sources check
+            print("  Sources title!".ljust(26) +  '...\tExists!')
+            sourcesOl = sourcesH.find_next('ol')
+            if sourcesOl is not None and  len( sourcesOl.findAll('li')) >= 1:
+                print("   Number of sources".ljust(25) + '...\tAt least 1! Good!')
+                #CSV sources num
+                newCsvLine.append('1')
+            else:
+                print("   Number of sources".ljust(25) + '...\tNot enough. Min = 1')
+                #CSV sources num
+                newCsvLine.append('0')
+    else:
+        #CSV solution_method_description.md exists
+        newCsvLine.append('0')
+        #CSV solution_method_description.md enough symbols
+        newCsvLine.append('0')
+        #CSV sources num
+        newCsvLine.append('0')
+        print(' solution_method_description.md'.ljust(36) +  '...\tdoes not exist!')
+
+def CheckForSolutionMethodEvaluation(nameFolderPath):
+    print("Checking for solution_method_evaluation.md")
+    if os.path.isfile(os.path.join(nameFolderPath,'solution_method_evaluation.md')):
+        #CSV solution_method_evaluation.md exists
+        newCsvLine.append('1')
+        print(' solution_method_evaluation.md'.ljust(36) +  '...\tExists!')
+        smDescSymbolsNum = CountTextSymbols(os.path.join(nameFolderPath,"solution_method_evaluation.md"))
+        if smDescSymbolsNum >= SOL_METHOD_EVALUATION_MIN:
+            print("  Number of symbols in solution_method_evaluation.md".ljust(70) + '...\tGood.')
+            #CSV solution_method_evaluation.md enough symbols
+            newCsvLine.append('1')
+        else:
+            #CSV solution_method_evaluation.md enough symbols
+            newCsvLine.append('0')
+            print("  Number of symbols in solution_method_evaluation.md".ljust(70) + '...\tNot enough. Min = ' + \
+                str(SOL_METHOD_EVALUATION_MIN))
+        # .md parsing:
+        soup = ParseMd(os.path.join(nameFolderPath,'solution_method_evaluation.md'))
+        titles = soup.find_all('h2')
+
+        descriptionH = 'none'
+        sourcesH = 'none'
+
+        for title in titles:
+            if title.text.find("Исследование метода решения") != -1:
+                descriptionH = title
+            if title.text.find("Источники") != -1:
+                sourcesH = title
+        
+        if descriptionH == 'none':
+            print("  There is no Evaluation title!")
+        else: # analogs check
+            print("  Evaluation title!".ljust(26) +  '...\tExists!')
+                
+        if sourcesH == 'none':
+            print("  There is no Sources title!")
+            newCsvLine.append('0')
+        else: #sources check
+            print("  Sources title!".ljust(26) +  '...\tExists!')
+            sourcesOl = sourcesH.find_next('ol')
+            if sourcesOl is not None and  len( sourcesOl.findAll('li')) >= 1:
+                print("   Number of sources".ljust(25) + '...\tAt least 1! Good!')
+                #CSV sources num
+                newCsvLine.append('1')
+            else:
+                print("   Number of sources".ljust(25) + '...\tNot enough. Min = 1')
+                #CSV sources num
+                newCsvLine.append('0')
+    else:
+        #CSV solution_method_evaluation.md exists
+        newCsvLine.append('0')
+        #CSV solution_method_evaluation.md enough symbols
+        newCsvLine.append('0')
+        #CSV sources num
+        newCsvLine.append('0')
+        print(' solution_method_evaluation.md'.ljust(36) +  '...\tdoes not exist!')
+
 def CheckForFile(dirpath, filename):
     file = Path(dirpath+'/' + filename)
     
@@ -307,7 +450,8 @@ csvFile = open('result.csv', "w")
 headers = ["Name", "Paper_base pdf", "fact_result.md exists", "fact_result.md enough symbols", \
         "problem.md exists", "research_object.md exists", "research_subject.md exists", \
         "goal.md exists", "tasks.md exists", "relevance.md exists", "Purpose statements enough symbols", \
-        "analogs.md exists", "analogs.md enough symbols", "analogs num >= 3", "criteria num >= 3", "sources num >= 1"]
+        "analogs.md exists", "analogs.md enough symbols", "analogs num >= 3", "criteria num >= 3", "sources num >= 1",
+        "solution_method_selection.md exists", "solution_method_selection.md enough symbols"]
 
 csvWriter = csv.writer(csvFile, delimiter=',')
 csvWriter.writerows([headers])
@@ -317,12 +461,15 @@ CheckRepo(repo_path)
 csvFile.close()
 csvFileRead = open('result.csv', "r")
 csvReader = csv.reader(csvFileRead, delimiter=',')
-
+#sol method selection after analogs +2 points
+#sol method description adter smsel +3 points
+#sol method evaluation adter smsel +3 points
 csvResFile = open('sum_result.csv', "w")
 res_headers = ["Name", "Выбор темы статьи и Фактический результат исследования (3)", \
         "Подготовка ответов на ключевые вопросы (7)", \
         "Сравнение аналогов или существующих подходов к решению проблемы (5)", \
-        "Сумма оценок (15)"]
+        "Выбор и описание метода решения + исследование(по желанию) (5/8)", \
+        "Сумма оценок (20/23)"]
 csvResWriter = csv.writer(csvResFile, delimiter=',')
 csvResWriter.writerows([res_headers])
 counter = 0
@@ -335,9 +482,8 @@ for row in csvReader:
     newCsvLine.append(row[0])
     newCsvLine.append(sum(numlist[0:3]))
     newCsvLine.append(sum(numlist[3:10]))
-    newCsvLine.append(sum(numlist[10:]))
+    newCsvLine.append(sum(numlist[10:15]))
+    newCsvLine.append(sum(numlist[15:]))
     newCsvLine.append(sum(numlist[0:]))
     csvResWriter.writerow(newCsvLine)
     newCsvLine.clear()
-
-

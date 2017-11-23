@@ -163,6 +163,7 @@ def CheckForAnalogs(analogsFolderPath):
                 str(ANALOG_REVIEW_MIN))
         # .md parsing:
         soup = ParseMd(os.path.join(analogsFolderPath,'analogs.md'))
+
         titles = soup.find_all('h2')
 
         analogsH = 'none'
@@ -176,7 +177,7 @@ def CheckForAnalogs(analogsFolderPath):
                 criteriasH = title
             if title.text.find("Источники") != -1:
                 sourcesH = title
-        
+
         if analogsH == 'none':
             print("  There is no Analogs title!")
             newCsvLine.append('0')
@@ -186,15 +187,19 @@ def CheckForAnalogs(analogsFolderPath):
             analogChildren = []
             nextNode = analogsH
             while True:
-                nextNode = nextNode.find_next_sibling()
-                tag_name = ''
                 try:
-                    tag_name = nextNode.name
-                except AttributeError:
-                    tag_name = ""
-                if tag_name == "h3":
-                    analogChildren.append(nextNode)
-                if tag_name == "h2" or nextNode.find_next_sibling() is None:
+                    nextNode = nextNode.find_next_sibling()
+                    tag_name = ''
+                    try:
+                        tag_name = nextNode.name
+                    except AttributeError:
+                        tag_name = ""
+                    if tag_name == "h3":
+                        analogChildren.append(nextNode)
+                    if tag_name == "h2" or nextNode.find_next_sibling() is None:
+                        break
+                except:
+                    print("Parsing error!! Try to copy headers from another's files")
                     break
 
             if len(analogChildren) >= ANALOGS_MIN:
@@ -217,16 +222,21 @@ def CheckForAnalogs(analogsFolderPath):
             criteriaChildren = []
             nextNode = criteriasH
             while True:
-                nextNode = nextNode.find_next_sibling()
-                tag_name = ''
                 try:
-                    tag_name = nextNode.name
-                except AttributeError:
-                    tag_name = ""
-                if tag_name == "h3":
-                    criteriaChildren.append(nextNode)
-                if tag_name == "h2":
+                    nextNode = nextNode.find_next_sibling()
+                    tag_name = ''
+                    try:
+                        tag_name = nextNode.name
+                    except AttributeError:
+                        tag_name = ""
+                    if tag_name == "h3":
+                        criteriaChildren.append(nextNode)
+                    if tag_name == "h2":
+                        break
+                except:
+                    print("Parsing error!! Try to copy headers from another's files")
                     break
+                
                         
             if len(criteriaChildren) >= CRITERIAS_MIN:
                 print("   Number of analogs".ljust(25) + '...\tGood.')

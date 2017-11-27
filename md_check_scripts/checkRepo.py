@@ -15,6 +15,9 @@ ANALOG_REVIEW_MIN = 2000
 SOL_METHOD_SELECTION_MIN = 1000
 SOL_METHOD_DESCRIPTION_MIN = 3000
 SOL_METHOD_EVALUATION_MIN = 3000
+CONCLUSION_MIN = 500
+ABSTRACT_MIN = 400
+ABSTRACT_MAX = 800
 
 def CheckRepo(repoPath):
     print('Checking for directory "' + repoPath + '"')
@@ -56,6 +59,8 @@ def CheckNamedDirectory(nameFolderPath):
         CheckForSolutionMethodSelection(nameFolderPath)
         CheckForSolutionMethodDescription(nameFolderPath)
         CheckForSolutionMethodEvaluation(nameFolderPath)
+        CheckForConclusions(nameFolderPath)
+        CheckForAbstract(nameFolderPath)
         #CSV Write Row
         csvWriter.writerow(newCsvLine)
         newCsvLine.clear()
@@ -413,6 +418,57 @@ def CheckForSolutionMethodEvaluation(nameFolderPath):
         newCsvLine.append('0')
         print(' solution_method_evaluation.md'.ljust(36) +  '...\tdoes not exist!')
 
+def CheckForConclusions(nameFolderPath):
+    print("Checking for conclusions.md")
+    if os.path.isfile(os.path.join(nameFolderPath,'conclusions.md')):
+        print(' conclusions.md'.ljust(36) +  '...\tExists!')
+        #CSV conclusions.md exists
+        newCsvLine.append('1')
+        smSelectionNum = CountTextSymbols(os.path.join(nameFolderPath,"conclusions.md"))
+        if smSelectionNum >= CONCLUSION_MIN:
+            #CSV conclusions.md enough symbols
+            newCsvLine.append('1')
+            print("  Number of symbols in conclusions.md".ljust(70) + '...\tGood.')
+        else:
+            #CSV conclusions.md enough symbols
+            newCsvLine.append('0')
+            print("  Number of symbols in conclusions.md".ljust(70) + '...\tNot enough. Min = ' + \
+                str(CONCLUSION_MIN))
+    else:
+        #CSV conclusions.md doesn't exist
+        newCsvLine.append('0')
+        #CSV conclusions.md enough symbols
+        newCsvLine.append('0')
+        print(' conclusions.md'.ljust(36) +  '...\tdoes not exist!')
+
+def CheckForAbstract(nameFolderPath):
+    print("Checking for abstract.md")
+    if os.path.isfile(os.path.join(nameFolderPath,'abstract.md')):
+        print(' abstract.md'.ljust(36) +  '...\tExists!')
+        #CSV abstract.md exists
+        newCsvLine.append('1')
+        smSelectionNum = CountTextSymbols(os.path.join(nameFolderPath,"abstract.md"))
+        if smSelectionNum >= ABSTRACT_MIN and smSelectionNum <= ABSTRACT_MAX:
+            #CSV abstract.md enough symbols
+            newCsvLine.append('1')
+            print("  Number of symbols in abstract.md".ljust(70) + '...\tGood.')
+        else:
+            #CSV abstract.md enough symbols
+            newCsvLine.append('0')
+
+            if smSelectionNum <= ABSTRACT_MIN:
+                print("  Number of symbols in abstract.md".ljust(70) + '...\tNot enough. Min = ' + \
+                    str(ABSTRACT_MIN))
+            else:
+                print("  Number of symbols in abstract.md".ljust(70) + '...\tToo much. Max = ' + \
+                    str(ABSTRACT_MAX))
+    else:
+        #CSV abstract.md doesn't exist
+        newCsvLine.append('0')
+        #CSV abstract.md enough symbols
+        newCsvLine.append('0')
+        print(' abstract.md'.ljust(36) +  '...\tdoes not exist!')
+
 def CheckForFile(dirpath, filename):
     file = Path(dirpath+'/' + filename)
     
@@ -460,8 +516,12 @@ csvFile = open('result.csv', "w")
 headers = ["Name", "Paper_base pdf", "fact_result.md exists", "fact_result.md enough symbols", \
         "problem.md exists", "research_object.md exists", "research_subject.md exists", \
         "goal.md exists", "tasks.md exists", "relevance.md exists", "Purpose statements enough symbols", \
-        "analogs.md exists", "analogs.md enough symbols", "analogs num >= 3", "criteria num >= 3", "sources num >= 1",
-        "solution_method_selection.md exists", "solution_method_selection.md enough symbols"]
+        "analogs.md exists", "analogs.md enough symbols", "analogs num >= 3", "criteria num >= 3", "sources num >= 1", \
+        "solution_method_selection.md exists", "solution_method_selection.md enough symbols" , \
+        "solution_method_description.md exists", "solution_method_description.md enough symbols" , "solution_method_description.md sources", \
+        "solution_method_evaluation.md exists", "solution_method_evaluation.md enough symbols" , "solution_method_evaluation.md sources", \
+        "conclusions.md exists", "conclusions.md enough symbols", \
+        "abstract.md exists", "abstract.md needed amount of symbols" ]
 
 csvWriter = csv.writer(csvFile, delimiter=',')
 csvWriter.writerows([headers])
@@ -469,31 +529,38 @@ newCsvLine = []
 CheckRepo(repo_path)
 
 csvFile.close()
-csvFileRead = open('result.csv', "r")
-csvReader = csv.reader(csvFileRead, delimiter=',')
+
 #sol method selection after analogs +2 points
 #sol method description adter smsel +3 points
 #sol method evaluation adter smsel +3 points
+#conclusion + abstract = +4 points
 csvResFile = open('sum_result.csv', "w")
-res_headers = ["Name", "Выбор темы статьи и Фактический результат исследования (3)", \
+res_headers = ["Name", "Сумма оценок (24/27)", \
+        "Выбор темы статьи и Фактический результат исследования (3)", \
         "Подготовка ответов на ключевые вопросы (7)", \
         "Сравнение аналогов или существующих подходов к решению проблемы (5)", \
         "Выбор и описание метода решения + исследование(по желанию) (5/8)", \
-        "Сумма оценок (20/23)"]
+        "Выводы и аннотация (4)"]
 csvResWriter = csv.writer(csvResFile, delimiter=',')
 csvResWriter.writerows([res_headers])
+
+csvFileRead = open('result.csv', "r")
+csvReader = csv.reader(csvFileRead, delimiter=',')
 counter = 0
 for row in csvReader:
     if counter == 0:
         counter = 1
         continue
     print(row)
+    if (len(row) == 0):
+        continue
     numlist = [int(x) for x in row[1:]]
     newCsvLine.append(row[0])
+    newCsvLine.append(sum(numlist[0:]))
     newCsvLine.append(sum(numlist[0:3]))
     newCsvLine.append(sum(numlist[3:10]))
     newCsvLine.append(sum(numlist[10:15]))
-    newCsvLine.append(sum(numlist[15:]))
-    newCsvLine.append(sum(numlist[0:]))
+    newCsvLine.append(sum(numlist[15:23]))
+    newCsvLine.append(sum(numlist[23:]))    
     csvResWriter.writerow(newCsvLine)
     newCsvLine.clear()

@@ -9,6 +9,7 @@ import argparse
 from glob import glob
 from pathlib import Path
 from bs4 import BeautifulSoup
+import re
 # import scipy.stats as ss
 # import math
 # import numpy
@@ -40,23 +41,22 @@ def ParseMd(file):
 
 def GetText(filename):
     soup = ParseMd(filename)
-    print(soup)
     pars = soup.find_all(['p','li'])
     allText = ""
     for t in pars:
-        allText += t.text
+        allText += t.text + ' '
     return allText
 
 def GetStats(filename):
     CheckForFile(os.getcwd(), filename)
     allText = GetText(os.path.join(os.getcwd(),filename))
-    print(allText)
-    all_words = [w.lower() for w in allText]
-    words = set(all_words)
-    counts = [(w, all_words.count(w)) for w in words]
+    wordList = re.sub("[^\w]", " ",  allText).split()
+    wordList = [w.lower() for w in wordList]
+    words = set(wordList)
+    counts = [(w, wordList.count(w)) for w in words]
 
     for (w, c) in counts:
-        if c > 0:
+        if c > 1:
             print(w + ": " + str(c))  
     
     # amb = [(w, c, len(wordnet.synsets(w))) for (w, c) in counts if len(wordnet.synsets(w)) > 0]

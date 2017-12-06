@@ -61,6 +61,7 @@ def CheckNamedDirectory(nameFolderPath):
         CheckForSolutionMethodEvaluation(nameFolderPath)
         CheckForConclusions(nameFolderPath)
         CheckForAbstract(nameFolderPath)
+        CheckForFullText(nameFolderPath)
         #CSV Write Row
         csvWriter.writerow(newCsvLine)
         newCsvLine.clear()
@@ -469,6 +470,39 @@ def CheckForAbstract(nameFolderPath):
         newCsvLine.append('0')
         print(' abstract.md'.ljust(36) +  '...\tdoes not exist!')
 
+def CheckForFullText(nameFolderPath):
+    print("Checking for paper.md")
+    if os.path.isfile(os.path.join(nameFolderPath,'paper.md')):
+        print(' paper.md'.ljust(36) +  '...\tExists!')
+        #CSV paper.md exists
+        newCsvLine.append('1')        
+    else:
+        #CSV paper.md doesn't exist
+        newCsvLine.append('0')
+        print(' paper.md'.ljust(36) +  '...\tdoes not exist!')
+
+    print("Checking for paper.pdf")
+    if os.path.isfile(os.path.join(nameFolderPath,'paper.pdf')):
+        print(' paper.pdf'.ljust(36) +  '...\tExists!')
+        #CSV paper.pdf exists
+        newCsvLine.append('1')        
+    else:
+        #CSV paper.pdf doesn't exist
+        newCsvLine.append('0')
+        print(' paper.pdf'.ljust(36) +  '...\tdoes not exist!')
+    
+    print("Checking for paper.docx/odt/tex")
+    if os.path.isfile(os.path.join(nameFolderPath,'paper.docx')) or \
+        os.path.isfile(os.path.join(nameFolderPath,'paper.odt')) or \
+        os.path.isfile(os.path.join(nameFolderPath,'paper.tex')):
+        print(' paper.docx/odt/tex'.ljust(36) +  '...\tExists!')
+        #CSV paper.docx/odt/tex exists
+        newCsvLine.append('1')        
+    else:
+        #CSV paper.docx/odt/tex doesn't exist
+        newCsvLine.append('0')
+        print(' paper.docx/odt/tex'.ljust(36) +  '...\tdoes not exist!')
+
 def CheckForFile(dirpath, filename):
     file = Path(dirpath+'/' + filename)
     
@@ -521,7 +555,8 @@ headers = ["Name", "Paper_base pdf", "fact_result.md exists", "fact_result.md en
         "solution_method_description.md exists", "solution_method_description.md enough symbols" , "solution_method_description.md sources", \
         "solution_method_evaluation.md exists", "solution_method_evaluation.md enough symbols" , "solution_method_evaluation.md sources", \
         "conclusions.md exists", "conclusions.md enough symbols", \
-        "abstract.md exists", "abstract.md needed amount of symbols" ]
+        "abstract.md exists", "abstract.md needed amount of symbols", \
+        "paper.md exists", "paper.pdf exists", "paper.docs/odt/text exists" ]
 
 csvWriter = csv.writer(csvFile, delimiter=',')
 csvWriter.writerows([headers])
@@ -534,13 +569,14 @@ csvFile.close()
 #sol method description adter smsel +3 points
 #sol method evaluation adter smsel +3 points
 #conclusion + abstract = +4 points
+#full paper +3 points
 csvResFile = open('sum_result.csv', "w")
 res_headers = ["Name", "Сумма оценок (24/27)", \
         "Выбор темы статьи и Фактический результат исследования (3)", \
         "Подготовка ответов на ключевые вопросы (7)", \
         "Сравнение аналогов или существующих подходов к решению проблемы (5)", \
         "Выбор и описание метода решения + исследование(по желанию) (5/8)", \
-        "Выводы и аннотация (4)"]
+        "Выводы и аннотация (4)", "Собранный текст (3)"]
 csvResWriter = csv.writer(csvResFile, delimiter=',')
 csvResWriter.writerows([res_headers])
 
@@ -561,6 +597,7 @@ for row in csvReader:
     newCsvLine.append(sum(numlist[3:10]))
     newCsvLine.append(sum(numlist[10:15]))
     newCsvLine.append(sum(numlist[15:23]))
-    newCsvLine.append(sum(numlist[23:]))    
+    newCsvLine.append(sum(numlist[23:27]))   
+    newCsvLine.append(sum(numlist[27:]))   
     csvResWriter.writerow(newCsvLine)
     newCsvLine.clear()

@@ -15,6 +15,7 @@ import scipy.stats as ss
 import math
 import numpy
 import matplotlib.pyplot as plt
+from nltk.corpus import stopwords
 
 def CheckForDir(dirpath):
     dir = Path(dirpath)
@@ -69,6 +70,7 @@ def GetText(filename):
 def CountWords(wordList):
     morph = pymorphy2.MorphAnalyzer()
     counts = {}
+    normalFormWordList = []
     for _word in wordList:
         currForm = morph.parse(_word)[0]
         nounForm = currForm.inflect({'sing','nomn'})
@@ -78,36 +80,57 @@ def CountWords(wordList):
         except:
             word = currForm.word
         
-        if word in counts:
-            counts[word] += 1
+        normalFormWordList.append(word)
+
+    ruStopWords = set(stopwords.words('russian'))
+    enStopWords = set(stopwords.words('english'))
+
+    filteredWordList = [_word for _word in normalFormWordList if _word not in ruStopWords]
+    filteredWordList = [_word for _word in filteredWordList if _word not in enStopWords]
+    filteredWordList = [_word for _word in filteredWordList if not _word.isdigit()]
+
+    for _word in filteredWordList:
+        if _word in counts:
+            counts[_word] += 1
         else:
-            counts[word] = 1
+            counts[_word] = 1
+    
     return counts
+
+def checkWater(wordList):
+    ruStopWords = set(stopwords.words('russian'))
+    stopWords = [_word for _word in wordList if _word in ruStopWords]
+    waterLevel = len(stopWords)/len(wordList) * 100
+    return (len(stopWords), waterLevel)
 
 def GetStats(dirPath):
     CheckForDir(dirPath)
     allText = GetAllText(dirPath)
     wordList = re.sub("[^\w]", " ",  allText).split()
     wordList = [w.lower() for w in wordList]
+    water = checkWater(wordList)
     counts = CountWords(wordList)
 
     for word, freq in counts.items():
-        if freq > 2:
+        if freq > 10:
             print(word + ": " + str(freq))
+
+    print("Stopwords in text: " + str(water[0]))
+    print("Waterlevel: " + str(water[1]) + "%")  
    
     amb = [(w, c) for (w, c) in counts.items()]    
     amb_c_rank = ss.rankdata([c for (w, c) in amb])
     amb_sorted = sorted(amb, key=lambda x: x[1], reverse=True)
 
-    #numpy.corrcoef(amb_c_rank, [math.log(c) for (w, c) in amb])
     rev = [len(amb_c_rank)-r+1 for r in amb_c_rank]    
     #plt.plot([math.log(c) for c in rev], [math.log(c) for (w, c) in amb], 'ro')
 
-    x = range(0, len(amb_sorted[0:5]))
-    y = [c for (w, c) in amb_sorted[0:5]]
-    my_xticks = [w for (w, c) in amb_sorted[0:5]]
+    x = range(0, len(amb_sorted[0:10]))
+    y = [c for (w, c) in amb_sorted[0:10]]
+    my_xticks = [w for (w, c) in amb_sorted[0:10]]
     plt.xticks(x, my_xticks)
     plt.plot(x, y)
+    
     plt.show()
 
 parser = argparse.ArgumentParser()

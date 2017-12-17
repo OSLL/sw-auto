@@ -177,7 +177,7 @@ def CheckForAnalogs(analogsFolderPath):
         sourcesH = 'none'
 
         for title in titles:
-            if title.text.find("Сравнение аналогов") != -1:
+            if title.text.find("аналог") != -1:
                 analogsH = title
             if title.text.find("Критерии сравнения аналогов") != -1:
                 criteriasH = title

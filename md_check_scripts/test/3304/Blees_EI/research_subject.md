@@ -1,6 +1,3 @@
-##Sample title2
-###Sample title3
+﻿## Предмет исследования
 
-Sample text. A lot of sample text. I mean... really a lot.
-
-New line. More text.
+В работе проводится исследование возможности автоматизации процесса проверки научных статей на соответствие "научному стилю"

@@ -1,6 +1,3 @@
-##Sample title2
-###Sample title3
+﻿## Проблема
 
-Sample text. A lot of sample text. I mean... really a lot.
-
-New line. More text.
+Проверки научных статей на предмет соответствия научному стилю и возможность автоматизации этого процесса

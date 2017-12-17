@@ -1,6 +1,5 @@
-##Sample title2
-###Sample title3
+﻿## Задачи
 
-Sample text. A lot of sample text. I mean... really a lot.
+* Исследование возможностей автоматизации процесса проверки;
 
-New line. More text.
+* Предложить решение, позволяющее автоматизировать процесс проверки научных статей.

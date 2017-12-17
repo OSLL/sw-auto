@@ -1,7 +1,3 @@
 Name,Paper_base pdf,fact_result.md exists,fact_result.md enough symbols,problem.md exists,research_object.md exists,research_subject.md exists,goal.md exists,tasks.md exists,relevance.md exists,Purpose statements enough symbols,analogs.md exists,analogs.md enough symbols,analogs num >= 3,criteria num >= 3,sources num >= 1,solution_method_selection.md exists,solution_method_selection.md enough symbols,solution_method_description.md exists,solution_method_description.md enough symbols,solution_method_description.md sources,solution_method_evaluation.md exists,solution_method_evaluation.md enough symbols,solution_method_evaluation.md sources,conclusions.md exists,conclusions.md enough symbols,abstract.md exists,abstract.md needed amount of symbols,paper.md exists,paper.pdf exists,paper.docs/odt/text exists
-Ivanov_II,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-Petrov_PP,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-Blees_EI,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,0,0,1,0,0,1,0,1,0,1,1,1
-Trump_DD,0,1,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
-Sidorov_SS,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-Testov_TT,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+Blees_EI,1,1,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,1,1,1
+SuchkovAI,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,1,0,1,0,0,0,0,0,1,1,1,0,1,0,0

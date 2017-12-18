@@ -132,8 +132,12 @@ def GetTestResults():
     (21.070234113712374,8.096431783376046)]
 
     #??mean = ss.Mean(results)
-
+    mean = (sum([w for (w, c) in results])/len(results),sum([c for (w, c) in results])/len(results))
+    _max = (max([w for (w, c) in results]),max([c for (w, c) in results]))
+    _min = (min([w for (w, c) in results]),min([c for (w, c) in results]))
     print(mean)
+    print(_max)
+    print(_min)
 
 def GetStats(dirPath):
     CheckForDir(dirPath)
@@ -182,5 +186,5 @@ parser.add_argument('path', help='path to directory with .md files')
 args = parser.parse_args()
 dir_path = args.path
 
-#GetStats(dir_path)
-GetTestResults()
+GetStats(dir_path)
+#GetTestResults()

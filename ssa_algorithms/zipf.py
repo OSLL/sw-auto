@@ -176,8 +176,10 @@ def GetStats(dirPath):
 
     # my_xticks = [w for (w, c) in amb_sorted[0:]]
     # plt.xticks(x, my_xticks)
-    plt.plot(x, y)
-    plt.plot(x, y2)
+    plt.ylabel("Частота употребления слова")
+    plt.xlabel("Ранг частоты употребления слова")
+    plt.plot(x, y,color='k')
+    plt.plot(x, y2,':',color='k')
     
     plt.show()
 

@@ -16,6 +16,7 @@ import math
 import numpy
 import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
+import textract
 
 def CheckForDir(dirpath):
     dir = Path(dirpath)
@@ -48,16 +49,27 @@ def ParseMd(file):
     soup = BeautifulSoup(htmlText, 'html.parser')
     return soup
 
-def GetAllText(dirpath):
+def GetAllTextFromMd(dirpath):
     files = os.listdir(dirpath)
     mdFiles = [f for f in files if f.endswith("paper.md")]
     mdFiles = [os.path.join(dirpath, f) for f in mdFiles]
     allText = ''
     for file in mdFiles:
-        allText += GetText(file) + ' '
+        allText += GetTextFromMd(file) + ' '
     return allText
 
-def GetText(filename):
+def GetAllTextFromPdf(dirpath):
+    files = os.listdir(dirpath)
+    pdfFiles = [f for f in files if f.endswith(".pdf")]
+    pdfFiles = [os.path.join(dirpath, f) for f in pdfFiles]
+    allText = ''
+    for file in pdfFiles:
+        bytesarr = GetTextFromPdf(file)
+        allText += bytesarr.decode('utf-8-sig') + ' '
+        print(allText.encode('utf-8-sig'))
+    return allText
+
+def GetTextFromMd(filename):
     soup = ParseMd(filename)
     #print(filename)
     #print(soup) #encode("utf-8-sig")
@@ -66,6 +78,11 @@ def GetText(filename):
     for t in pars:
         allText += t.text + ' '
     return allText
+
+def GetTextFromPdf(filename):
+    # text = textract.process(filename)
+    text = textract.process("e:\\paper.pdf", encoding='utf-8',method='pdftotext',language='rus')
+    return text
 
 def CountWords(wordList):
     morph = pymorphy2.MorphAnalyzer()
@@ -141,14 +158,15 @@ def GetTestResults():
 
 def GetStats(dirPath):
     CheckForDir(dirPath)
-    allText = GetAllText(dirPath)
+    # allText = GetAllTextFromMd(dirPath)
+    allText = GetAllTextFromPdf(dirPath)
     wordList = re.sub("[^\w]", " ",  allText).split()
     wordList = [w.lower() for w in wordList]
     water = checkWater(wordList)
     counts = CountWords(wordList)
 
     for word, freq in counts.items():
-        if freq > 10:
+        if freq > 5:
             print(word + ": " + str(freq))
 
     print("Stopwords in text: " + str(water[0]))
@@ -174,8 +192,8 @@ def GetStats(dirPath):
     deviation = GetStandartDeviation([c for (w, c) in amb_sorted if c >= 5])#GetStandartDeviation(y3)
     print("deviation: " + str(deviation))
 
-    # my_xticks = [w for (w, c) in amb_sorted[0:]]
-    # plt.xticks(x, my_xticks)
+    my_xticks = [w for (w, c) in amb_sorted[0:]]
+    plt.xticks(x, my_xticks)
     plt.ylabel("Частота употребления слова")
     plt.xlabel("Ранг частоты употребления слова")
     plt.plot(x, y,color='k')

@@ -80,8 +80,7 @@ def GetTextFromMd(filename):
     return allText
 
 def GetTextFromPdf(filename):
-    # text = textract.process(filename)
-    text = textract.process("e:\\paper.pdf", encoding='utf-8',method='pdftotext',language='rus')
+    text = textract.process(filename, encoding='utf-8',method='pdftotext',language='rus')
     return text
 
 def CountWords(wordList):

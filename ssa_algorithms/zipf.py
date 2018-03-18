@@ -17,6 +17,7 @@ import numpy
 import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
 import textract
+import operator
 
 def CheckForDir(dirpath):
     dir = Path(dirpath)
@@ -119,6 +120,13 @@ def checkWater(wordList):
     waterLevel = len(stopWords)/len(wordList) * 100
     return (len(stopWords), waterLevel)
 
+def GetKeyWords(wordList):
+    sortedWordList = sorted(wordList.items(), key=operator.itemgetter(1))[::-1]
+
+    maxKey, maxValue = sortedWordList[0]
+    keyWords = [(w,c) for (w,c) in sortedWordList if c >= maxValue/2]
+    return keyWords
+
 def GetYPlot(data):
     _data = []
     _max = max(data)
@@ -163,11 +171,18 @@ def GetStats(dirPath):
     wordList = [w.lower() for w in wordList]
     water = checkWater(wordList)
     counts = CountWords(wordList)
+    keyWords = GetKeyWords(counts)
 
     for word, freq in counts.items():
         if freq > 5:
             print(word + ": " + str(freq))
 
+    print("Keywords in text:")
+    for word, freq in keyWords:
+        if freq > 5:
+            print(word + ": " + str(freq))
+    keyWordsLevel = sum([pair[1] for pair in keyWords])/sum(counts.values())
+    print("Keywords level: " + str(keyWordsLevel*100) + "%")    
     print("Stopwords in text: " + str(water[0]))
     print("Waterlevel: " + str(water[1]) + "%")  
    
@@ -192,7 +207,7 @@ def GetStats(dirPath):
     print("deviation: " + str(deviation))
 
     my_xticks = [w for (w, c) in amb_sorted[0:]]
-    plt.xticks(x, my_xticks)
+    # plt.xticks(x, my_xticks)
     plt.ylabel("Частота употребления слова")
     plt.xlabel("Ранг частоты употребления слова")
     plt.plot(x, y,color='k')

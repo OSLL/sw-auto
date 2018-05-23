@@ -59,15 +59,20 @@ def GetAllTextFromMd(dirpath):
         allText += GetTextFromMd(file) + ' '
     return allText
 
-def GetAllTextFromPdf(dirpath):
+def getFilesFromFolder(dirpath):
     files = os.listdir(dirpath)
     pdfFiles = [f for f in files if f.endswith(".pdf")]
     pdfFiles = [os.path.join(dirpath, f) for f in pdfFiles]
-    allText = ''
-    for file in pdfFiles:
-        bytesarr = GetTextFromPdf(file)
-        allText += bytesarr.decode('utf-8-sig') + ' '
-        print(allText.encode('utf-8-sig'))
+    return pdfFiles
+
+def GetAllTextFromPdf(filePath):
+    print('Processing ' + filePath + ' ...\n')
+    allText = ''    
+    bytesarr = GetTextFromPdf(filePath)
+    if bytesarr == None:
+        return ''
+    allText += bytesarr.decode('utf-8-sig') + ' '
+    # print(allText.encode('utf-8-sig'))
     return allText
 
 def GetTextFromMd(filename):
@@ -81,8 +86,11 @@ def GetTextFromMd(filename):
     return allText
 
 def GetTextFromPdf(filename):
-    text = textract.process(filename, encoding='utf-8',method='pdftotext',language='rus')
-    return text
+    try:
+        text = textract.process(filename, encoding='utf-8',method='pdftotext',language='rus')
+        return text
+    except Exception:
+        return None
 
 def CountWords(wordList):
     morph = pymorphy2.MorphAnalyzer()
@@ -144,76 +152,61 @@ def GetStandartDeviation(data):
         deviation += math.pow(data[i]-perfectData[i],2)
     return math.sqrt(deviation/len(data))
 
-def GetTestResults():
-    results = [ (24.36548223350254,2.3869048043157406), (20.056899004267425,5.904047182531645), \
-    (14.676616915422885,6.8405488439403035),(22.485207100591715,5.941721356463498), \
-    (19.74852071005917,6.167598935904716), (24.305949008498583,6.183000683206467), \
-    (20.476460578559276,7.18112890717097), (19.353984643897274,7.938768037444853), \
-    (20.76502732240437,5.085302021852815), (15.081206496519723,7.424254455924562), \
-    (18.95497498610339,8.641253207882684), (19.163578613022764,8.756846223351458), \
-    (20.752895752895753,5.184431966858193), (23.007623007623007,5.983537361734219), \
-    (18.98428053204353,7.885213268411863), (17.59927797833935,5.860974748675821), \
-    (21.070234113712374,8.096431783376046)]
-
-    #??mean = ss.Mean(results)
-    mean = (sum([w for (w, c) in results])/len(results),sum([c for (w, c) in results])/len(results))
-    _max = (max([w for (w, c) in results]),max([c for (w, c) in results]))
-    _min = (min([w for (w, c) in results]),min([c for (w, c) in results]))
-    print(mean)
-    print(_max)
-    print(_min)
-
 def GetStats(dirPath):
     CheckForDir(dirPath)
     # allText = GetAllTextFromMd(dirPath)
-    allText = GetAllTextFromPdf(dirPath)
-    wordList = re.sub("[^\w]", " ",  allText).split()
-    wordList = [w.lower() for w in wordList]
-    water = checkWater(wordList)
-    counts = CountWords(wordList)
-    keyWords = GetKeyWords(counts)
+    files = getFilesFromFolder(dirPath)
+    f = open('results.txt', 'w')
+    files.sort()
+    for pdfFile in files:
+        try:
+            allText = GetAllTextFromPdf(pdfFile)
+            wordList = re.sub("[^\w]", " ",  allText).split()
+            wordList = [w.lower() for w in wordList]
+            if len(wordList) == 0:
+                continue
+            water = checkWater(wordList)
+            counts = CountWords(wordList)
+            keyWords = GetKeyWords(counts)
 
-    for word, freq in counts.items():
-        if freq > 5:
-            print(word + ": " + str(freq))
+            # for word, freq in counts.items():
+            #     if freq > 5:
+            #         print(word + ": " + str(freq))
 
-    print("Keywords in text:")
-    for word, freq in keyWords:
-        if freq > 5:
-            print(word + ": " + str(freq))
-    keyWordsLevel = sum([pair[1] for pair in keyWords])/sum(counts.values())
-    print("Keywords level: " + str(keyWordsLevel*100) + "%")    
-    print("Stopwords in text: " + str(water[0]))
-    print("Waterlevel: " + str(water[1]) + "%")  
-   
-    amb = [(w, c) for (w, c) in counts.items()]    
-    amb_c_rank = ss.rankdata([c for (w, c) in amb])
-    amb_sorted = sorted(amb, key=lambda x: x[1], reverse=True)
+            # print("Keywords in text:")
+            # for word, freq in keyWords:
+            #     if freq > 5:
+            #         print(word + ": " + str(freq))
+            keyWordsLevel = sum([pair[1] for pair in keyWords])/sum(counts.values())
+            # print("Keywords level: " + str(keyWordsLevel*100) + "%")    
+            # print("Stopwords in text: " + str(water[0]))
+            # print("Waterlevel: " + str(water[1]) + "%")  
+        
+            amb = [(w, c) for (w, c) in counts.items()]    
+            amb_c_rank = ss.rankdata([c for (w, c) in amb])
+            amb_sorted = sorted(amb, key=lambda x: x[1], reverse=True)
 
-    x = range(0, len(amb_sorted[0:]))
-    y = [c for (w, c) in amb_sorted[0:]]
-    y2 = GetYPlot([c for (w, c) in amb_sorted[0:]])
+            x = range(0, len(amb_sorted[0:]))
+            y = [c for (w, c) in amb_sorted[0:]]
+            y2 = GetYPlot([c for (w, c) in amb_sorted[0:]])
+        
+            deviation = GetStandartDeviation([c for (w, c) in amb_sorted if c >= 5])#GetStandartDeviation(y3)
+            
+            f.write(str({'filename':pdfFile, 'keywordsLvl': keyWordsLevel*100, 'WaterLvl': water[1], 'devition': deviation}))
+            f.write(', ')
+        except Exception:
+            continue
+        # print("deviation: " + str(deviation))
 
-    # _max = max([c for (w, c) in amb_sorted[0:10]])
-    # _min = min(y2)
-
-    # diff = (_max - _min)/9
-    # y3 = []
-    # for i in range(0,10):
-    #     y3.append(_max - i*diff)
-
-    
-    deviation = GetStandartDeviation([c for (w, c) in amb_sorted if c >= 5])#GetStandartDeviation(y3)
-    print("deviation: " + str(deviation))
-
-    my_xticks = [w for (w, c) in amb_sorted[0:]]
-    # plt.xticks(x, my_xticks)
-    plt.ylabel("Частота употребления слова")
-    plt.xlabel("Ранг частоты употребления слова")
-    plt.plot(x, y,color='k')
-    plt.plot(x, y2,':',color='k')
-    
-    plt.show()
+        # my_xticks = [w for (w, c) in amb_sorted[0:]]
+        # plt.ylabel("Частота употребления слова")
+        # plt.xlabel("Ранг частоты употребления слова")
+        # plt.plot(x, y,color='k')
+        # plt.plot(x, y2,':',color='k')
+        
+        # plt.show()
+    # print(results)
+    f.close()
 
 parser = argparse.ArgumentParser()
 parser.add_argument('path', help='path to directory with .md files')
@@ -221,4 +214,3 @@ args = parser.parse_args()
 dir_path = args.path
 
 GetStats(dir_path)
-#GetTestResults()

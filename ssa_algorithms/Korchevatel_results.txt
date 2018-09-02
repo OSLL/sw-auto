@@ -1,0 +1,4 @@
+Keywords level: 10.380622837370241%
+Stopwords in text: 449
+Waterlevel: 18.500206015657188%
+deviation: 6.848623088485546

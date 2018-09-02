@@ -6,6 +6,7 @@ import codecs
 import mistune
 import csv
 import argparse
+import sys
 from glob import glob
 from pathlib import Path
 from bs4 import BeautifulSoup
@@ -23,20 +24,29 @@ def CheckForDir(dirpath):
     dir = Path(dirpath)
 
     if dir.is_dir():
-        print('     ' + str(dir).ljust(25) + '...\tExists!')
+        print('Directory     ' + str(dir).ljust(25) + '...\tExists!')
         return True
     else:
-        print('     ' + str(dir).ljust(25) + "...\tDoesn't exist!")
+        print('Directory     ' + str(dir).ljust(25) + "...\tDoesn't exist!")
         return False
 
 def CheckForFile(dirpath, filename):
     file = Path(os.path.join(dirpath,filename))
 
     if file.is_file():
-        print('     ' + filename.ljust(25) + '...\tExists!')
+        print('File     ' + filename.ljust(25) + '...\tExists!')
         return True
     else:
-        print('     ' + filename.ljust(25) + "...\tDoesn't exist!")
+        print('File     ' + filename.ljust(25) + "...\tDoesn't exist!")
+        return False
+
+def CheckForFileFullPath(filename):
+    file = Path(os.path.abspath(filename))
+    if file.is_file():
+        print('File     ' + filename.ljust(25) + '...\tExists!')
+        return True
+    else:
+        print('File     ' + filename.ljust(25) + "...\tDoesn't exist!")
         return False
 
 def ParseMd(file):
@@ -152,19 +162,19 @@ def GetStandartDeviation(data):
         deviation += math.pow(data[i]-perfectData[i],2)
     return math.sqrt(deviation/len(data))
 
-def GetStats(dirPath):
-    CheckForDir(dirPath)
-    # allText = GetAllTextFromMd(dirPath)
-    files = getFilesFromFolder(dirPath)
-    f = open('results.txt', 'w')
-    files.sort()
-    for pdfFile in files:
+def GetStats(dirPath, flagDir):    
+    if not flagDir:
+        if not CheckForFileFullPath(dirPath):
+            sys.exit()
+
         try:
-            allText = GetAllTextFromPdf(pdfFile)
+            allText = GetAllTextFromPdf(dirPath)
             wordList = re.sub("[^\w]", " ",  allText).split()
             wordList = [w.lower() for w in wordList]
             if len(wordList) == 0:
-                continue
+                print("No words in text!!!")
+                sys.exit()
+            f = open('results.txt', 'w')
             water = checkWater(wordList)
             counts = CountWords(wordList)
             keyWords = GetKeyWords(counts)
@@ -178,9 +188,9 @@ def GetStats(dirPath):
             #     if freq > 5:
             #         print(word + ": " + str(freq))
             keyWordsLevel = sum([pair[1] for pair in keyWords])/sum(counts.values())
-            # print("Keywords level: " + str(keyWordsLevel*100) + "%")    
-            # print("Stopwords in text: " + str(water[0]))
-            # print("Waterlevel: " + str(water[1]) + "%")  
+            print("Keywords level: " + str(keyWordsLevel*100) + "%")
+            print("Stopwords in text: " + str(water[0]))
+            print("Waterlevel: " + str(water[1]) + "%")
         
             amb = [(w, c) for (w, c) in counts.items()]    
             amb_c_rank = ss.rankdata([c for (w, c) in amb])
@@ -192,25 +202,56 @@ def GetStats(dirPath):
         
             deviation = GetStandartDeviation([c for (w, c) in amb_sorted if c >= 5])#GetStandartDeviation(y3)
             
-            f.write(str({'filename':pdfFile, 'keywordsLvl': keyWordsLevel*100, 'WaterLvl': water[1], 'devition': deviation}))
-            f.write(', ')
+            f.write(str({'filename':dirPath, 'keywordsLvl': keyWordsLevel*100, 'WaterLvl': water[1], 'devition': deviation}))
+            print("deviation: " + str(deviation))
+            my_xticks = [w for (w, c) in amb_sorted[0:]]
+            plt.ylabel("Частота употребления слова")
+            plt.xlabel("Ранг частоты употребления слова")
+            plt.plot(x, y,color='k')
+            plt.plot(x, y2,':',color='k')        
+            plt.show()
         except Exception:
-            continue
-        # print("deviation: " + str(deviation))
+            sys.exit()
+    else:
+        if not CheckForDir(dirPath):
+            sys.exit()
+        files = getFilesFromFolder(dirPath)
+        f = open('results.txt', 'w')
+        files.sort()
+        for pdfFile in files:
+            try:
+                allText = GetAllTextFromPdf(pdfFile)
+                wordList = re.sub("[^\w]", " ",  allText).split()
+                wordList = [w.lower() for w in wordList]
+                if len(wordList) == 0:
+                    continue
+                water = checkWater(wordList)
+                counts = CountWords(wordList)
+                keyWords = GetKeyWords(counts)
 
-        # my_xticks = [w for (w, c) in amb_sorted[0:]]
-        # plt.ylabel("Частота употребления слова")
-        # plt.xlabel("Ранг частоты употребления слова")
-        # plt.plot(x, y,color='k')
-        # plt.plot(x, y2,':',color='k')
-        
-        # plt.show()
-    # print(results)
-    f.close()
+                keyWordsLevel = sum([pair[1] for pair in keyWords])/sum(counts.values())
+            
+                amb = [(w, c) for (w, c) in counts.items()]    
+                amb_c_rank = ss.rankdata([c for (w, c) in amb])
+                amb_sorted = sorted(amb, key=lambda x: x[1], reverse=True)
+
+                x = range(0, len(amb_sorted[0:]))
+                y = [c for (w, c) in amb_sorted[0:]]
+                y2 = GetYPlot([c for (w, c) in amb_sorted[0:]])
+            
+                deviation = GetStandartDeviation([c for (w, c) in amb_sorted if c >= 5])#GetStandartDeviation(y3)
+                
+                f.write(str({'filename':pdfFile, 'keywordsLvl': keyWordsLevel*100, 'WaterLvl': water[1], 'devition': deviation}))
+                f.write(', ')
+            except Exception:
+                continue
+        f.close()
 
 parser = argparse.ArgumentParser()
-parser.add_argument('path', help='path to directory with .md files')
+parser.add_argument('path', help='path to .pdf file')
+parser.add_argument('-d', '--dir', action="store_true", default=False, help='expect path to directory with .pdf files')
 args = parser.parse_args()
 dir_path = args.path
+use_dir = args.dir
 
-GetStats(dir_path)
+GetStats(dir_path, use_dir)

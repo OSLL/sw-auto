@@ -188,9 +188,24 @@ def GetStats(dirPath, flagDir):
             #     if freq > 5:
             #         print(word + ": " + str(freq))
             keyWordsLevel = sum([pair[1] for pair in keyWords])/sum(counts.values())
+            keyl = 5.5
+            keyr = 13.5
+            waterl = 14
+            waterr = 20.5
+            devl = 5
+            devr = 9.5
             print("Keywords level: " + str(keyWordsLevel*100) + "%")
+            if keyl <= keyWordsLevel*100 <= keyr:
+                print("Keywords level Good")
+            else:
+                print("Keywords level Bad")
+
             print("Stopwords in text: " + str(water[0]))
             print("Waterlevel: " + str(water[1]) + "%")
+            if waterl <= water[1] <= waterr:
+                print("Waterlevel level Good")
+            else:
+                print("Waterlevel level Bad")
         
             amb = [(w, c) for (w, c) in counts.items()]    
             amb_c_rank = ss.rankdata([c for (w, c) in amb])
@@ -204,6 +219,12 @@ def GetStats(dirPath, flagDir):
             
             f.write(str({'filename':dirPath, 'keywordsLvl': keyWordsLevel*100, 'WaterLvl': water[1], 'devition': deviation}))
             print("deviation: " + str(deviation))
+            
+            if devl <= deviation <= devr:
+                print("deviation level Good")
+            else:
+                print("deviation level Bad")
+
             my_xticks = [w for (w, c) in amb_sorted[0:]]
             plt.ylabel("Частота употребления слова")
             plt.xlabel("Ранг частоты употребления слова")

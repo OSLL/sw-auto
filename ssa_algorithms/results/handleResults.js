@@ -145,6 +145,15 @@ testResults = function (array) {
     return array;
 };
 
+testResults2 = function () {
+    var z = new Ziggurat();
+    array = [];
+    for (var i = 0; i < 1000; i++) {
+        array.push(z.nextGaussian());
+    }
+    return array;
+};
+
 data = data.filter((a) => a.WaterLvl != 0)
 data = removeDuplicates(data, 'filename')
 data = testResults(data)

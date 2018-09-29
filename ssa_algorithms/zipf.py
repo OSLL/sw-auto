@@ -71,7 +71,7 @@ def GetAllTextFromMd(dirpath):
 
 def getFilesFromFolder(dirpath):
     files = os.listdir(dirpath)
-    pdfFiles = [f for f in files if f.endswith(".pdf")]
+    pdfFiles = [f for f in files if f.lower().endswith(".pdf")]
     pdfFiles = [os.path.join(dirpath, f) for f in pdfFiles]
     return pdfFiles
 
@@ -239,6 +239,7 @@ def GetStats(dirPath, flagDir):
         files = getFilesFromFolder(dirPath)
         f = open('results.txt', 'w')
         files.sort()
+        print(files)
         for pdfFile in files:
             try:
                 allText = GetAllTextFromPdf(pdfFile)

@@ -1,0 +1,330 @@
+{
+    "results": [
+        {
+            "filename": "Borsuk",
+            "keywordsLvl": 10.84507042253521,
+            "WaterLvl": 17.361543248288736,
+            "devition": 14.152826894878823,
+            "grade": 3
+        },
+        {
+            "filename": "KOZLOV",
+            "keywordsLvl": 4.800108784335056,
+            "WaterLvl": 14.46206342834203,
+            "devition": 14.562180042751775,
+            "grade": 4
+        },
+        {
+            "filename": "LIKHACHEV",
+            "keywordsLvl": 8.12875068194217,
+            "WaterLvl": 19.65981012658228,
+            "devition": 12.49299937932533,
+            "grade": 4
+        },
+        {
+            "filename": "АЛЕКСЕЕВИЧ",
+            "keywordsLvl": 3.5602598027423626,
+            "WaterLvl": 14.484126984126986,
+            "devition": 9.511665648654743,
+            "grade": 5
+        },
+        {
+            "filename": "БОЛГАРИНА",
+            "keywordsLvl": 10.302000261472088,
+            "WaterLvl": 13.810038306649641,
+            "devition": 14.166385987241352,
+            "grade": 5
+        },
+        {
+            "filename": "БУДЧАН",
+            "keywordsLvl": 11.263960773631162,
+            "WaterLvl": 14.217342342342343,
+            "devition": 15.882743330000373,
+            "grade": 5
+        },
+        {
+            "filename": "Белько",
+            "keywordsLvl": 5.437245129134572,
+            "WaterLvl": 16.186516186516187,
+            "devition": 11.223818317660664,
+            "grade": 4
+        },
+        {
+            "filename": "ГРУНЯШИН",
+            "keywordsLvl": 3.015139851167565,
+            "WaterLvl": 18.736678938190273,
+            "devition": 12.929315215794764,
+            "grade": 5
+        },
+        {
+            "filename": "ДАНИЛОВ",
+            "keywordsLvl": 2.410901467505241,
+            "WaterLvl": 18.03580832016851,
+            "devition": 12.321451391195119,
+            "grade": 5
+        },
+        {
+            "filename": "ЕФРЕМОВ",
+            "keywordsLvl": 5.065059178122473,
+            "WaterLvl": 11.079737971538288,
+            "devition": 17.073425819882853,
+            "grade": 5
+        },
+        {
+            "filename": "ЖАНГИРОВ",
+            "keywordsLvl": 6.9191343963553535,
+            "WaterLvl": 17.97216699801193,
+            "devition": 14.671173743068817,
+            "grade": 4
+        },
+        {
+            "filename": "ЗАБОРОВСКИЙ",
+            "keywordsLvl": 9.574468085106384,
+            "WaterLvl": 17.177575255454293,
+            "devition": 11.19696620799923,
+            "grade": 4
+        },
+        {
+            "filename": "ИВАНОВ",
+            "keywordsLvl": 4.06891495601173,
+            "WaterLvl": 18.023337550963024,
+            "devition": 12.879004253343705,
+            "grade": 3
+        },
+        {
+            "filename": "ИЩЕНКО",
+            "keywordsLvl": 5.305667734298844,
+            "WaterLvl": 16.944787803873094,
+            "devition": 12.066403568988765,
+            "grade": 4
+        },
+        {
+            "filename": "КАНУШИН",
+            "keywordsLvl": 6.978990581985029,
+            "WaterLvl": 17.17845236006317,
+            "devition": 8.929902731148422,
+            "grade": 5
+        },
+        {
+            "filename": "КЛИМУК",
+            "keywordsLvl": 10.31171517210814,
+            "WaterLvl": 19.653934051583416,
+            "devition": 15.020684077110444,
+            "grade": 5
+        },
+        {
+            "filename": "КОЗИНЕЦС",
+            "keywordsLvl": 41.94306371441482,
+            "WaterLvl": 7.4624489146011355,
+            "devition": 85.21576482375764,
+            "grade": 5
+        },
+        {
+            "filename": "КОМАРОВ",
+            "keywordsLvl": 5.1016635859519415,
+            "WaterLvl": 13.896029705798343,
+            "devition": 11.150742281224348,
+            "grade": 4
+        },
+        {
+            "filename": "КОРОБОВ",
+            "keywordsLvl": 4.656564539320872,
+            "WaterLvl": 15.889696586599241,
+            "devition": 12.365999583667435,
+            "grade": 5
+        },
+        {
+            "filename": "КУВШИНОВ",
+            "keywordsLvl": 4.756637168141593,
+            "WaterLvl": 19.229497354497354,
+            "devition": 10.113485001635661,
+            "grade": 4
+        },
+        {
+            "filename": "КУРИШЕВ",
+            "keywordsLvl": 5.566461020751542,
+            "WaterLvl": 21.58710217755444,
+            "devition": 12.233951682622235,
+            "grade": 5
+        },
+        {
+            "filename": "ЛАПКИНА",
+            "keywordsLvl": 8.227176220806793,
+            "WaterLvl": 25.49292214357937,
+            "devition": 12.868927578315612,
+            "grade": 5
+        },
+        {
+            "filename": "МАРАШОВ",
+            "keywordsLvl": 11.357018054746652,
+            "WaterLvl": 16.361767728674202,
+            "devition": 10.986541384010492,
+            "grade": 5
+        },
+        {
+            "filename": "МАРТЫНОВ",
+            "keywordsLvl": 12.992972895453894,
+            "WaterLvl": 21.398691408344952,
+            "devition": 15.234919564454806,
+            "grade": 5
+        },
+        {
+            "filename": "МАСЛОВ",
+            "keywordsLvl": 6.4726324934839266,
+            "WaterLvl": 19.763593380614658,
+            "devition": 10.00159475638647,
+            "grade": 5
+        },
+        {
+            "filename": "МИХАЙЛОВ",
+            "keywordsLvl": 7.416044776119403,
+            "WaterLvl": 16.082210868555507,
+            "devition": 12.430462664730706,
+            "grade": 5
+        },
+        {
+            "filename": "МОКРЕЦОВ",
+            "keywordsLvl": 11.619234543670265,
+            "WaterLvl": 17.33600114334715,
+            "devition": 12.873946922737455,
+            "grade": 5
+        },
+        {
+            "filename": "МОТОВИЛОВ",
+            "keywordsLvl": 10.505698005698004,
+            "WaterLvl": 13.371627037135989,
+            "devition": 13.139244106002895,
+            "grade": 5
+        },
+        {
+            "filename": "ПЕТУХОВ",
+            "keywordsLvl": 10.470275066548359,
+            "WaterLvl": 12.244897959183673,
+            "devition": 6.480630177735033,
+            "grade": 4
+        },
+        {
+            "filename": "ПИНАЕВ",
+            "keywordsLvl": 9.098411388487724,
+            "WaterLvl": 19.969395562356542,
+            "devition": 12.805925182373494,
+            "grade": 4
+        },
+        {
+            "filename": "ПОЛОВЦЕВ",
+            "keywordsLvl": 8.879806799182612,
+            "WaterLvl": 13.152345809172377,
+            "devition": 14.697321157558289,
+            "grade": 5
+        },
+        {
+            "filename": "РАЗМОЧАЕВА",
+            "keywordsLvl": 5.723592368543509,
+            "WaterLvl": 13.196820841152446,
+            "devition": 18.87718356909544,
+            "grade": 5
+        },
+        {
+            "filename": "САВЕДЕРКИН",
+            "keywordsLvl": 10.803149606299213,
+            "WaterLvl": 21.33724340175953,
+            "devition": 12.998927157312297,
+            "grade": 4
+        },
+        {
+            "filename": "СЕМЕНОВА",
+            "keywordsLvl": 7.911900935816239,
+            "WaterLvl": 16.71074262025588,
+            "devition": 15.94382806607644,
+            "grade": 5
+        },
+        {
+            "filename": "СКОРОСПЕЛОВ",
+            "keywordsLvl": 4.350453172205438,
+            "WaterLvl": 16.23514431239389,
+            "devition": 11.06757553560099,
+            "grade": 5
+        },
+        {
+            "filename": "СМИРНОВ",
+            "keywordsLvl": 4.363818759404782,
+            "WaterLvl": 19.88929889298893,
+            "devition": 11.518506204348782,
+            "grade": 5
+        },
+        {
+            "filename": "СТЕЦКЕВИЧ",
+            "keywordsLvl": 5.151482008093623,
+            "WaterLvl": 18.63409127560071,
+            "devition": 12.390128470728179,
+            "grade": 5
+        },
+        {
+            "filename": "Старожилов",
+            "keywordsLvl": 7.142857142857142,
+            "WaterLvl": 14.523512276321265,
+            "devition": 11.935272732895022,
+            "grade": 3
+        },
+        {
+            "filename": "ТОМИЛОВ",
+            "keywordsLvl": 8.735150244584206,
+            "WaterLvl": 21.83893627696939,
+            "devition": 12.032067010688886,
+            "grade": 5
+        },
+        {
+            "filename": "ФЕДОРОВ",
+            "keywordsLvl": 11.84480234260615,
+            "WaterLvl": 10.899374873966526,
+            "devition": 17.932129333835412,
+            "grade": 3
+        },
+        {
+            "filename": "ЧАЙКА",
+            "keywordsLvl": 13.41905703923508,
+            "WaterLvl": 17.24461105904405,
+            "devition": 16.9799302181053,
+            "grade": 5
+        },
+        {
+            "filename": "ЧЕГЕСОВ",
+            "keywordsLvl": 8.95786426503699,
+            "WaterLvl": 18.13037573562698,
+            "devition": 13.843362794120141,
+            "grade": 5
+        },
+        {
+            "filename": "ЧЕРЕПАНОВ",
+            "keywordsLvl": 9.333973743195646,
+            "WaterLvl": 13.69187411930484,
+            "devition": 14.770422130644944,
+            "grade": 3
+        },
+        {
+            "filename": "ЧУЛАНОВ",
+            "keywordsLvl": 7.5412930627654555,
+            "WaterLvl": 15.380725328709724,
+            "devition": 18.805146675386258,
+            "grade": 5
+        },
+        {
+            "filename": "average3",
+            "keywordsLvl": 8.647123721441176,
+            "WaterLvl": 14.89992841376888,
+            "devition": 14.333931069119581
+        },
+        {
+            "filename": "average4",
+            "keywordsLvl": 7.308682875145564,
+            "WaterLvl": 17.18908943476139,
+            "devition": 11.796659187279584
+        },
+        {
+            "filename": "average5",
+            "keywordsLvl": 8.882118286002436,
+            "WaterLvl": 16.86983117198513,
+            "devition": 16.04792774890795
+        }
+    ]
+}

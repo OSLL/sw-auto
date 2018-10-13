@@ -19,5 +19,17 @@ deviationArr[:] = [x - deviationMean for x in deviationArr]
 with open('results2.json') as f:
     dataTst = json.load(f)
 
-result = stats.shapiro(keyArr)
-print (result)
+resultKolmogorov = stats.kstest(keyArr, cdf='norm')
+resultShapiro = stats.shapiro(keyArr)
+resultAnderson = stats.anderson(keyArr)
+print ("\nkey_res:\n\tShapiro: ", resultShapiro, "\n\tKolmogorov: ", resultKolmogorov, "\n\tAnderson: ", resultAnderson[0], "\t", resultAnderson[1][2])
+
+resultKolmogorov = stats.kstest(waterArr, cdf='norm')
+resultShapiro = stats.shapiro(waterArr)
+resultAnderson = stats.anderson(waterArr)
+print ("\nwater_res:\n\tShapiro: ", resultShapiro, "\n\tKolmogorov: ", resultKolmogorov, "\n\tAnderson: ", resultAnderson[0], "\t", resultAnderson[1][2])
+
+resultKolmogorov = stats.kstest(deviationArr, cdf='norm')
+resultShapiro = stats.shapiro(deviationArr)
+resultAnderson = stats.anderson(deviationArr)
+print ("\ndeviation_res:\n\tShapiro: ", resultShapiro, "\n\tKolmogorov: ", resultKolmogorov, "\n\tAnderson: ", resultAnderson[0], "\t", resultAnderson[1][2])

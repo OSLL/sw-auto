@@ -154,17 +154,17 @@ testResults2 = function () {
     return array;
 };
 
-data = data.filter((a) => a.WaterLvl != 0)
-data = removeDuplicates(data, 'filename')
-data = testResults(data)
+// data = data.filter((a) => a.WaterLvl != 0)
+// data = removeDuplicates(data, 'filename')
+// data = testResults(data)
 
-data.forEach(function(element) {
-    fs.appendFile("goodResults2.txt", element.keywordsLvl + '\t' + element.WaterLvl + '\t' + element.devition + '\n', function(err) {
-        if(err) {
-            return console.log(err);
-        }
-    }); 
-}, this);
+// data.forEach(function(element) {
+//     fs.appendFile("goodResults2.txt", element.keywordsLvl + '\t' + element.WaterLvl + '\t' + element.devition + '\n', function(err) {
+//         if(err) {
+//             return console.log(err);
+//         }
+//     }); 
+// }, this);
 
 const waterData = data.map(function (item) {
     return item.WaterLvl;
@@ -190,22 +190,22 @@ const keywordsVar = standardDeviation(keywordsLvlData);
 const waterVar = standardDeviation(waterData);
 const deviationVar = standardDeviation(deviationData);
 
-console.log("mdKeywordsLvl:", mdKeywordsLvl, "var:", keywordsVar);
-console.log("mdWaterLvl:", mdWaterLvl, "var:", waterVar);
-console.log("mdDeviation:", mdDeviation, "var:", deviationVar);
-console.log("interval Keywords: [", mdKeywordsLvl - keywordsVar + ",", mdKeywordsLvl + keywordsVar + "]");
-console.log("interval Water: [", mdWaterLvl - waterVar + ",", mdWaterLvl + waterVar + "]");
-console.log("interval Deviation: [", mdDeviation - deviationVar + ",", mdDeviation + deviationVar + "]");
+console.log("avgKeywordsLvl:", avgKeywordsLvl, "var:", keywordsVar);
+console.log("avgWaterLvl:", avgWaterLvl, "var:", waterVar);
+console.log("avgDeviation:", avgDeviation, "var:", deviationVar);
+console.log("interval Keywords: [", avgKeywordsLvl - keywordsVar + ",", avgKeywordsLvl + keywordsVar + "]");
+console.log("interval Water: [", avgWaterLvl - waterVar + ",", avgWaterLvl + waterVar + "]");
+console.log("interval Deviation: [", avgDeviation - deviationVar + ",", avgDeviation + deviationVar + "]");
 console.log(data.length)
 
-data.sort(function(a,b) {return (a.filename > b.filename) ? 1 : ((b.filename > a.filename) ? -1 : 0);} );
+// data.sort(function(a,b) {return (a.filename > b.filename) ? 1 : ((b.filename > a.filename) ? -1 : 0);} );
 
-var str = JSON.stringify(data);
+// var str = JSON.stringify(data);
 
-fs.writeFile("./results2.json", str, (err) => {
-    if (err) {
-        console.error(err);
-        return;
-    };
-});
+// fs.writeFile("./results2.json", str, (err) => {
+//     if (err) {
+//         console.error(err);
+//         return;
+//     };
+// });
 

@@ -3,3 +3,11 @@ book:
 
 paper:
 'keywordsLvl': 3.6658653846153846, 'WaterLvl': 31.687898089171973, 'devition': 5.359328081716923
+
++
+{'filename': '/root/Documents/msc/Master-s-thesis/ssa_algorithms/new_test2/Dostoevskiyi_F_Idiot.a6.pdf', 'keywordsLvl': 6.6586298636514805, 'WaterLvl': 45.65535665053667, 'devition': 53.12927473963891},
+{'filename': '/root/Documents/msc/Master-s-thesis/ssa_algorithms/new_test2/Gogol_N_Mertviye_DushiI.pdf', 'keywordsLvl': 7.144134354840928, 'WaterLvl': 40.81265182014303, 'devition': 35.58239526773032},
+{'filename': '/root/Documents/msc/Master-s-thesis/ssa_algorithms/new_test2/Vern_J_Puteshestvie_K_Centru_Zemli.pdf', 'keywordsLvl': 5.037551175338232, 'WaterLvl': 35.19000614672596, 'devition': 21.569967086826797},
+{'filename': '/root/Documents/msc/Master-s-thesis/ssa_algorithms/new_test2/Наши с вами персональные данные ничего не стоят.pdf', 'keywordsLvl': 10.560344827586206, 'WaterLvl': 32.10735586481113, 'devition': 6.846070364052946},
+{'filename': '/root/Documents/msc/Master-s-thesis/ssa_algorithms/new_test2/Рассказ о том, как я ворую номера кредиток и пароли у посетителей ваших сайтов.pdf', 'keywordsLvl': 6.612529002320186, 'WaterLvl': 36.46490902339398, 'devition': 6.821418716554307},
+{'filename': '/root/Documents/msc/Master-s-thesis/ssa_algorithms/new_test2/Трехмерный движок на формулах Excel для чайников.pdf', 'keywordsLvl': 11.610006414368184, 'WaterLvl': 27.918552036199095, 'devition': 9.278365639319034}, 

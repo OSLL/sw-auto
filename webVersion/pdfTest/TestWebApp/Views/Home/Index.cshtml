@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Basic test web app";
+}
+<h2>Basic web-test version</h2>
+<form id="FileUploadForm" asp-action="UploadFile" asp-controller="Home"
+      method="post" enctype="multipart/form-data">
+    <input id="uploadfile" type="file" style="margin: 20px 0"/>
+    <button name="uploadbtn" type="submit">Upload file</button>
+</form>
+<div style="margin-top: 20px;">
+    <div style="display: flex; width: 1100px;">
+        <div style="display: flex; width: 300px;">
+            <span id="info"></span>
+            <div style="display: flex; flex-flow: column;">
+                <div style="display: flex;">
+                    <div style="margin-right: 20px;">Water level:</div><div id="waterLvl"></div>
+                </div>
+                <div style="display: flex;">
+                    <div style="margin-right: 20px;">Key words level:</div><div id="keywordsLvl"></div>
+                </div>
+                <div style="display: flex;">
+                    <div style="margin-right: 20px;">Zipf:</div><div id="zipf"></div>
+                </div>
+                <div style="display: flex;">
+                    <div style="margin-right: 20px;">Number of pronouns:</div><div id="pronouns"></div>
+                </div>
+            </div>
+        </div>
+        <div style="width: 800px;" id="text">
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).on('change', ':file', function () {
+            var input = $(this)
+            var label = $('#BrowseInput').val(input.val().replace(/\\/g, '/').replace(/.*\//, ''));
+        });
+    </script>
+    <script type="text/javascript">
+        function getAntiForgeryToken() {
+            token = $('input[name=__RequestVerificationToken]').val();
+            return token;
+        };
+    </script>
+    <script type="text/javascript">
+
+        $(function () {
+            $("#FileUploadForm").submit(function (e) {
+                e.preventDefault();
+
+                console.log('Doing ajax submit');
+
+                var formAction = $(this).attr("action");
+                var fdata = new FormData();
+
+                var fileInput = $('#uploadfile')[0];
+                var file = fileInput.files[0];
+                fdata.append("file", file);
+
+                $.ajax({
+                    type: 'post',
+                    url: formAction,
+                    data: fdata,
+                    processData: false,
+                    contentType: false
+                }).done(function (result) {
+                    if (result === "Select file!") {
+                        $("#info").html(result);
+                        $("#waterLvl").html('');
+                        $("#keywordsLvl").html('');
+                        $("#zipf").html('');
+                        $("#pronouns").html('');
+                        $("#text").html('');
+                    } else {
+                        var obj = JSON.parse(result);
+                        console.log(obj);
+                        console.log('_' + result);
+                        $("#info").html('');
+
+                        $("#waterLvl").html(obj.waterLvl);
+                        $("#keywordsLvl").html(obj.keyWordsLvl);
+                        $("#zipf").html(obj.zipfLvl);
+                        $("#pronouns").html(obj.pronounsCount);
+                        $("#text").html(obj.htmlText);
+                    }
+                });
+            });
+        })
+
+    
+    </script>
+}

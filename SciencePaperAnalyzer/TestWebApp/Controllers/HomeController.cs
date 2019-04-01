@@ -12,7 +12,7 @@ namespace TestWebApp.Controllers
     public class HomeController : Controller
     {
         [HttpPost]
-        public async Task<IActionResult> UploadFile(IFormFile file)
+        public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName)
         {
             if (file == null)
             {
@@ -29,7 +29,7 @@ namespace TestWebApp.Controllers
                 }
             }
 
-            var result = TestITextSharp(filePath);
+            var result = TestITextSharp(filePath, titles, paperName, refsName);
 
             return Ok(result);
         }
@@ -64,14 +64,14 @@ namespace TestWebApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public static string TestITextSharp(string path)
+        public static string TestITextSharp(string path, string titles, string paperName, string refsName)
         {
             var textExtractor = new PdfTextExtractor(path);
             try
             {
                 var text = textExtractor.GetAllText();
 
-                return PaperAnalyzer.PaperAnalyzer.Instance.ProcessText(text);
+                return PaperAnalyzer.PaperAnalyzer.Instance.ProcessText(text, titles, paperName, refsName);
             }
             catch (Exception ex)
             {

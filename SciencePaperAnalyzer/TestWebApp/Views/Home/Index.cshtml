@@ -5,28 +5,35 @@
 <form id="FileUploadForm" asp-action="UploadFile" asp-controller="Home"
       method="post" enctype="multipart/form-data">
     <input id="uploadfile" type="file" style="margin: 20px 0"/>
-    <button name="uploadbtn" type="submit">Upload file</button>
+    <button name="uploadbtn" type="submit">Проверить</button>
 </form>
 <div style="margin-top: 20px;">
-    <div style="display: flex; width: 1100px;">
-        <div style="display: flex; width: 300px;">
-            <span id="info"></span>
-            <div style="display: flex; flex-flow: column;">
-                <div style="display: flex;">
-                    <div style="margin-right: 20px;">Water level:</div><div id="waterLvl"></div>
-                </div>
-                <div style="display: flex;">
-                    <div style="margin-right: 20px;">Key words level:</div><div id="keywordsLvl"></div>
-                </div>
-                <div style="display: flex;">
-                    <div style="margin-right: 20px;">Zipf:</div><div id="zipf"></div>
-                </div>
-                <div style="display: flex;">
-                    <div style="margin-right: 20px;">Number of pronouns:</div><div id="pronouns"></div>
+    <div style="display: flex; width: 1200px;">
+        <div style="display: flex; width: 300px; flex-flow: column;">
+            <div style="margin-top: 20px; width: 300px; height: 400px; display: flex; flex-direction: column;">
+                <textarea style="min-width: 100%; min-height: 70px; max-width: 100%; max-height: 70px;" id="paperName" placeholder="Название статьи"></textarea>
+                <textarea style="min-width: 100%; min-height: 300px; max-width: 100%; max-height: 300px;" id="titles" placeholder="Названия разделов на отдельной строке"></textarea>
+                <textarea style="min-width: 100%; min-height: 30px; max-width: 100%; max-height: 30px;" id="refsName" placeholder="Название раздела со списком источников"></textarea>
+            </div>
+            <div style="margin-top: 20px; display: flex; width: 300px;">
+                <span id="info"></span>
+                <div style="display: flex; flex-flow: column;">
+                    <div style="display: flex;">
+                        <div style="margin-right: 20px;">Water level:</div><div id="waterLvl"></div>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="margin-right: 20px;">Key words level:</div><div id="keywordsLvl"></div>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="margin-right: 20px;">Zipf:</div><div id="zipf"></div>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="margin-right: 20px;">Number of pronouns:</div><div id="pronouns"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div style="width: 800px;" id="text">
+        <div style="width: 900px; padding: 20px; background: floralwhite; white-space: pre-wrap;" id="text">
 
         </div>
     </div>
@@ -59,6 +66,15 @@
                 var fileInput = $('#uploadfile')[0];
                 var file = fileInput.files[0];
                 fdata.append("file", file);
+
+                var titles = $('#titles')[0].value;
+                fdata.append("titles", titles);
+
+                var paperName = $('#paperName')[0].value;
+                fdata.append("paperName", paperName);
+
+                var refsName = $('#refsName')[0].value;
+                fdata.append("refsName", refsName);
 
                 $.ajax({
                     type: 'post',

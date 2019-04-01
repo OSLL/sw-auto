@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="crfsuite_x64.dll" />
+    <None Remove="crfsuite_x86.dll" />
+    <None Remove="Lib.config" />
+    <None Remove="libcrfsuite.so" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
@@ -14,6 +21,20 @@
     <ProjectReference Include="..\LangAnalyzer.Postagger\LangAnalyzer.Postagger.csproj" />
     <ProjectReference Include="..\LangAnalyzer.SentenceSplitter\LangAnalyzer.SentenceSplitter.csproj" />
     <ProjectReference Include="..\LangAnalyzer.Сrfsuite\LangAnalyzer.Сrfsuite.csproj" />
+    <ProjectReference Include="..\TestResults\TestResults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="crfsuite_x64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="crfsuite_x86.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Lib.config" />
+    <Content Include="libcrfsuite.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

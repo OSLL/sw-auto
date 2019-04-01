@@ -17,6 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="crfsuite_x64.dll" />
+    <None Remove="crfsuite_x86.dll" />
+    <None Remove="libcrfsuite.so" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="crfsuite_x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

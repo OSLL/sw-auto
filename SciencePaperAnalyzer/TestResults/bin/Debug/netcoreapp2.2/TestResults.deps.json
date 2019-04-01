@@ -1,0 +1,92 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.2",
+    "signature": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.2": {
+      "TestResults/1.0.0": {
+        "dependencies": {
+          "LangAnalyzer.Postagger": "1.0.0"
+        },
+        "runtime": {
+          "TestResults.dll": {}
+        }
+      },
+      "LangAnalyzer.Core/1.0.0": {
+        "runtime": {
+          "LangAnalyzer.Core.dll": {}
+        }
+      },
+      "LangAnalyzer.Morphology/1.0.0": {
+        "dependencies": {
+          "LangAnalyzer.Core": "1.0.0"
+        },
+        "runtime": {
+          "LangAnalyzer.Morphology.dll": {}
+        }
+      },
+      "LangAnalyzer.Postagger/1.0.0": {
+        "dependencies": {
+          "LangAnalyzer.Core": "1.0.0",
+          "LangAnalyzer.Morphology": "1.0.0",
+          "LangAnalyzer.SentenceSplitter": "1.0.0",
+          "LangAnalyzer.Сrfsuite": "1.0.0"
+        },
+        "runtime": {
+          "LangAnalyzer.Postagger.dll": {}
+        }
+      },
+      "LangAnalyzer.SentenceSplitter/1.0.0": {
+        "dependencies": {
+          "LangAnalyzer.Core": "1.0.0"
+        },
+        "runtime": {
+          "LangAnalyzer.SentenceSplitter.dll": {}
+        }
+      },
+      "LangAnalyzer.Сrfsuite/1.0.0": {
+        "dependencies": {
+          "LangAnalyzer.Core": "1.0.0",
+          "LangAnalyzer.SentenceSplitter": "1.0.0"
+        },
+        "runtime": {
+          "LangAnalyzer.Сrfsuite.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TestResults/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LangAnalyzer.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LangAnalyzer.Morphology/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LangAnalyzer.Postagger/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LangAnalyzer.SentenceSplitter/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LangAnalyzer.Сrfsuite/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

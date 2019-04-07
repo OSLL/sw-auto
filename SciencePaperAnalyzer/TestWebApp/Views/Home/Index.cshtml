@@ -19,16 +19,19 @@
                 <span id="info"></span>
                 <div style="display: flex; flex-flow: column;">
                     <div style="display: flex;">
-                        <div style="margin-right: 20px;">Water level:</div><div id="waterLvl"></div>
+                        <div style="margin-right: 20px;" title="Приемлимый интервал = [14, 20]">Water level:</div><div id="waterLvl"></div>
                     </div>
                     <div style="display: flex;">
-                        <div style="margin-right: 20px;">Key words level:</div><div id="keywordsLvl"></div>
+                        <div style="margin-right: 20px;" title="Приемлимый интервал = [6, 14]">Key words level:</div><div id="keywordsLvl"></div>
                     </div>
                     <div style="display: flex;">
-                        <div style="margin-right: 20px;">Zipf:</div><div id="zipf"></div>
+                        <div style="margin-right: 20px;" title="Приемлимый интервал = [5.5, 9.5]">Zipf:</div><div id="zipf"></div>
                     </div>
                     <div style="display: flex;">
                         <div style="margin-right: 20px;">Number of pronouns:</div><div id="pronouns"></div>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="margin-right: 20px;">Result:</div><div id="result"></div>
                     </div>
                 </div>
             </div>
@@ -89,6 +92,7 @@
                         $("#keywordsLvl").html('');
                         $("#zipf").html('');
                         $("#pronouns").html('');
+                        $("#result").html('');
                         $("#text").html('');
                     } else {
                         var obj = JSON.parse(result);
@@ -96,10 +100,11 @@
                         console.log('_' + result);
                         $("#info").html('');
 
-                        $("#waterLvl").html(obj.waterLvl);
-                        $("#keywordsLvl").html(obj.keyWordsLvl);
-                        $("#zipf").html(obj.zipfLvl);
+                        $("#waterLvl").html(obj.waterLvlStr);
+                        $("#keywordsLvl").html(obj.keyWordsLvlStr);
+                        $("#zipf").html(obj.zipfLvlStr);
                         $("#pronouns").html(obj.pronounsCount);
+                        $("#result").html(obj.analyzeResult);
                         $("#text").html(obj.htmlText);
                     }
                 });

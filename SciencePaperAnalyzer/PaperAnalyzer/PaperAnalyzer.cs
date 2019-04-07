@@ -11,6 +11,7 @@ using static LangAnalyzer.Morphology.MorphoModelConfig;
 using SentenceHtml = TestResults.Presentation.Sentence;
 using WordHtml = TestResults.Presentation.Word;
 using Word = LangAnalyzer.Tokenizing.Word;
+using System.Text.RegularExpressions;
 
 namespace PaperAnalyzer
 {
@@ -175,6 +176,8 @@ namespace PaperAnalyzer
                 };
                 refNameSection.Sentences.Add(refNameSentence);
 
+                var referencesList = new List<Reference>();
+
                 if (referencesIndex != -1)
                 {
                     referencesSection = text.Substring(referencesIndex);
@@ -185,11 +188,35 @@ namespace PaperAnalyzer
 
                     var references = new List<string>();
 
-                    for(int i = 0; i < tstRefs.Length; i++)
+                    var refStartRegex = new Regex(@"^(([1-9]|[1-9][0-9])\. )");
+
+                    for (int i = 0; i < tstRefs.Length; i++)
                     {
-                        if (tstRefs[i].Trim().StartsWith($"{references.Count + 1}."))
+                        var regexResult = refStartRegex.Match(tstRefs[i]);
+
+                        if (regexResult.Success)
                         {
-                            references.Add(tstRefs[i].Trim());
+                            if (regexResult.Value == $"{references.Count + 1}. ")
+                            {
+                                references.Add(tstRefs[i].Trim());
+                            }
+                            else
+                            {
+                                var last = references.Last();
+                                if (last.Contains($"{references.Count + 1}. "))
+                                {
+                                    var refs = last.Split($"{references.Count + 1}. ");
+                                    references.RemoveAt(references.Count - 1);
+                                    references.Add(refs[0].Trim());
+                                    references.Add($"{references.Count + 1}. {refs[1].Trim()}");
+                                    references.Add(tstRefs[i].Trim());
+                                }
+                                else
+                                {
+                                    references.RemoveAt(references.Count - 1);
+                                    references.Add(last + tstRefs[i].Trim());
+                                }
+                            }
                         }
                         else
                         {
@@ -202,13 +229,75 @@ namespace PaperAnalyzer
                         }
                     }
 
-                    foreach(var reference in references)
+                    //for(int i = 0; i < tstRefs.Length; i++)
+                    //{
+                    //    if (tstRefs[i].Trim().StartsWith($"{references.Count + 1}."))
+                    //    {
+                    //        references.Add(tstRefs[i].Trim());
+                    //    }
+                    //    else
+                    //    {
+                    //        if (references.Count != 0)
+                    //        {
+                    //            var last = references.Last();
+                    //            references.RemoveAt(references.Count - 1);
+                    //            references.Add(last + tstRefs[i].Trim());
+                    //        }
+                    //    }
+                    //}
+
+                    var referenceRegex = new Regex(@"(\[([1-9]|[1-9][0-9])(\-([1-9]|[1-9][0-9]))?\])");
+                    var refYearRegex = new Regex(@"((19|20)\d{2}\.)");
+                    var matches = referenceRegex.Matches(text).Select(x => x.Value.Replace("[","").Replace("]","")).Distinct().ToList();
+
+                    var referenceIndexes = new List<int>();
+                    foreach (var match in matches)
                     {
-                        var refSentence = new SentenceHtml(SentenceType.Reference)
+                        if (match.Contains("-"))
                         {
-                            Original = reference
-                        };
-                        refSection.Sentences.Add(refSentence);
+                            var interval = match.Split("-").Select(x => int.Parse(x)).ToList();
+
+                            if (interval.Count != 2)
+                                continue;
+
+                            var minNum = interval.Min();
+                            var maxNum = interval.Max();
+
+                            for (int i = minNum; i <= maxNum; i++)
+                                referenceIndexes.Add(i);
+                        }
+                        else
+                        {
+                            var num = int.Parse(match);
+                            referenceIndexes.Add(num);
+                        }
+                    }
+
+                    referenceIndexes = referenceIndexes.Distinct().ToList();
+
+                    foreach (var reference in references)
+                    {
+                        try
+                        {
+                            var number = int.Parse(reference.Split(".")[0]);
+                            var refSentence = new SentenceHtml(SentenceType.Reference)
+                            {
+                                Original = reference
+                            };
+                            refSection.Sentences.Add(refSentence);
+                            var year = refYearRegex.Match(refSentence.Original);
+                        
+                            var referenceToAdd = new Reference(refSentence, number)
+                            {
+                                ReferedTo = referenceIndexes.Contains(number),
+                                Year = year.Success ? int.Parse(year.Value.Replace(".","")) : 0
+                            };
+                            referencesList.Add(referenceToAdd);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
                     }
                 }
 
@@ -300,7 +389,9 @@ namespace PaperAnalyzer
                                 upperCaseStreak = false;
                             if (word.valueOriginal[0] == word.valueUpper[0]
                                 && (word.morphology.PartOfSpeech == PartOfSpeechEnum.Noun && word.morphology.MorphoAttribute == MorphoAttributeEnum.Common
-                                    || word.morphology.PartOfSpeech == PartOfSpeechEnum.Adjective))
+                                    || word.morphology.PartOfSpeech == PartOfSpeechEnum.Adjective
+                                    || word.morphology.PartOfSpeech == PartOfSpeechEnum.Verb
+                                    || word.morphology.PartOfSpeech == PartOfSpeechEnum.Preposition))
                             {
                                 var newSentence = tmpSentence.ConvertAll(x => x);
                                 tmpSentence.Clear();
@@ -310,13 +401,28 @@ namespace PaperAnalyzer
                             }
                             else
                             {
-                                tmpSentence.Add(word);
-                                continue;
+                                if (tmpSentence.Count > 0 && tmpSentence.Last().morphology.PartOfSpeech == PartOfSpeechEnum.Preposition)
+                                {
+                                    var lastWord = tmpSentence.Last();
+                                    tmpSentence.RemoveAt(tmpSentence.Count - 1);
+                                    var newSentence = tmpSentence.ConvertAll(x => x);
+                                    tmpSentence.Clear();
+                                    tmpSentence.Add(lastWord);
+                                    tmpSentence.Add(word);
+                                    newResult.Add(newSentence.ToArray());
+                                }
+                                else
+                                {
+                                    tmpSentence.Add(word);
+                                    continue;
+                                }
                             }
                         }
                     }
                     newResult.Add(tmpSentence.ToArray());
                 }
+
+                newResult = newResult.Where(x => x.Length > 0).ToList();
 
                 var titlesTest = newResult.Where(x => x.Last().posTaggerOutputType != PosTaggerOutputType.Punctuation).ToList();
 
@@ -329,6 +435,7 @@ namespace PaperAnalyzer
 
                     if (titles.Contains(sentence.ToStringVersion()))
                     {
+                        titles.Remove(sentence.ToStringVersion());
                         if (section.Sentences.Count() > 0)
                         {
                             sections.Add(section);
@@ -374,7 +481,9 @@ namespace PaperAnalyzer
                     }
                 }
 
-                if (refSection.Sentences.Count() > 0)
+                refSection.References = referencesList;
+
+                if (refSection.References.Count() > 0)
                 {
                     sections.Add(refNameSection);
                     sections.Add(refSection);
@@ -396,22 +505,54 @@ namespace PaperAnalyzer
                 var keyWordsLvl = keyWordsCount / (double)wordCount * 100;
                 var zipfLvl = GetZipf(dictionary);
 
+                string waterLvlStr, keyWordsLvlStr, zipfLvlStr;
+                bool paperOk = true;
+
+                if (waterLvl >= 14 && waterLvl <= 20)
+                    waterLvlStr = $"<span style=\"color: green\">{waterLvl} - OK</span>";
+                else
+                {
+                    waterLvlStr = $"<span style=\"color: red\">{waterLvl} - НЕ ОК</span>";
+                    paperOk = false;
+                }
+
+                if (keyWordsLvl >= 6 && keyWordsLvl <= 14)
+                    keyWordsLvlStr = $"<span style=\"color: green\">{keyWordsLvl} - OK</span>";
+                else
+                {
+                    keyWordsLvlStr = $"<span style=\"color: red\">{keyWordsLvl} - НЕ ОК</span>";
+                    paperOk = false;
+                }
+
+                if (zipfLvl >= 5.5 && zipfLvl <= 9.5)
+                    zipfLvlStr = $"<span style=\"color: green\">{zipfLvl} - OK</span>";
+                else
+                {
+                    zipfLvlStr = $"<span style=\"color: red\">{zipfLvl} - НЕ ОК</span>";
+                    paperOk = false;
+                }
+
+                var analyzeResult = paperOk
+                    ? "<span style=\"color: green\">Статья соответствует научному стилю</span>"
+                    : "<span style=\"color: red\">Статья не соответствует научному стилю</span>";
+
                 var htmlText = string.Join("", sections.Select(x => x.ToStringVersion()));
 
                 var testResult = new
                 {
-                    waterLvl,
-                    keyWordsLvl,
-                    zipfLvl,
+                    waterLvlStr,
+                    keyWordsLvlStr,
+                    zipfLvlStr,
                     pronounsCount,
-                    htmlText
+                    htmlText,
+                    analyzeResult
                 };
 
                 var jsonObject = JsonConvert.SerializeObject(testResult);
 
                 return jsonObject;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 var testResult = new
                 {

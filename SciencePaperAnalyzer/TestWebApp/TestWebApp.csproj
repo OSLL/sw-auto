@@ -17,24 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="crfsuite_x64.dll" />
-    <None Remove="crfsuite_x86.dll" />
-    <None Remove="libcrfsuite.so" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="crfsuite_x64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="crfsuite_x86.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="libcrfsuite.so">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

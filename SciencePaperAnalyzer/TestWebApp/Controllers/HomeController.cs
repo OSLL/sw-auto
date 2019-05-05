@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using AnalyzeResults.Presentation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TestWebApp.Models;
@@ -11,12 +14,14 @@ namespace TestWebApp.Controllers
 {
     public class HomeController : Controller
     {
+        public static List<PaperAnalysisResult> Results = new List<PaperAnalysisResult>();
+
         [HttpPost]
         public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName)
         {
             if (file == null)
             {
-                return Ok("Select file!");
+                return new PartialViewResult();
             }
             // full path to file in temp location
             var filePath = Path.GetTempFileName();
@@ -29,9 +34,19 @@ namespace TestWebApp.Controllers
                 }
             }
 
-            var result = TestITextSharp(filePath, titles, paperName, refsName);
+            var result = AnalyzePaper(filePath, titles, paperName, refsName);
+            if (Results.Count > 0)
+            {
+                Results.Clear();
+            }
+            Results.Add(result);
+            return Ok();
+        }
 
-            return Ok(result);
+        [HttpGet]
+        public IActionResult Result()
+        {
+            return View(Results.Count > 0 ? Results.Last() : null);
         }
 
         public IActionResult Index()
@@ -64,18 +79,18 @@ namespace TestWebApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public static string TestITextSharp(string path, string titles, string paperName, string refsName)
+        public static PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName)
         {
             var textExtractor = new PdfTextExtractor(path);
             try
             {
                 var text = textExtractor.GetAllText();
 
-                return PaperAnalyzer.PaperAnalyzer.Instance.ProcessText(text, titles, paperName, refsName);
+                return PaperAnalyzer.PaperAnalyzer.Instance.ProcessTextWithResult(text, titles, paperName, refsName);
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                return null;
             }
         }
     }

@@ -1,8 +1,8 @@
 ﻿using LangAnalyzer.Postagger;
 using System.Collections.Generic;
-using TestResults.Errors;
+using AnalyzeResults.Errors;
 
-namespace TestResults.Presentation
+namespace AnalyzeResults.Presentation
 {
     public class Word
     {

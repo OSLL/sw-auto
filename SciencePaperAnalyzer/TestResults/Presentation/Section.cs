@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace TestResults.Presentation
+namespace AnalyzeResults.Presentation
 {
     public class Section
     {
@@ -46,7 +46,6 @@ namespace TestResults.Presentation
                         sb.Append($"<span>{reference.Original.Original}</span> <span {referedToStyle}>{referedToString}</span> {oldSource}\n");
                     }
                     return $"<p style =\"font-size: 14px\">{sb.ToString()}</p>";
-                    //return $"<p style =\"font-size: 14px\">{string.Join("\n", Sentences.Select(x => x.Original))}</p>";
                 default:
                     return "Что то не так";
             }

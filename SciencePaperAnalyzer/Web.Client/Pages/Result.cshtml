@@ -1,0 +1,71 @@
+@page "/result"
+@using System.Net.Http
+@using Web.Shared;
+@using AnalyzeResults.Presentation;
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.Services.IUriHelper UriHelper
+
+@if (ResultVisible)
+{
+    @if (ResultAnalyzing)
+    {
+        <h1>Analyzing...</h1>
+    }
+    else
+    {
+        <h1>Result</h1>
+        @foreach (var sec in result.Sections)
+        {
+            <p>@sec.ToStringVersion()</p>
+        }
+        <br />
+        @foreach (var criterion in result.Criteria)
+        {
+            <p>@criterion.Name</p>
+        }
+        <p>Scientific: @result.IsScientific()</p>
+        <br />
+        @foreach (var error in result.Errors)
+        {
+            <p>@error.Name</p>
+        }
+    }
+}
+else
+{
+    <textarea placeholder="Paper name" class="textarea" @bind(PaperName)></textarea>
+    <textarea placeholder="Section's names on separate lines" class="textarea" @bind(Titles)></textarea>
+    <textarea placeholder="Sources section name" class="textarea" @bind(RefsName)></textarea>
+    <button onclick="@Analyze" class=""></button>
+    //Название статьи
+    //Названия разделов на отдельной строке
+    //Название раздела со списком источников
+}
+
+@functions {
+    public string PaperName { get; set; }
+    public string Titles { get; set; }
+    public string RefsName { get; set; }
+    public bool ResultAnalyzing { get; set; }
+    public bool ResultVisible { get; set; }
+    PaperAnalysisResult result { get; set; }
+
+    protected override void OnInit()
+    {
+        ResultVisible = false;
+        ResultAnalyzing = false;
+    }
+
+    async Task Analyze()
+    {
+        ResultAnalyzing = true;
+        ResultVisible = true;
+        result = await Http.PostJsonAsync<PaperAnalysisResult>("/api/Results/AnalyzeLastPaper", new TitlesInfo
+        {
+            PaperName = PaperName,
+            Titles = Titles,
+            RefsName = RefsName
+        });
+        ResultAnalyzing = false;
+    }
+}

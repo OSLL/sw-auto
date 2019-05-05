@@ -1,0 +1,46 @@
+﻿@using System.Net.Http
+@using Web.Client.Services
+@inject HttpClient Http
+@inject IJsInterop JsInterop
+@inject Microsoft.AspNetCore.Components.Services.IUriHelper UriHelper
+@page "/"
+
+<div class="@this.GetClass()">
+    <label for="fileUpload" class="custom-file-upload-label">
+        <i class="@this.GetIconClass()"></i> @Title
+    </label>
+</div>
+<input type="file" onchange="@UploadFile" id="fileUpload" ref="fileUpload" disabled="@IsDisabled" />
+
+@functions {
+    public string Title { get; set; }
+    protected bool IsDisabled { get; set; }
+    ElementRef fileUpload;
+
+    protected override void OnInit()
+    {
+        Title = "Выберите файл";
+        IsDisabled = false;
+    }
+
+    async Task UploadFile()
+    {
+        IsDisabled = true;
+        Title = "Загрузка файла...";
+        var data = await JsInterop.GetFileData(fileUpload);
+        var response = await Http.PostAsync("/api/Upload/Save", new ByteArrayContent(Convert.FromBase64String(data)));
+        Title = "Анализ статьи...";
+        var fileTempName = await response.Content.ReadAsStringAsync();
+        UriHelper.NavigateTo("result");
+    }
+
+    public string GetClass()
+    {
+        return this.IsDisabled ? "custom-file-upload_disabled" : "custom-file-upload";
+    }
+
+    public string GetIconClass()
+    {
+        return this.IsDisabled ? "icon-none" : "fa fa-cloud-upload";
+    }
+}

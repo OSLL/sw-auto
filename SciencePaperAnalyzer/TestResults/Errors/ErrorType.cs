@@ -1,7 +1,8 @@
-﻿namespace TestResults.Errors
+﻿namespace AnalyzeResults.Errors
 {
     public enum ErrorType
     {
-        Any
+        UseOfPersonalPronouns,
+        Other
     }
 }

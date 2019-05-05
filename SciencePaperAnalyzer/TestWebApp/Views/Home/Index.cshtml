@@ -1,13 +1,13 @@
-﻿@{
+﻿@model AnalyzeResults.Presentation.PaperAnalysisResult
+@{
     ViewData["Title"] = "Basic test web app";
 }
-<h2>Basic web-test version</h2>
-<form id="FileUploadForm" asp-action="UploadFile" asp-controller="Home"
-      method="post" enctype="multipart/form-data">
-    <input id="uploadfile" type="file" style="margin: 20px 0"/>
-    <button name="uploadbtn" type="submit">Проверить</button>
-</form>
-<div style="margin-top: 20px;">
+<div class="main-container">
+    <form id="FileUploadForm" asp-action="UploadFile" asp-controller="Home"
+            method="post" enctype="multipart/form-data">
+        <input id="uploadfile" type="file" style="margin: 20px 0" />
+        <button name="uploadbtn" type="submit">Проверить</button>
+    </form>
     <div style="display: flex; width: 1200px;">
         <div style="display: flex; width: 300px; flex-flow: column;">
             <div style="margin-top: 20px; width: 300px; height: 400px; display: flex; flex-direction: column;">
@@ -15,29 +15,9 @@
                 <textarea style="min-width: 100%; min-height: 300px; max-width: 100%; max-height: 300px;" id="titles" placeholder="Названия разделов на отдельной строке"></textarea>
                 <textarea style="min-width: 100%; min-height: 30px; max-width: 100%; max-height: 30px;" id="refsName" placeholder="Название раздела со списком источников"></textarea>
             </div>
-            <div style="margin-top: 20px; display: flex; width: 300px;">
-                <span id="info"></span>
-                <div style="display: flex; flex-flow: column;">
-                    <div style="display: flex;">
-                        <div style="margin-right: 20px;" title="Приемлимый интервал = [14, 20]">Water level:</div><div id="waterLvl"></div>
-                    </div>
-                    <div style="display: flex;">
-                        <div style="margin-right: 20px;" title="Приемлимый интервал = [6, 14]">Key words level:</div><div id="keywordsLvl"></div>
-                    </div>
-                    <div style="display: flex;">
-                        <div style="margin-right: 20px;" title="Приемлимый интервал = [5.5, 9.5]">Zipf:</div><div id="zipf"></div>
-                    </div>
-                    <div style="display: flex;">
-                        <div style="margin-right: 20px;">Number of pronouns:</div><div id="pronouns"></div>
-                    </div>
-                    <div style="display: flex;">
-                        <div style="margin-right: 20px;">Result:</div><div id="result"></div>
-                    </div>
-                </div>
-            </div>
         </div>
-        <div style="width: 900px; padding: 20px; background: floralwhite; white-space: pre-wrap;" id="text">
-
+        <div style="display: flex; width: 200px; margin-left: 20px; color: #feffff">
+            Названия статьи и разделов необходимы для удобного, интерактивного отображения статьи и ошибок в ней.
         </div>
     </div>
 </div>
@@ -86,31 +66,11 @@
                     processData: false,
                     contentType: false
                 }).done(function (result) {
-                    if (result === "Select file!") {
-                        $("#info").html(result);
-                        $("#waterLvl").html('');
-                        $("#keywordsLvl").html('');
-                        $("#zipf").html('');
-                        $("#pronouns").html('');
-                        $("#result").html('');
-                        $("#text").html('');
-                    } else {
-                        var obj = JSON.parse(result);
-                        console.log(obj);
-                        console.log('_' + result);
-                        $("#info").html('');
-
-                        $("#waterLvl").html(obj.waterLvlStr);
-                        $("#keywordsLvl").html(obj.keyWordsLvlStr);
-                        $("#zipf").html(obj.zipfLvlStr);
-                        $("#pronouns").html(obj.pronounsCount);
-                        $("#result").html(obj.analyzeResult);
-                        $("#text").html(obj.htmlText);
-                    }
+                    window.location.href='@Url.Action("Result", "Home")'
                 });
             });
         })
 
-    
+
     </script>
 }

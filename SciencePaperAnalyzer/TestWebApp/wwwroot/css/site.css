@@ -45,6 +45,13 @@ body {
     padding: 20px;
 }
 
+.criteria-title {
+    font-weight: 600;
+    font-size: 20px;
+    color: #feffff;
+    margin-bottom: 5px;
+}
+
 .criteria-container {
     padding: 10px;
     display: flex;
@@ -75,7 +82,7 @@ body {
 
 .criteria-name {
     width: calc(100% - 40px);
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 600;
     color: #feffff;
     margin-bottom: 6px;
@@ -94,6 +101,16 @@ body {
     margin-bottom: 4px;
 }
 
+.criteria-description {
+    font-style: italic;
+    font-size: 15px;
+}
+
+.criterion-value {
+    font-size: 18px;
+    font-weight: 600;
+}
+
 .italic {
     font-style: italic;
 }
@@ -107,6 +124,7 @@ body {
 }
 
 .data-value {
+    white-space: pre-wrap;
 }
 
 .errors-container {
@@ -336,4 +354,59 @@ body {
 
 .error-highlighted {
     background: crimson;
+}
+
+.grade-container {
+    background: #def2f1;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    flex-flow: column;
+}
+
+.grade-title {
+    font-weight: 600;
+    font-size: 20px;
+    color: #17252a;
+}
+
+.grade-value-container {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.grade-label {
+    font-size: 30px;
+    font-weight: 600;
+    color: #2b7a78;
+    height: 100px;
+    line-height: 150px;
+}
+
+.grade-value {
+    font-weight: 900;
+    font-size: 80px;
+    height: 100px;
+}
+
+.grade-perfect {
+    color: forestgreen;
+}
+
+.grade-good {
+    color: lawngreen;
+}
+
+.grade-meh {
+    color: gold;
+}
+
+.grade-bad {
+    color: darkorange;
+}
+
+.grade-awful {
+    color: darkred;
 }

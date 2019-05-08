@@ -12,6 +12,7 @@ using TextExtractor;
 
 namespace TestWebApp.Controllers
 {
+    [System.Runtime.InteropServices.Guid("AC77F42B-4207-4468-A583-0999046DBAFD")]
     public class HomeController : Controller
     {
         public static List<PaperAnalysisResult> Results = new List<PaperAnalysisResult>();
@@ -90,7 +91,9 @@ namespace TestWebApp.Controllers
             }
             catch (Exception ex)
             {
-                return null;
+                var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(), new List<AnalyzeResults.Errors.Error>());
+                res.Error = ex.Message;
+                return res;
             }
         }
     }

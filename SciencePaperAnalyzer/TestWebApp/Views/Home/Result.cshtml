@@ -22,9 +22,40 @@
 </head>
 <body>
     <div class="main-container">
-        @if (Model != null)
+        @if (string.IsNullOrEmpty(Model.Error))
         {
             <div class="results-container">
+                <div class="grade-container">
+                    @*
+                        90-100 perfect (green)
+                        70-89 good (lightgreen)
+                        55-69 meh (yellow)
+                        40-54 bad (orange)
+                        0-39 awful (red)
+                    *@
+                    <div class="grade-title">
+                        Оценка стиля статьи:
+                    </div>
+                    <div class="grade-value-container">
+                        <div class="grade-value @(Model.GetPaperGrade() > 90.0
+                                                    ? "grade-perfect"
+                                                    : Model.GetPaperGrade() > 70.0
+                                                        ? "grade-good"
+                                                        : Model.GetPaperGrade() > 55.0
+                                                            ? "grade-meh"
+                                                            : Model.GetPaperGrade() > 40.0
+                                                                ? "grade-bad"
+                                                                : "grade-awful")">
+                            @Model.GetPaperGrade()
+                        </div>
+                        <div class="grade-label">
+                            из 100
+                        </div>
+                    </div>
+                </div>
+                <div class="criteria-title">
+                    Критерии:
+                </div>
                 @foreach (var crit in Model.Criteria)
                 {
                     <div class="criteria-container">
@@ -49,12 +80,18 @@
                             <div class="criteria-data-row criteria-description">
                                 @crit.Description
                             </div>
-                            <div class="criteria-data-row">
+                            <div class="criteria-data-row criterion-value">
                                 <span class="data-label">Значение: </span><span class="data-value">@crit.GetStringValue()</span>
                             </div>
                             <div class="criteria-data-row">
                                 <span class="data-label">Требования: </span><span class="data-value">@crit.GetStringRequirements()</span>
                             </div>
+                            @if (!crit.IsMet())
+                            {
+                                <div class="criteria-data-row">
+                                    <span class="data-label">Совет: </span><span class="data-value">@crit.GetAdvice()</span>
+                                </div>
+                            }
                         </div>
                     </div>
                 }
@@ -195,6 +232,7 @@
         {
         <div>
             No model...
+            @Model.Error
         </div>
         }
     </div>

@@ -20,5 +20,9 @@
         public abstract string GetStringValue();
 
         public abstract string GetStringRequirements();
+
+        public abstract double GetGradePart();
+
+        public abstract string GetAdvice();
     }
 }

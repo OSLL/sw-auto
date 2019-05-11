@@ -29,6 +29,11 @@ function LoadResults() {
             var selector = ".ref-error[number='" + refnum + "']";
             $(selector).toggleClass('ref-selected');
         }
+        var sectId = $(this).attr('sectId');
+        if (sectId !== undefined) {
+            var selector = ".section-error[sectId='" + sectId + "']";
+            $(selector).toggleClass('section-selected');
+        }
     });
 
     $('.error-container').blur(function () {
@@ -41,6 +46,11 @@ function LoadResults() {
         if (refnum !== undefined) {
             var selector = ".ref-error[number='" + refnum + "']";
             $(selector).removeClass('ref-selected');
+        }
+        var sectId = $(this).attr('sectId');
+        if (sectId !== undefined) {
+            var selector = ".section-error[sectId='" + sectId + "']";
+            $(selector).removeClass('section-selected');
         }
     });
 
@@ -90,6 +100,34 @@ function LoadResults() {
         var refnum = $(this).attr('number');
         if (refnum !== undefined) {
             var selector = ".error-container[refnum='" + refnum + "']";
+            $(selector).removeClass('error-highlighted');
+        }
+    })
+
+    $('.section-error').hover(function () {
+        var errors = $(this).attr('errors');
+        if (errors !== undefined) {
+            var errorCodes = errors.split(',');
+            var errorCodesSelector = (errorCodes.map(x => "[errorcode='" + x + "']")).join(',');
+            $(errorCodesSelector).toggleClass('error-highlighted');
+        }
+        var sectId = $(this).attr('sectId');
+        if (sectId !== undefined) {
+            var selector = ".error-container[sectId='" + sectId + "']";
+            $(selector).toggleClass('error-highlighted');
+        }
+    })
+
+    $('.section-error').blur(function () {
+        var errors = $(this).attr('errors');
+        if (errors !== undefined) {
+            var errorCodes = errors.split(',');
+            var errorCodesSelector = (errorCodes.map(x => "[errorcode='" + x + "']")).join(',');
+            $(errorCodesSelector).removeClass('error-highlighted');
+        }
+        var sectId = $(this).attr('sectId');
+        if (sectId !== undefined) {
+            var selector = ".error-container[sectId='" + sectId + "']";
             $(selector).removeClass('error-highlighted');
         }
     })

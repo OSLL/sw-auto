@@ -342,15 +342,15 @@ body {
     border-radius: 0px 0px 20px 20px;
 }
 
-.word-error, .ref-error {
+.word-error, .ref-error, .section-error {
     border-bottom: rgba(220, 20, 60, 0.4) 2px solid;
     color: crimson;
 }
 
-.word-error:hover, .word-selected, .ref-error:hover, .ref-selected {
-    background: rgba(220, 20, 60, 0.4);
-    border-bottom: unset;
-}
+    .word-error:hover, .word-selected, .ref-error:hover, .ref-selected, .section-error:hover, .section-selected {
+        background: rgba(220, 20, 60, 0.4);
+        border-bottom: unset;
+    }
 
 .error-highlighted {
     background: crimson;

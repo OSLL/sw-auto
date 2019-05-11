@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -10,6 +11,7 @@ namespace AnalyzeResults.Presentation
         {
             Sentences = new List<Sentence>();
             References = new List<Reference>();
+            Id = Guid.NewGuid();
         }
 
         public Section(IEnumerable<Sentence> sentences)
@@ -17,11 +19,15 @@ namespace AnalyzeResults.Presentation
             Sentences.AddRange(sentences);
         }
 
+        public Guid Id { get; }
+
         public SectionType Type { get; set; }
 
         public List<Sentence> Sentences { get; set; }
 
         public List<Reference> References { get; set; }
+
+        public bool HasErrors { get; set; }
 
         public string ToStringVersion()
         {

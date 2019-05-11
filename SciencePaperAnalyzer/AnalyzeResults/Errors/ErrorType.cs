@@ -4,6 +4,7 @@
     {
         UseOfPersonalPronouns,
         SourceNotReferenced,
+        ShortSection,
         Other
     }
 }

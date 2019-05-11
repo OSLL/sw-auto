@@ -544,6 +544,20 @@ namespace PaperAnalyzer
                     }
                 }
 
+                for (int i = 0; i < sections.Count; i++)
+                {
+                    if (sections[i].Type == SectionType.SectionTitle 
+                        && i + 1 < sections.Count
+                        && sections[i + 1].Type == SectionType.Text
+                        && sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count < 3)
+                    {
+                        sections[i].HasErrors = true;
+                        var error = new ShortSectionError(sections[i].Id, sections[i].ToStringVersion(),
+                            sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count);
+                        errors.Add(error);
+                    }
+                }
+
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors);
 
                 return analysisResult;

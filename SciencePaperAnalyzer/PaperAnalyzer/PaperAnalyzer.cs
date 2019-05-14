@@ -2,7 +2,6 @@
 using LangAnalyzer.Postagger;
 using LangAnalyzer.SentenceSplitter;
 using LangAnalyzer.Tokenizing;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;

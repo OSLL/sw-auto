@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="App.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="App.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AnalyzeResults\AnalyzeResults.csproj" />
+    <ProjectReference Include="..\PaperAnalyzer\PaperAnalyzer.csproj" />
+    <ProjectReference Include="..\TextExtractor\TextExtractor.csproj" />
+  </ItemGroup>
+
+</Project>

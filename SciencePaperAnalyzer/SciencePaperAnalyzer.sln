@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaperAnalyzer", "PaperAnaly
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyzeResults", "AnalyzeResults\AnalyzeResults.csproj", "{8A2098EE-9B57-476A-BD28-E9516EAAE9C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTimeTestApp", "ConsoleTimeTestApp\ConsoleTimeTestApp.csproj", "{2650051D-419F-4B00-99D0-06F7D03A0C76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{8A2098EE-9B57-476A-BD28-E9516EAAE9C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A2098EE-9B57-476A-BD28-E9516EAAE9C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A2098EE-9B57-476A-BD28-E9516EAAE9C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2650051D-419F-4B00-99D0-06F7D03A0C76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2650051D-419F-4B00-99D0-06F7D03A0C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2650051D-419F-4B00-99D0-06F7D03A0C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2650051D-419F-4B00-99D0-06F7D03A0C76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

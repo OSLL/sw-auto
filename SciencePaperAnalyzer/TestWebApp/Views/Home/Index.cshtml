@@ -2,13 +2,13 @@
 @{
     ViewData["Title"] = "Basic test web app";
 }
-<div class="main-container">
+<div class="main-container" style="justify-content: center;" id="main">
     <form id="FileUploadForm" asp-action="UploadFile" asp-controller="Home"
             method="post" enctype="multipart/form-data">
-        <input id="uploadfile" type="file" style="margin: 20px 0" />
+        <input id="uploadfile" type="file" style="margin: 20px 0"/>
         <button name="uploadbtn" type="submit">Проверить</button>
     </form>
-    <div style="display: flex; width: 1200px;">
+    <div style="display: flex;">
         <div style="display: flex; width: 300px; flex-flow: column;">
             <div style="margin-top: 20px; width: 300px; height: 400px; display: flex; flex-direction: column;">
                 <textarea style="min-width: 100%; min-height: 70px; max-width: 100%; max-height: 70px;" id="paperName" placeholder="Название статьи"></textarea>
@@ -20,6 +20,10 @@
             Названия статьи и разделов необходимы для удобного, интерактивного отображения статьи и ошибок в ней.
         </div>
     </div>
+</div>
+<div class="loader-container" id="load">
+    <div class="loader"></div>
+    <div class="loader-label">Анализ статьи...</div>
 </div>
 
 @section Scripts {
@@ -58,6 +62,9 @@
 
                 var refsName = $('#refsName')[0].value;
                 fdata.append("refsName", refsName);
+
+                $('#main')[0].style.display = 'none';
+                $('#load')[0].style.display = 'flex';
 
                 $.ajax({
                     type: 'post',

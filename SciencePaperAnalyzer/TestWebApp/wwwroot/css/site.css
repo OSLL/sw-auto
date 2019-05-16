@@ -1,10 +1,18 @@
-﻿html {
+﻿:root {
+    --darkest: #17252a;
+    --dark: #2b7a78;
+    --neutral: #3aafa9;
+    --light: #def2f1;
+    --lightest: #feffff;
+}
+
+html {
     height: 100%;
 }
 
 body {
     min-height: 100%;
-    background: #3aafa9;
+    background: var(--neutral);
 }
 
 .paper-container {
@@ -48,7 +56,7 @@ body {
 .criteria-title {
     font-weight: 600;
     font-size: 20px;
-    color: #feffff;
+    color: var(--lightest);
     margin-bottom: 5px;
 }
 
@@ -57,8 +65,8 @@ body {
     display: flex;
     flex-flow: column;
     align-items: center;
-    background: #2b7a78;
-    color: #17252a;
+    background: var(--dark);
+    color: var(--darkest);
     border-radius: 14px;
     margin-bottom: 10px;
 }
@@ -84,14 +92,14 @@ body {
     width: calc(100% - 40px);
     font-size: 20px;
     font-weight: 600;
-    color: #feffff;
+    color: var(--lightest);
     margin-bottom: 6px;
 }
 
 .criteria-data {
     width: 100%;
     font-size: 14px;
-    color: #feffff;
+    color: var(--lightest);
     display: flex;
     flex-flow: column;
 }
@@ -255,8 +263,8 @@ body {
 }
 
 .errors-collapsible {
-    background-color: #2b7a78;
-    color: #feffff;
+    background-color: var(--dark);
+    color: var(--lightest);
     cursor: pointer;
     padding: 10px;
     width: 100%;
@@ -268,7 +276,7 @@ body {
 }
 
 .active, .errors-collapsible:hover {
-    background-color: #17252a;
+    background-color: var(--darkest);
 }
 
 .active {
@@ -277,7 +285,7 @@ body {
 }
 
 .active:hover {
-    background-color: #2b7a78;
+    background-color: var(--dark);
 }
 
 .errors-content {
@@ -285,7 +293,7 @@ body {
     transform: scaleY(0);
     transform-origin: top;
     transition: transform 0.26s ease;
-    background: #17252a;
+    background: var(--darkest);
     border-radius: 0px 0px 20px 20px;
 }
 
@@ -328,13 +336,13 @@ body {
     display: flex;
     flex-flow: column;
     align-items: center;
-    background: #17252a;
-    color: #feffff;
+    background: var(--darkest);
+    color: var(--lightest);
 }
 
 .error-container:hover {
-    background: #2b7a78;
-    color: #feffff;
+    background: var(--dark);
+    color: var(--lightest);
     text-decoration: unset;
 }
 
@@ -357,7 +365,7 @@ body {
 }
 
 .grade-container {
-    background: #def2f1;
+    background: var(--light);
     margin-bottom: 20px;
     border-radius: 14px;
     padding: 10px;
@@ -368,7 +376,7 @@ body {
 .grade-title {
     font-weight: 600;
     font-size: 20px;
-    color: #17252a;
+    color: var(--darkest);
 }
 
 .grade-value-container {
@@ -380,7 +388,7 @@ body {
 .grade-label {
     font-size: 30px;
     font-weight: 600;
-    color: #2b7a78;
+    color: var(--dark);
     height: 100px;
     line-height: 150px;
 }
@@ -409,4 +417,112 @@ body {
 
 .grade-awful {
     color: darkred;
+}
+
+.loader-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    padding-top: 15%;
+    flex-flow: column;
+    align-items: center;
+    display: none;
+}
+
+.loader-label {
+    color: var(--light);
+    font-size: 30px;
+}
+
+.loader {
+    color: var(--light);
+    font-size: 90px;
+    text-indent: -9999em;
+    overflow: hidden;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    margin: 72px auto;
+    position: relative;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+    animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+}
+
+@-webkit-keyframes load6 {
+    0% {
+        box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+
+    5%, 95% {
+        box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+
+    10%, 59% {
+        box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em, -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
+    }
+
+    20% {
+        box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em, -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
+    }
+
+    38% {
+        box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em, -0.82em -0.09em 0 -0.477em;
+    }
+
+    100% {
+        box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+}
+
+@keyframes load6 {
+    0% {
+        box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+
+    5%, 95% {
+        box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+
+    10%, 59% {
+        box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em, -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
+    }
+
+    20% {
+        box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em, -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
+    }
+
+    38% {
+        box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em, -0.82em -0.09em 0 -0.477em;
+    }
+
+    100% {
+        box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+}
+
+@-webkit-keyframes round {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes round {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }

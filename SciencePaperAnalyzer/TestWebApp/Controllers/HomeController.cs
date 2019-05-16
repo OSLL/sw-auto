@@ -16,6 +16,7 @@ namespace TestWebApp.Controllers
     public class HomeController : Controller
     {
         public static List<PaperAnalysisResult> Results = new List<PaperAnalysisResult>();
+        public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
 
         [HttpPost]
         public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName)
@@ -87,7 +88,7 @@ namespace TestWebApp.Controllers
             {
                 var text = textExtractor.GetAllText();
 
-                return PaperAnalyzer.PaperAnalyzer.Instance.ProcessTextWithResult(text, titles, paperName, refsName);
+                return Analyzer.ProcessTextWithResult(text, titles, paperName, refsName);
             }
             catch (Exception ex)
             {

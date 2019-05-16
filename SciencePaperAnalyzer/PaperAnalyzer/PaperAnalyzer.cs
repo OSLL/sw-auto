@@ -146,6 +146,10 @@ namespace PaperAnalyzer
                     Processor = posTaggerProcessor,
                 };
 
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+                GC.WaitForPendingFinalizers();
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+
                 return environment;
             }
         }
@@ -558,6 +562,10 @@ namespace PaperAnalyzer
                 }
 
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors);
+
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+                GC.WaitForPendingFinalizers();
+                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
 
                 return analysisResult;
             }

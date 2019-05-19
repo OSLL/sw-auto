@@ -1,6 +1,4 @@
 ﻿:root {
-    --darkest: #17252a;
-    --dark: #2b7a78;
     --background: #F6F6F8;
     --basic: #E3E3E3;
     --basic_hover: #D3D3D3;
@@ -466,12 +464,12 @@ body {
 }
 
 .loader-label {
-    color: var(--basic);
+    color: var(--darkText);
     font-size: 30px;
 }
 
 .loader {
-    color: var(--basic);
+    color: var(--darkText);
     font-size: 90px;
     text-indent: -9999em;
     overflow: hidden;
@@ -694,4 +692,53 @@ input[type="file"] {
 .textarea-sectionnames {
     max-height: 256px;
     min-height: 256px;
+}
+
+.settings-manager-container {
+    display: flex;
+    width: 100%;
+}
+
+.save-settings-button {
+    height: 60px;
+    width: 50%;
+    margin-right: 10px;
+    background: var(--basic);
+    color: var(--darkText);
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 16px;
+    text-align: center;
+    line-height: 60px;
+    text-decoration: unset;
+}
+
+.save-settings-button:hover {
+    background: var(--basic_hover);
+    color: var(--darkText);
+    text-decoration: unset;
+}
+
+.save-settings-button:focus {
+    text-decoration: unset;
+    color: var(--darkText);
+}
+
+.load-settings-button {
+    height: 60px;
+    width: 50%;
+    background: var(--basic);
+    color: var(--darkText);
+    display: inline-block;
+    font-size: 15px;
+    border-radius: 16px;
+    text-align: center;
+    line-height: 60px;
+    cursor: pointer;
+}
+
+.load-settings-button:hover {
+    background: var(--basic_hover);
+    color: var(--darkText);
 }

@@ -5,7 +5,7 @@
 <div class="main-index-container" id="main">
     <div class="index-content-container">
         <div class="index-info">
-            Сервис помогает улучшить научную статью, проверяя её на соответсвие научному стилю и
+            Сервис помогает улучшить научную статью, проверяя её на соответствие научному стилю и
             указывая на допущенные ошибки, предоставляя советы по их исправлению.
         </div>
         <form id="FileUploadForm" asp-action="UploadFile" asp-controller="Home"
@@ -39,6 +39,13 @@
                     <textarea class="textarea-value textarea-keywords" id="keywords" placeholder="Введите ключевые слова на отдельной строке"></textarea>
                 </div>
             </div>
+            <div class="settings-manager-container">
+                <a class="save-settings-button" id="savebtn" href="#" onClick="saveOutput(this)"><i class="glyphicon glyphicon-cloud-download"></i> Сохранить настройки</a>
+                <input type="file" id="loadbtn" value="Import" onchange="onLoadSettings(event)" />
+                <label for="loadbtn" class="load-settings-button">
+                    <i class="glyphicon glyphicon-cloud-upload"></i> Загрузите настройки из файла
+                </label>
+            </div>
         </div>
     </div>
 </div>
@@ -61,6 +68,38 @@
         };
     </script>
     <script type="text/javascript">
+
+        function onLoadSettings(e) {
+            if (e.currentTarget.files.length > 0) {
+                var reader = new FileReader();
+                reader.onload = onReaderLoad;
+                reader.readAsText(e.currentTarget.files[0]);
+            }
+        }
+
+        function onReaderLoad(event){
+            var obj = JSON.parse(event.target.result);
+            $('#titles')[0].value = obj.titles;
+            $('#paperName')[0].value = obj.paperName;
+            $('#refsName')[0].value = obj.refsName;
+            $('#keywords')[0].value = obj.keywords;
+        }
+
+        function saveOutput(link) {
+            var titles = $('#titles')[0].value;
+            var paperName = $('#paperName')[0].value;
+            var refsName = $('#refsName')[0].value;
+            var keywords = $('#keywords')[0].value;
+            
+            var data = {titles, paperName, refsName, keywords};
+            var json = JSON.stringify(data);
+            var blob = new Blob([json], {type: "application/json"});
+            var url  = URL.createObjectURL(blob);
+            var a = link;
+            a.download = "settings.json";
+            a.href = url;
+        }
+
         function onFileChange(e) {
             console.log('changed');
             if (e.currentTarget.files.length > 0) {

@@ -13,6 +13,7 @@ using Word = LangAnalyzer.Tokenizing.Word;
 using System.Text.RegularExpressions;
 using AnalyzeResults.Errors;
 using System.Text;
+using AnalyzeResults.Settings;
 
 namespace PaperAnalyzer
 {
@@ -155,7 +156,7 @@ namespace PaperAnalyzer
         }
         #endregion
 
-        public PaperAnalysisResult ProcessTextWithResult(string text, string titlesString, string paperName, string refsName)
+        public PaperAnalysisResult ProcessTextWithResult(string text, string titlesString, string paperName, string refsName, ResultScoreSettings settings)
         {
             try
             {
@@ -510,15 +511,15 @@ namespace PaperAnalyzer
 
                 var criteria = new List<Criterion>
                 {
-                    new NumericalCriterion("Уровень водности", waterLvl, 14, 20, 35,
+                    new NumericalCriterion("Уровень водности", waterLvl, 14, 20, settings.WaterCriterionFactor,
                         "Процентное соотношение стоп-слов и общего количества слов в тексте",
                         $"Постарайтесь снизить количество используемых стоп-слов. Часто употребляемые стоп-слова в статье:\n{stopWordsReport.ToString()}",
                         "Текст слишком \"сухой\". Попробуйте добавить связки между разделами."),
-                    new NumericalCriterion("Тошнота", keyWordsLvl, 6, 14, 35,
+                    new NumericalCriterion("Тошнота", keyWordsLvl, 6, 14, settings.KeyWordsCriterionFactor,
                         "Показатель повторений в текстовом документе ключевых слов и фраз",
                         $"Слишком частое повторение слов, при возможности, старайтесь использовать синонимы. Наиболее употребляемые слова в тексте:\n{keyWordsReport.ToString()}",
                         $"Постарайтесь увеличить частоту употребления ключевых слов текста:\n{keyWordsReport.ToString()}"),
-                    new NumericalCriterion("Zipf", zipfLvl, 5.5, 9.5, 30,
+                    new NumericalCriterion("Zipf", zipfLvl, 5.5, 9.5, settings.ZipfFactor,
                         "Значение отклонения текста статьи от идеальной кривой по Ципфу",
                         "Постарайтесь разнообразить текст, добавить связки между разделами, возможно, увеличить количество прилагательных.",
                         "Постарайтесь увеличить частоту употребления ключевых слов, возможно, снизить количество прилагательных.")
@@ -561,7 +562,30 @@ namespace PaperAnalyzer
                     }
                 }
 
-                var analysisResult = new PaperAnalysisResult(sections, criteria, errors);
+                var picRegex = new Regex(@"\b(\w*Рисунок (([1-9]|[1-9][0-9])*)*\w)\b");
+                var tableRegex = new Regex(@"\b(\w*Таблица (([1-9]|[1-9][0-9])*)*\w)\b");
+                var picMatches = picRegex.Matches(text).Select(x => int.Parse(x.Value.Split(" ")[1])).ToList();
+                var tableMatches = tableRegex.Matches(text).Select(x => int.Parse(x.Value.Split(" ")[1])).ToList();
+
+                var picRefRegex = new Regex(@"\b(\w*рис. (([1-9]|[1-9][0-9])*)*\w)\b");
+                var tableRefRegex = new Regex(@"\b(\w*табл. (([1-9]|[1-9][0-9])*)*\w)\b");
+                var picRefMatches = picRefRegex.Matches(text).Select(x => int.Parse(x.Value.Split(" ")[1])).ToList();
+                var tableRefMatches = tableRefRegex.Matches(text).Select(x => int.Parse(x.Value.Split(" ")[1])).ToList();
+
+                var picsNotRefd = picMatches.Except(picRefMatches).ToList();
+                var tablesNotRefd = tableMatches.Except(tableRefMatches).ToList();
+
+                foreach (var notRefdPic in picsNotRefd)
+                    errors.Add(new PictureNotReferencedError(notRefdPic));
+
+                foreach (var notRefdTable in tablesNotRefd)
+                    errors.Add(new TableNotReferencedError(notRefdTable));
+
+                //test
+                errors.Add(new PictureNotReferencedError(1337));
+                errors.Add(new TableNotReferencedError(1337));
+
+                var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.ErrorCost);
 
                 GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
                 GC.WaitForPendingFinalizers();

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LangAnalyzerStd.Core\LangAnalyzerStd.Core.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Morphology\LangAnalyzerStd.Morphology.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.SentenceSplitter\LangAnalyzerStd.SentenceSplitter.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Сrfsuite\LangAnalyzerStd.Сrfsuite.csproj" />
+  </ItemGroup>
+
+</Project>

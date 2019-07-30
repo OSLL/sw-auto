@@ -5,6 +5,8 @@
         UseOfPersonalPronouns,
         SourceNotReferenced,
         ShortSection,
-        Other
+        Other,
+        PictureNotReferenced,
+        TableNotReferenced
     }
 }

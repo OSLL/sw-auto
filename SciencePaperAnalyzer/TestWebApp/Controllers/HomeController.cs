@@ -5,8 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
+using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using TestWebApp.Models;
 using TextExtractor;
 
@@ -17,6 +20,16 @@ namespace TestWebApp.Controllers
     {
         public static List<PaperAnalysisResult> Results = new List<PaperAnalysisResult>();
         public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
+
+        protected IConfiguration Configuration;
+        protected ResultScoreSettings ResultScoreSettings { get; set; }
+
+        public HomeController(IOptions<ResultScoreSettings> settings = null, IConfiguration configuration = null)
+        {
+            if (settings != null)
+                ResultScoreSettings = settings.Value;
+            Configuration = configuration;
+        }
 
         [HttpPost]
         public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName)
@@ -81,14 +94,21 @@ namespace TestWebApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public static PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName)
+        public PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName)
         {
             var textExtractor = new PdfTextExtractor(path);
             try
             {
                 var text = textExtractor.GetAllText();
-
-                return Analyzer.ProcessTextWithResult(text, titles, paperName, refsName);
+                // get last from config (updated in runtime)
+                var settings = new ResultScoreSettings
+                {
+                    ErrorCost = double.Parse(Configuration.GetSection("ResultScoreSettings")["ErrorCost"]),
+                    KeyWordsCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["KeyWordsCriterionFactor"]),
+                    WaterCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["WaterCriterionFactor"]),
+                    ZipfFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["ZipfFactor"])
+                };
+                return Analyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
             }
             catch (Exception ex)
             {

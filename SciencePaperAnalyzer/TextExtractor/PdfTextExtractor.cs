@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using iTextSharp.text.pdf;
+using Syncfusion.Pdf.Parsing;
 
 namespace TextExtractor
 {
@@ -51,13 +52,14 @@ namespace TextExtractor
 
         private void ExtractTextFromFile()
         {
-            var reader = new PdfReader(FilePath);
-
-            for (int page = 1; page <= reader.NumberOfPages; page++)
-                PageTexts.Add(iTextSharp.text.pdf.parser.PdfTextExtractor.GetTextFromPage(reader, page));
+            FileStream fileStreamInput = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+            PdfLoadedDocument loadedDocument = new PdfLoadedDocument(fileStreamInput);
+            for (var i = 0; i < loadedDocument.Pages.Count; i++)
+            {
+                PageTexts.Add(loadedDocument.Pages[i].ExtractText(true));
+            }
 
             TextExtracted = true;
-            reader.Close();
         }
     }
 }

@@ -385,7 +385,8 @@ body {
 
 .word-error, .ref-error, .section-error {
     border-bottom: rgba(220, 20, 60, 0.4) 2px solid;
-    color: var(--red);;
+    color: var(--red);
+    cursor: pointer;
 }
 
     .word-error:hover, .word-selected, .ref-error:hover, .ref-selected, .section-error:hover, .section-selected {

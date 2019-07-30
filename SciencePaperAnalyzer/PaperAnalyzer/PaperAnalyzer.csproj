@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="crfsuite_x64.dll" />
+    <None Remove="crfsuite_x86.dll" />
+    <None Remove="Lib.config" />
+    <None Remove="libcrfsuite.so" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AnalyzeResults\AnalyzeResults.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Core\LangAnalyzerStd.Core.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Morphology\LangAnalyzerStd.Morphology.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Postagger\LangAnalyzerStd.Postagger.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.SentenceSplitter\LangAnalyzerStd.SentenceSplitter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="crfsuite_x64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="crfsuite_x86.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Lib.config" />
+    <Content Include="libcrfsuite.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

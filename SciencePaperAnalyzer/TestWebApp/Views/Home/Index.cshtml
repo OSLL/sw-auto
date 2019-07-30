@@ -1,0 +1,161 @@
+﻿@model AnalyzeResults.Presentation.PaperAnalysisResult
+@{
+    ViewData["Title"] = "Basic test web app";
+}
+<div class="main-index-container" id="main">
+    <div class="index-content-container">
+        <div>
+            
+        </div>
+        <div class="index-info">
+            Сервис помогает улучшить научную статью, проверяя её на соответствие научному стилю и
+            указывая на допущенные ошибки, предоставляя советы по их исправлению.
+        </div>
+        <form id="FileUploadForm" asp-action="UploadFile" asp-controller="Home"
+              method="post" enctype="multipart/form-data" class="upload-form">
+            <button id="runBtn" name="uploadbtn" type="submit" class="start-button" disabled>Начать анализ статьи</button>
+            <input id="uploadfile" type="file" style="margin: 20px 0" onchange="onFileChange(event)" />
+            <label id="uploadinput" for="uploadfile" class="custom-file-upload">
+                <i class="glyphicon glyphicon-cloud-upload"></i> Выберите файл статьи
+            </label>
+            <label id="uploadlabel" class="file-label">Файл не выбран!</label>
+        </form>
+        <div class="analysis-settings-container">
+            <div class="settings-label">
+                Настройки анализа статьи:
+            </div>
+            <div class="settings-info">
+                Названия статьи и разделов необходимы для удобного, интерактивного отображения статьи и ошибок в ней.
+                Перечисление ключевых слов позволит оценить их использование к тексте.
+            </div>
+            <div class="settings-values">
+                <div class="settings-column">
+                    <label class="textarea-label">Названия разделов на отдельной строке</label>
+                    <textarea class="textarea-value textarea-sectionnames" id="titles" placeholder="Введите названия разделов на отдельной строке"></textarea>
+                </div>
+                <div class="settings-column">
+                    <label class="textarea-label">Название статьи</label>
+                    <textarea class="textarea-value textarea-papername" id="paperName" placeholder="Введите название статьи"></textarea>
+                    <label class="textarea-label">Название раздела со списком источников</label>
+                    <textarea class="textarea-value textarea-refsname" id="refsName" placeholder="Введите название раздела со списком источников"></textarea>
+                    <label class="textarea-label">Ключевые слова</label>
+                    <textarea class="textarea-value textarea-keywords" id="keywords" placeholder="Введите ключевые слова на отдельной строке"></textarea>
+                </div>
+            </div>
+            <div class="settings-manager-container">
+                <a class="save-settings-button" id="savebtn" href="#" onClick="saveOutput(this)"><i class="glyphicon glyphicon-cloud-download"></i> Сохранить настройки</a>
+                <input type="file" id="loadbtn" value="Import" onchange="onLoadSettings(event)" />
+                <label for="loadbtn" class="load-settings-button">
+                    <i class="glyphicon glyphicon-cloud-upload"></i> Загрузите настройки из файла
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loader-container" id="load">
+    <div class="loader"></div>
+    <div class="loader-label">Анализ статьи...</div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).on('change', ':file', function () {
+            var input = $(this)
+            var label = $('#BrowseInput').val(input.val().replace(/\\/g, '/').replace(/.*\//, ''));
+        });
+    </script>
+    <script type="text/javascript">
+        function getAntiForgeryToken() {
+            token = $('input[name=__RequestVerificationToken]').val();
+            return token;
+        };
+    </script>
+    <script type="text/javascript">
+
+        function onLoadSettings(e) {
+            if (e.currentTarget.files.length > 0) {
+                var reader = new FileReader();
+                reader.onload = onReaderLoad;
+                reader.readAsText(e.currentTarget.files[0]);
+            }
+        }
+
+        function onReaderLoad(event){
+            var obj = JSON.parse(event.target.result);
+            $('#titles')[0].value = obj.titles;
+            $('#paperName')[0].value = obj.paperName;
+            $('#refsName')[0].value = obj.refsName;
+            $('#keywords')[0].value = obj.keywords;
+        }
+
+        function saveOutput(link) {
+            var titles = $('#titles')[0].value;
+            var paperName = $('#paperName')[0].value;
+            var refsName = $('#refsName')[0].value;
+            var keywords = $('#keywords')[0].value;
+            
+            var data = {titles, paperName, refsName, keywords};
+            var json = JSON.stringify(data);
+            var blob = new Blob([json], {type: "application/json"});
+            var url  = URL.createObjectURL(blob);
+            var a = link;
+            a.download = "settings.json";
+            a.href = url;
+        }
+
+        function onFileChange(e) {
+            console.log('changed');
+            if (e.currentTarget.files.length > 0) {
+                $('#runBtn').prop("disabled", false);
+                $('#uploadlabel')[0].innerText = e.currentTarget.files[0].name;
+                $('#uploadlabel').addClass('file-selected');
+                $('#uploadinput').addClass('file-selected');
+            } else {
+                $('#runBtn').prop("disabled", true);
+                $('#uploadlabel')[0].innerText = 'Файл не выбран!';
+                $('#uploadlabel').removeClass('file-selected');
+                $('#uploadinput').removeClass('file-selected');
+            }
+        }
+        $(function () {
+            
+
+            $("#FileUploadForm").submit(function (e) {
+                e.preventDefault();
+
+                console.log('Doing ajax submit');
+
+                var formAction = $(this).attr("action");
+                var fdata = new FormData();
+
+                var fileInput = $('#uploadfile')[0];
+                var file = fileInput.files[0];
+                fdata.append("file", file);
+
+                var titles = $('#titles')[0].value;
+                fdata.append("titles", titles);
+
+                var paperName = $('#paperName')[0].value;
+                fdata.append("paperName", paperName);
+
+                var refsName = $('#refsName')[0].value;
+                fdata.append("refsName", refsName);
+
+                $('#main')[0].style.display = 'none';
+                $('#load')[0].style.display = 'flex';
+
+                $.ajax({
+                    type: 'post',
+                    url: formAction,
+                    data: fdata,
+                    processData: false,
+                    contentType: false
+                }).done(function (result) {
+                    window.location.href='@Url.Action("Result", "Home")'
+                });
+            });
+        })
+
+
+    </script>
+}

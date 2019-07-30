@@ -1,0 +1,173 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\TestResults\\TestResults.csproj": {}
+  },
+  "projects": {
+    "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj",
+        "projectName": "LangAnalyzer.Core",
+        "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj"
+      },
+      "frameworks": {
+        "net40": {}
+      }
+    },
+    "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Morphology\\LangAnalyzer.Morphology.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Morphology\\LangAnalyzer.Morphology.csproj",
+        "projectName": "LangAnalyzer.Morphology",
+        "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Morphology\\LangAnalyzer.Morphology.csproj",
+        "frameworks": {
+          "net40": {
+            "projectReferences": {
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net40": {}
+      }
+    },
+    "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Postagger\\LangAnalyzer.Postagger.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Postagger\\LangAnalyzer.Postagger.csproj",
+        "projectName": "LangAnalyzer.Postagger",
+        "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Postagger\\LangAnalyzer.Postagger.csproj",
+        "frameworks": {
+          "net40": {
+            "projectReferences": {
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj"
+              },
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Morphology\\LangAnalyzer.Morphology.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Morphology\\LangAnalyzer.Morphology.csproj"
+              },
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.SentenceSplitter\\LangAnalyzer.SentenceSplitter.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.SentenceSplitter\\LangAnalyzer.SentenceSplitter.csproj"
+              },
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Сrfsuite\\LangAnalyzer.Сrfsuite.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Сrfsuite\\LangAnalyzer.Сrfsuite.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net40": {}
+      }
+    },
+    "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.SentenceSplitter\\LangAnalyzer.SentenceSplitter.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.SentenceSplitter\\LangAnalyzer.SentenceSplitter.csproj",
+        "projectName": "LangAnalyzer.SentenceSplitter",
+        "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.SentenceSplitter\\LangAnalyzer.SentenceSplitter.csproj",
+        "frameworks": {
+          "net40": {
+            "projectReferences": {
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net40": {}
+      }
+    },
+    "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Сrfsuite\\LangAnalyzer.Сrfsuite.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Сrfsuite\\LangAnalyzer.Сrfsuite.csproj",
+        "projectName": "LangAnalyzer.Сrfsuite",
+        "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Сrfsuite\\LangAnalyzer.Сrfsuite.csproj",
+        "frameworks": {
+          "net40": {
+            "projectReferences": {
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Core\\LangAnalyzer.Core.csproj"
+              },
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.SentenceSplitter\\LangAnalyzer.SentenceSplitter.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.SentenceSplitter\\LangAnalyzer.SentenceSplitter.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net40": {}
+      }
+    },
+    "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\TestResults\\TestResults.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\TestResults\\TestResults.csproj",
+        "projectName": "TestResults",
+        "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\TestResults\\TestResults.csproj",
+        "packagesPath": "C:\\Users\\eduar\\.nuget\\packages\\",
+        "outputPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\TestResults\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\eduar\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.0": {
+            "projectReferences": {
+              "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Postagger\\LangAnalyzer.Postagger.csproj": {
+                "projectPath": "D:\\programming\\Master-s-thesis\\SciencePaperAnalyzer\\LangAnalyzer.Postagger\\LangAnalyzer.Postagger.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.0": {
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

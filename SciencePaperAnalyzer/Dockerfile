@@ -8,13 +8,13 @@ WORKDIR /src
 COPY ["TestWebApp/WebPaperAnalyzer.csproj", "TestWebApp/"]
 COPY ["TextExtractor/TextExtractor.csproj", "TextExtractor/"]
 COPY ["PaperAnalyzer/PaperAnalyzer.csproj", "PaperAnalyzer/"]
-COPY ["LangAnalyzer.Postagger/LangAnalyzer.Postagger.csproj", "LangAnalyzer.Postagger/"]
-COPY ["LangAnalyzer.Core/LangAnalyzer.Core.csproj", "LangAnalyzer.Core/"]
-COPY ["LangAnalyzer.Morphology/LangAnalyzer.Morphology.csproj", "LangAnalyzer.Morphology/"]
-COPY ["LangAnalyzer.SentenceSplitter/LangAnalyzer.SentenceSplitter.csproj", "LangAnalyzer.SentenceSplitter/"]
-COPY ["LangAnalyzer.Сrfsuite/LangAnalyzer.Сrfsuite.csproj", "LangAnalyzer.Сrfsuite/"]
+COPY ["LangAnalyzerStd.Postagger/LangAnalyzerStd.Postagger.csproj", "LangAnalyzerStd.Postagger/"]
+COPY ["LangAnalyzerStd.Core/LangAnalyzerStd.Core.csproj", "LangAnalyzerStd.Core/"]
+COPY ["LangAnalyzerStd.Morphology/LangAnalyzerStd.Morphology.csproj", "LangAnalyzerStd.Morphology/"]
+COPY ["LangAnalyzerStd.SentenceSplitter/LangAnalyzerStd.SentenceSplitter.csproj", "LangAnalyzerStd.SentenceSplitter/"]
+COPY ["LangAnalyzerStd.Сrfsuite/LangAnalyzerStd.Сrfsuite.csproj", "LangAnalyzerStd.Сrfsuite/"]
 COPY ["AnalyzeResults/AnalyzeResults.csproj", "AnalyzeResults/"]
-RUN dotnet restore "TestWebApp/WebPaperAnalyzer.csproj"
+# RUN dotnet restore "TestWebApp/WebPaperAnalyzer.csproj"
 COPY . .
 WORKDIR "/src/TestWebApp"
 RUN dotnet build "WebPaperAnalyzer.csproj" -c Release -o /app

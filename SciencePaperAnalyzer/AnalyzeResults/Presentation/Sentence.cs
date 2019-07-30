@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LangAnalyzer.Postagger;
+using LangAnalyzerStd.Postagger;
 
 namespace AnalyzeResults.Presentation
 {

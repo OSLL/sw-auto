@@ -18,10 +18,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AnalyzeResults\AnalyzeResults.csproj" />
-    <ProjectReference Include="..\LangAnalyzer.Morphology\LangAnalyzer.Morphology.csproj" />
-    <ProjectReference Include="..\LangAnalyzer.Postagger\LangAnalyzer.Postagger.csproj" />
-    <ProjectReference Include="..\LangAnalyzer.SentenceSplitter\LangAnalyzer.SentenceSplitter.csproj" />
-    <ProjectReference Include="..\LangAnalyzer.Сrfsuite\LangAnalyzer.Сrfsuite.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Core\LangAnalyzerStd.Core.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Morphology\LangAnalyzerStd.Morphology.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Postagger\LangAnalyzerStd.Postagger.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.SentenceSplitter\LangAnalyzerStd.SentenceSplitter.csproj" />
   </ItemGroup>
 
   <ItemGroup>

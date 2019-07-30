@@ -1,4 +1,4 @@
-﻿using LangAnalyzer.Postagger;
+﻿using LangAnalyzerStd.Postagger;
 
 namespace AnalyzeResults.Presentation
 {

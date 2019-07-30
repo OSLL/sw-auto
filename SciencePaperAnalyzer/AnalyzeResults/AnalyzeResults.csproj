@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LangAnalyzer.Postagger\LangAnalyzer.Postagger.csproj" />
+    <ProjectReference Include="..\LangAnalyzerStd.Postagger\LangAnalyzerStd.Postagger.csproj" />
   </ItemGroup>
 
 </Project>

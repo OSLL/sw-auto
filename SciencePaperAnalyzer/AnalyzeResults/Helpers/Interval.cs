@@ -2,6 +2,7 @@
 
 namespace AnalyzeResults.Helpers
 {
+    [Serializable]
     public struct Interval<T> where T : struct, IComparable
     {
         public T LowerBound { get; private set; }

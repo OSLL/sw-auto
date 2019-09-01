@@ -1,7 +1,9 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 
 namespace AnalyzeResults.Errors
 {
+    [Serializable]
     public class ShortSectionError : Error
     {
         public ShortSectionError(Guid sectionId, string sectionName, int sentencesNum)
@@ -11,6 +13,7 @@ namespace AnalyzeResults.Errors
             SectionId = sectionId;
         }
 
+        [BsonElement("id")]
         public Guid SectionId { get; }
     }
 }

@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LangAnalyzerStd.Postagger;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace AnalyzeResults.Presentation
 {
+    [Serializable]
     public class Sentence
     {
         public Sentence(SentenceType type)
@@ -18,10 +21,13 @@ namespace AnalyzeResults.Presentation
             Words.AddRange(words);
         }
 
+        [BsonElement("words")]
         public List<Word> Words { get; set; }
 
+        [BsonElement("type")]
         public SentenceType SentenceType { get; set; }
 
+        [BsonElement("original")]
         public string Original { get; set; }
 
         public string ToStringVersion()

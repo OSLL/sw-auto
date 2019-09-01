@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
@@ -12,14 +11,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using TestWebApp.Models;
 using TextExtractor;
+using WebPaperAnalyzer.Models;
+using WebPaperAnalyzer.DAL;
 
 namespace TestWebApp.Controllers
 {
     [System.Runtime.InteropServices.Guid("AC77F42B-4207-4468-A583-0999046DBAFD")]
     public class HomeController : Controller
     {
-        public static List<PaperAnalysisResult> Results = new List<PaperAnalysisResult>();
         public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
+        IResultRepository repository = new ResultRepository("mongodb://localhost:27017/resultsDB");
 
         protected IConfiguration Configuration;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
@@ -50,18 +51,19 @@ namespace TestWebApp.Controllers
             }
 
             var result = AnalyzePaper(filePath, titles, paperName, refsName);
-            if (Results.Count > 0)
+            var analysisResult = new AnalysisResult
             {
-                Results.Clear();
-            }
-            Results.Add(result);
-            return Ok();
+                Id = Guid.NewGuid().ToString(),
+                Result = result
+            };
+            repository.AddResult(analysisResult);
+            return Ok(analysisResult.Id);
         }
 
         [HttpGet]
-        public IActionResult Result()
+        public IActionResult Result(string id)
         {
-            return View(Results.Count > 0 ? Results.Last() : null);
+            return View(repository.GetResult(id).Result);
         }
 
         public IActionResult Index()

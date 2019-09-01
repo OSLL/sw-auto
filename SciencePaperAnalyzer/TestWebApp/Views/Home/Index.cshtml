@@ -151,7 +151,8 @@
                     processData: false,
                     contentType: false
                 }).done(function (result) {
-                    window.location.href='@Url.Action("Result", "Home")'
+                    //window.location.href = '@Url.Action("Result", "Home")'
+                    window.location.href = '@Url.Action("Result", "Home")?id=' + result
                 });
             });
         })

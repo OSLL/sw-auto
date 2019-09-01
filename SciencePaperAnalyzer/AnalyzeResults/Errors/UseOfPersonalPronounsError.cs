@@ -1,7 +1,10 @@
 ﻿using AnalyzeResults.Presentation;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 
 namespace AnalyzeResults.Errors
 {
+    [Serializable]
     public class UseOfPersonalPronounsError : Error
     {
         public UseOfPersonalPronounsError(Word errorWord)
@@ -11,6 +14,7 @@ namespace AnalyzeResults.Errors
             ErrorWord = errorWord;
         }
 
+        [BsonElement("errorword")]
         public Word ErrorWord { get; }
     }
 }

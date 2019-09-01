@@ -1,8 +1,10 @@
 ﻿using System;
 using AnalyzeResults.Helpers;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace AnalyzeResults.Presentation
 {
+    [Serializable]
     public class NumericalCriterion : Criterion
     {
         private string _adviceToLower;
@@ -20,10 +22,13 @@ namespace AnalyzeResults.Presentation
             _adviceToRaise = adviceToRaise;
         }
 
+        [BsonElement("interval")]
         public Interval<double> Interval { get; set; }
 
+        [BsonElement("value")]
         public double Value { get; set; }
 
+        [BsonElement("factor")]
         public double Factor { get; set; }
 
         public override string GetStringRequirements()

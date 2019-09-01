@@ -1,5 +1,9 @@
-﻿namespace AnalyzeResults.Errors
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
+
+namespace AnalyzeResults.Errors
 {
+    [Serializable]
     public class SourceNotReferencedError : Error
     {
         public SourceNotReferencedError(int number)
@@ -9,6 +13,7 @@
             Number = number;
         }
 
+        [BsonElement("number")]
         public int Number { get; set; }
     }
 }

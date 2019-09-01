@@ -1,10 +1,12 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace AnalyzeResults.Presentation
 {
+    [Serializable]
     public class Section
     {
         public Section()
@@ -19,14 +21,19 @@ namespace AnalyzeResults.Presentation
             Sentences.AddRange(sentences);
         }
 
+        [BsonId]
         public Guid Id { get; }
 
+        [BsonElement("type")]
         public SectionType Type { get; set; }
 
+        [BsonElement("sentences")]
         public List<Sentence> Sentences { get; set; }
 
+        [BsonElement("references")]
         public List<Reference> References { get; set; }
 
+        [BsonElement("haserrors")]
         public bool HasErrors { get; set; }
 
         public string ToStringVersion()

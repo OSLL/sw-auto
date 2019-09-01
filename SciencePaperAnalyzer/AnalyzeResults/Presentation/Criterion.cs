@@ -1,5 +1,9 @@
-﻿namespace AnalyzeResults.Presentation
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
+
+namespace AnalyzeResults.Presentation
 {
+    [Serializable]
     public abstract class Criterion
     {
         public Criterion(string name, CriterionType type, string description = "")
@@ -9,10 +13,13 @@
             Description = description;
         }
 
+        [BsonElement("name")]
         public string Name { get; set; }
 
+        [BsonElement("description")]
         public string Description { get; set; }
 
+        [BsonElement("type")]
         public CriterionType Type { get; set; }
 
         public abstract bool IsMet();

@@ -17,7 +17,9 @@ COPY ["AnalyzeResults/AnalyzeResults.csproj", "AnalyzeResults/"]
 # RUN dotnet restore "TestWebApp/WebPaperAnalyzer.csproj"
 COPY . .
 WORKDIR "/src/TestWebApp"
-RUN dotnet build "WebPaperAnalyzer.csproj" -c Release -o /app
+# RUN ping www.google.com
+# RUN apt-get update && apt-get install -y libcurl3
+# RUN dotnet build "WebPaperAnalyzer.csproj" -c Release -o /app
 
 FROM build AS publish
 RUN dotnet publish "WebPaperAnalyzer.csproj" -c Release -o /app

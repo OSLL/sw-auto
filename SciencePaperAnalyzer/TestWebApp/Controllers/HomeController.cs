@@ -13,6 +13,7 @@ using TestWebApp.Models;
 using TextExtractor;
 using WebPaperAnalyzer.Models;
 using WebPaperAnalyzer.DAL;
+using Microsoft.Extensions.Logging;
 
 namespace TestWebApp.Controllers
 {
@@ -21,15 +22,17 @@ namespace TestWebApp.Controllers
     {
         public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
         IResultRepository repository = new ResultRepository("mongodb://localhost:27017/resultsDB");
+        private readonly ILogger<HomeController> _logger;
 
         protected IConfiguration Configuration;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
 
-        public HomeController(IOptions<ResultScoreSettings> settings = null, IConfiguration configuration = null)
+        public HomeController(ILogger<HomeController> logger, IOptions<ResultScoreSettings> settings = null, IConfiguration configuration = null)
         {
             if (settings != null)
                 ResultScoreSettings = settings.Value;
             Configuration = configuration;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -41,7 +44,7 @@ namespace TestWebApp.Controllers
             }
             // full path to file in temp location
             var filePath = Path.GetTempFileName();
-
+            _logger.LogTrace($"UploadFile: new file path: {filePath}");
             if (file.Length > 0)
             {
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -49,14 +52,16 @@ namespace TestWebApp.Controllers
                     await file.CopyToAsync(stream);
                 }
             }
-
+            _logger.LogTrace($"UploadFile: file saved");
             var result = AnalyzePaper(filePath, titles, paperName, refsName);
+            _logger.LogTrace($"UploadFile: file analyzed");
             var analysisResult = new AnalysisResult
             {
                 Id = Guid.NewGuid().ToString(),
                 Result = result
             };
             repository.AddResult(analysisResult);
+            _logger.LogTrace($"UploadFile: result saved");
             return Ok(analysisResult.Id);
         }
 
@@ -102,6 +107,7 @@ namespace TestWebApp.Controllers
             try
             {
                 var text = textExtractor.GetAllText();
+                _logger.LogTrace($"AnalyzePaper: text extracted");
                 // get last from config (updated in runtime)
                 var settings = new ResultScoreSettings
                 {
@@ -114,6 +120,7 @@ namespace TestWebApp.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogTrace($"AnalyzePaper: ERROR - {ex.Message}");
                 var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(), new List<AnalyzeResults.Errors.Error>());
                 res.Error = ex.Message;
                 return res;

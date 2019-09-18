@@ -28,6 +28,7 @@ namespace TestWebApp
             });
 
             services.Configure<ResultScoreSettings>(Configuration.GetSection(nameof(ResultScoreSettings)));
+            services.Configure<MongoSettings>(Configuration.GetSection(nameof(MongoSettings)));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

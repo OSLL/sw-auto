@@ -21,16 +21,28 @@ namespace TestWebApp.Controllers
     public class HomeController : Controller
     {
         public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
-        IResultRepository repository = new ResultRepository("mongodb://localhost:27017/resultsDB");
+        IResultRepository repository;
         private readonly ILogger<HomeController> _logger;
 
         protected IConfiguration Configuration;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
+        protected MongoSettings MongoSettings { get; set; }
 
-        public HomeController(ILogger<HomeController> logger, IOptions<ResultScoreSettings> settings = null, IConfiguration configuration = null)
+        public HomeController(
+            ILogger<HomeController> logger,
+            IOptions<ResultScoreSettings> resultScoreSettings = null,
+            IOptions<MongoSettings> mongoSettings = null,
+            IConfiguration configuration = null)
         {
-            if (settings != null)
-                ResultScoreSettings = settings.Value;
+            if (resultScoreSettings != null)
+                ResultScoreSettings = resultScoreSettings.Value;
+            if (mongoSettings != null)
+            {
+                MongoSettings = mongoSettings.Value;
+                repository = new ResultRepository(MongoSettings.ConnectionString);
+            }
+            else
+                repository = new ResultRepository("mongodb://localhost:27017/resultsDB"); 
             Configuration = configuration;
             _logger = logger;
         }

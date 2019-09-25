@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
+    <Content Remove="nlog.config" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +45,12 @@
   <ItemGroup>
     <ProjectReference Include="..\PaperAnalyzer\PaperAnalyzer.csproj" />
     <ProjectReference Include="..\TextExtractor\TextExtractor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

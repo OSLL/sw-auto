@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NLog.Web;
 
 namespace TestWebApp
 {
@@ -45,6 +46,8 @@ namespace TestWebApp
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+            env.ConfigureNLog("nlog.config");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

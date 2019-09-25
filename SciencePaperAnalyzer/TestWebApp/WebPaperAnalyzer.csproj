@@ -52,4 +52,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Update="C:\Users\eduar\.nuget\packages\nlog.config\4.6.7\contentFiles\any\any\NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
 </Project>

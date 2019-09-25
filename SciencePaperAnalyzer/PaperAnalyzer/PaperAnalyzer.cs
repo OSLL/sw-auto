@@ -318,8 +318,6 @@ namespace PaperAnalyzer
                 if (titleIndex != -1)
                     text = text.Substring(titleIndex);
 
-                text = "Это тестовое предложение я добавил специально, оно содержит ошибки, которые точно должны быть выделены." + text;
-
                 var result = Environment.Processor.RunFullAnalysis(text, true, true, true, true);
 
                 var dictionary = new Dictionary<string, int>();

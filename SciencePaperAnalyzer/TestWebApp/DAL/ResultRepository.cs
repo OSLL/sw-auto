@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using AnalyzeResults.Presentation;
+using AnalyzeResults.Settings;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using WebPaperAnalyzer.Models;
@@ -15,10 +17,21 @@ namespace WebPaperAnalyzer.DAL
         private readonly IMongoDatabase _database;
         private readonly IMongoCollection<BinaryForm> _resultsCollection;
 
-        public ResultRepository(string connectionString)
+        public ResultRepository(MongoSettings settings)
         {
-            _client = new MongoClient(connectionString);
-            _database = _client.GetDatabase("db");
+            var internalIdentity = new MongoInternalIdentity("admin", settings.User);
+            var passwordEvidence = new PasswordEvidence(settings.Password);
+            var mongoCredential = new MongoCredential("SCRAM-SHA-1", internalIdentity, passwordEvidence);
+            var credentials = new List<MongoCredential> { mongoCredential };
+
+
+            var mongoSettings = new MongoClientSettings();
+            mongoSettings.Credentials = credentials;
+            var address = new MongoServerAddress(settings.Host);
+            mongoSettings.Server = address;
+
+            _client = new MongoClient(mongoSettings); //new MongoClient(settings.ConnectionString);
+            _database = _client.GetDatabase(settings.Database);
             _resultsCollection = _database.GetCollection<BinaryForm>("results");
         }
 

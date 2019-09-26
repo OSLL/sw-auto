@@ -11,11 +11,11 @@ namespace TestWebApp
     {
         public static void Main(string[] args)
         {
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
             try
             {
-                logger.Debug("init main");
                 CreateWebHostBuilder(args).Build().Run();
+                logger.Debug("init main");
             }
             catch (Exception ex)
             {

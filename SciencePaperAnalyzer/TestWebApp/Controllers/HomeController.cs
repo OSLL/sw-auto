@@ -36,13 +36,8 @@ namespace TestWebApp.Controllers
         {
             if (resultScoreSettings != null)
                 ResultScoreSettings = resultScoreSettings.Value;
-            if (mongoSettings != null)
-            {
-                MongoSettings = mongoSettings.Value;
-                repository = new ResultRepository(MongoSettings.ConnectionString);
-            }
-            else
-                repository = new ResultRepository("mongodb://localhost:27017/resultsDB"); 
+            MongoSettings = mongoSettings.Value;
+            repository = new ResultRepository(MongoSettings);
             Configuration = configuration;
             _logger = logger;
         }
@@ -56,7 +51,7 @@ namespace TestWebApp.Controllers
             }
             // full path to file in temp location
             var filePath = Path.GetTempFileName();
-            _logger.LogTrace($"UploadFile: new file path: {filePath}");
+            _logger.LogDebug($"UploadFile: new file path: {filePath}");
             if (file.Length > 0)
             {
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -64,16 +59,16 @@ namespace TestWebApp.Controllers
                     await file.CopyToAsync(stream);
                 }
             }
-            _logger.LogTrace($"UploadFile: file saved");
+            _logger.LogDebug($"UploadFile: file saved");
             var result = AnalyzePaper(filePath, titles, paperName, refsName);
-            _logger.LogTrace($"UploadFile: file analyzed");
+            _logger.LogDebug($"UploadFile: file analyzed");
             var analysisResult = new AnalysisResult
             {
                 Id = Guid.NewGuid().ToString(),
                 Result = result
             };
             repository.AddResult(analysisResult);
-            _logger.LogTrace($"UploadFile: result saved");
+            _logger.LogDebug($"UploadFile: result saved");
             return Ok(analysisResult.Id);
         }
 
@@ -132,7 +127,7 @@ namespace TestWebApp.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogTrace($"AnalyzePaper: ERROR - {ex.Message}");
+                _logger.LogTrace($"AnalyzePaper: ERROR - {ex.Message}:\n {(ex.InnerException != null ? ex.InnerException.Message : "")}");
                 var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(), new List<AnalyzeResults.Errors.Error>());
                 res.Error = ex.Message;
                 return res;

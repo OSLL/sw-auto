@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
-    <Content Remove="nlog.config" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,12 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="nlog.config">
+    <Content Update="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
+    </Content>
     <Content Update="wwwroot\css\site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

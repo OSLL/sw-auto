@@ -1,4 +1,6 @@
-﻿using AnalyzeResults.Settings;
+﻿using System;
+using System.IO;
+using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -47,7 +49,7 @@ namespace TestWebApp
                 app.UseHsts();
             }
 
-            env.ConfigureNLog("nlog.config");
+            env.ConfigureNLog("NLog.config");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

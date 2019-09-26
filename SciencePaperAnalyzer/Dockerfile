@@ -14,17 +14,18 @@ COPY ["LangAnalyzerStd.Morphology/LangAnalyzerStd.Morphology.csproj", "LangAnaly
 COPY ["LangAnalyzerStd.SentenceSplitter/LangAnalyzerStd.SentenceSplitter.csproj", "LangAnalyzerStd.SentenceSplitter/"]
 COPY ["LangAnalyzerStd.Сrfsuite/LangAnalyzerStd.Сrfsuite.csproj", "LangAnalyzerStd.Сrfsuite/"]
 COPY ["AnalyzeResults/AnalyzeResults.csproj", "AnalyzeResults/"]
-# RUN dotnet restore "TestWebApp/WebPaperAnalyzer.csproj"
 COPY . .
 WORKDIR "/src/TestWebApp"
-# RUN ping www.google.com
-# RUN apt-get update && apt-get install -y libcurl3
-# RUN dotnet build "WebPaperAnalyzer.csproj" -c Release -o /app
 
 FROM build AS publish
 RUN dotnet publish "WebPaperAnalyzer.csproj" -c Release -o /app
-
+RUN rm /app/NLog.config
+RUN cp NLog.config /app/NLog.config
+RUN cp -avr resources /app/resources
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
+RUN mkdir app
+RUN cp NLog.config app/
+RUN cp NLog.config wwwroot/
 ENTRYPOINT ["dotnet", "WebPaperAnalyzer.dll"]

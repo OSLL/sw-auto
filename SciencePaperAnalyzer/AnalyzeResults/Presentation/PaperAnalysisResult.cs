@@ -48,5 +48,13 @@ namespace AnalyzeResults.Presentation
             var fines = Errors.Count * ErrorCost;
             return Math.Max(baseValue - fines, 0);
         }
+
+        /// <summary>
+        /// Техническая информация о процессе анализа
+        /// Вынесена из out-параметров метода анализа в результат анализа
+        /// Не требует сохранения в БД
+        /// </summary>
+        [BsonIgnore]
+        public PaperAnalysisProcessingMetrics Metrics { get; set; }
     }
 }

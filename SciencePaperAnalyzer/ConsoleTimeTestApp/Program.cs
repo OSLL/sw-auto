@@ -2,32 +2,32 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using AnalyzeResults.Settings;
 using TextExtractor;
 
 namespace ConsoleTimeTestApp
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var filePaths = Directory.GetFiles(@"D:\programming\papersForTest");
 
-            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, $"result{string.Format("{0:MM_DD_hh_mm_ss}", DateTime.Now)}.txt")))
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, $"result{DateTime.Now:MM_DD_hh_mm_ss}.txt")))
                 foreach (var path in filePaths)
                 {
                     Console.WriteLine($"{path} processing...");
-                    long textExtractionTime, analyzingTime;
-                    int strLength;
-                    AnalyzePaper(path, string.Empty, string.Empty, string.Empty, out textExtractionTime, out analyzingTime, out strLength);
+                    var result = AnalyzePaper(path, string.Empty, string.Empty, string.Empty);
                     var file = new FileInfo(path);
-                    outputFile.WriteLine($"{file.Name}\t{file.Length} bytes\t{strLength} lines\t{textExtractionTime} ms\t{analyzingTime} ms");
+
+                    var metrics = result.Metrics; 
+                    outputFile.WriteLine($"{file.Name}\t{file.Length} bytes\t{metrics.StrLength} lines\t{metrics.TextExtractionTime} ms\t{metrics.AnalyzingTime} ms");
                 }
         }
 
-        public static PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName,
-            out long textExtractionTime, out long analyzingTime, out int stringLength)
+        public static PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
             var textExtractor = new PdfTextExtractor(path);
@@ -35,21 +35,28 @@ namespace ConsoleTimeTestApp
             {
                 var text = textExtractor.GetAllText();
                 watch.Stop();
-                textExtractionTime = watch.ElapsedMilliseconds;
+                var textExtractionTime = watch.ElapsedMilliseconds;
                 watch.Restart();
-                var result = PaperAnalyzer.PaperAnalyzer.Instance.ProcessTextWithResult(text, titles, paperName, refsName);
+                var result = PaperAnalyzer.PaperAnalyzer.Instance.ProcessTextWithResult(text, titles, paperName, refsName, new ResultScoreSettings());
                 watch.Stop();
-                analyzingTime = watch.ElapsedMilliseconds;
-                stringLength = text.Length;
+
+                // Заполнение метрик процесса анализа
+                var metrics = new PaperAnalysisProcessingMetrics()
+                {
+                    TextExtractionTime = textExtractionTime,
+                    AnalyzingTime = watch.ElapsedMilliseconds,
+                    StrLength = text.Length,
+                };
+                result.Metrics = metrics;
+
                 return result;
             }
             catch (Exception ex)
             {
-                var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(), new List<AnalyzeResults.Errors.Error>());
-                res.Error = ex.Message;
-                textExtractionTime = -1;
-                analyzingTime = -1;
-                stringLength = -1;
+                var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(), new List<AnalyzeResults.Errors.Error>())
+                {
+                    Error = ex.Message
+                };
                 return res;
             }
         }

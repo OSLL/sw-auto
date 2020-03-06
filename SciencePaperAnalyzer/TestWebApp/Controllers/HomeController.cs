@@ -113,7 +113,10 @@ namespace TestWebApp.Controllers
             var textExtractor = new PdfTextExtractor(path);
             try
             {
+                var watch = Stopwatch.StartNew();
                 var text = textExtractor.GetAllText();
+                watch.Stop();
+                var textExtractionTime = watch.ElapsedMilliseconds;
                 _logger.LogTrace($"AnalyzePaper: text extracted");
                 // get last from config (updated in runtime)
                 var settings = new ResultScoreSettings
@@ -123,7 +126,20 @@ namespace TestWebApp.Controllers
                     WaterCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["WaterCriterionFactor"]),
                     ZipfFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["ZipfFactor"])
                 };
-                return Analyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
+                watch.Restart();
+                var result = Analyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
+                watch.Stop();
+
+                // Заполнение метрик процесса анализа
+                var metrics = new PaperAnalysisProcessingMetrics()
+                {
+                    TextExtractionTime = textExtractionTime,
+                    AnalyzingTime = watch.ElapsedMilliseconds,
+                    StrLength = text.Length,
+                };
+                result.Metrics = metrics;
+
+                return result;
             }
             catch (Exception ex)
             {

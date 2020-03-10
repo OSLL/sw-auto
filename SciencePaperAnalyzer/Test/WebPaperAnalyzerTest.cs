@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using TestWebApp.Controllers;
 using WebPaperAnalyzer.DAL;
@@ -36,36 +35,25 @@ namespace Test
 
             var controller = new HomeController(logger.Object, repository.Object);
 
-            var file = new Mock<IFormFile>();
-
             // Возможно, стоит добавить файл в testResources непосредственно в проект
             // Пока на временной основе загружу файл из родительской директории (pdf включен в репозиторий)
             var current = Directory.GetCurrentDirectory();
             // Не уверен, что это будет работать на unix-системе или из докер-контейнера
             var path = Path.GetFullPath(Path.Combine(current, @"..\..\..\..\..\paper_work\icc_2018\paper_short.pdf"));
 
-            var testFile = new FileInfo(path);
-            var memoryStream = new MemoryStream();
-            var writer = new StreamWriter(memoryStream);
-            writer.Write(testFile.OpenRead());
-            writer.Flush();
-            memoryStream.Position = 0;
-
-            file.Setup(f => f.Length).Returns(memoryStream.Length);
-
-            file.Setup(f => f.CopyToAsync(It.IsAny<Stream>(), CancellationToken.None))
-                .Callback<Stream, CancellationToken>((stream, token) => memoryStream.CopyTo(stream))
-                .Returns(Task.CompletedTask);
-
+            var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);         
+            var formFile = new FormFile(fileStream, 0, fileStream.Length, "file", "paper_short.pdf");
 
             // Act
-            var result = await controller.UploadFile(file.Object, string.Empty, string.Empty, string.Empty);
+            var result = await controller.UploadFile(formFile, string.Empty, string.Empty, string.Empty);
             var okResult = result as OkObjectResult;
 
             // Assert
             Assert.IsNotNull(okResult);
             Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
             Assert.IsNotNull(okResult.Value);
+            
+            fileStream.Close();          
         }
     }
 }

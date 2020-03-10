@@ -25,13 +25,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTimeTestApp", "Conso
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LangAnalyzerStd.Core", "LangAnalyzerStd.Core\LangAnalyzerStd.Core.csproj", "{D0B676CD-296A-4039-8045-F265F0D08262}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LangAnalyzerStd.Morphology", "LangAnalyzerStd.Morphology\LangAnalyzerStd.Morphology.csproj", "{3FC4A8A2-0077-4A0A-9856-94D85AD25F4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LangAnalyzerStd.Morphology", "LangAnalyzerStd.Morphology\LangAnalyzerStd.Morphology.csproj", "{3FC4A8A2-0077-4A0A-9856-94D85AD25F4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LangAnalyzerStd.SentenceSplitter", "LangAnalyzerStd.SentenceSplitter\LangAnalyzerStd.SentenceSplitter.csproj", "{C6064ACB-7EC0-4EDA-A4A6-632F2769BCDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LangAnalyzerStd.SentenceSplitter", "LangAnalyzerStd.SentenceSplitter\LangAnalyzerStd.SentenceSplitter.csproj", "{C6064ACB-7EC0-4EDA-A4A6-632F2769BCDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LangAnalyzerStd.Сrfsuite", "LangAnalyzerStd.Сrfsuite\LangAnalyzerStd.Сrfsuite.csproj", "{7E14D678-09CD-443F-B360-00E1A631C9FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LangAnalyzerStd.Сrfsuite", "LangAnalyzerStd.Сrfsuite\LangAnalyzerStd.Сrfsuite.csproj", "{7E14D678-09CD-443F-B360-00E1A631C9FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LangAnalyzerStd.Postagger", "LangAnalyzerStd.Postagger\LangAnalyzerStd.Postagger.csproj", "{B809905D-511E-4D28-B43C-F4A4D6FCE2FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LangAnalyzerStd.Postagger", "LangAnalyzerStd.Postagger\LangAnalyzerStd.Postagger.csproj", "{B809905D-511E-4D28-B43C-F4A4D6FCE2FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{668ACF44-7042-4A20-BB1A-D4E6983D6B62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +101,10 @@ Global
 		{B809905D-511E-4D28-B43C-F4A4D6FCE2FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B809905D-511E-4D28-B43C-F4A4D6FCE2FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B809905D-511E-4D28-B43C-F4A4D6FCE2FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{668ACF44-7042-4A20-BB1A-D4E6983D6B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{668ACF44-7042-4A20-BB1A-D4E6983D6B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{668ACF44-7042-4A20-BB1A-D4E6983D6B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{668ACF44-7042-4A20-BB1A-D4E6983D6B62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

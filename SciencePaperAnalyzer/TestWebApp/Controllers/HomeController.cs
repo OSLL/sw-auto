@@ -25,19 +25,20 @@ namespace TestWebApp.Controllers
         private readonly ILogger<HomeController> _logger;
 
         protected IConfiguration Configuration;
+        protected IResultRepository _repository;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
         protected MongoSettings MongoSettings { get; set; }
 
         public HomeController(
             ILogger<HomeController> logger,
+            IResultRepository repository,
             IOptions<ResultScoreSettings> resultScoreSettings = null,
             IOptions<MongoSettings> mongoSettings = null,
             IConfiguration configuration = null)
         {
-            if (resultScoreSettings != null)
-                ResultScoreSettings = resultScoreSettings.Value;
-            MongoSettings = mongoSettings.Value;
-            repository = new ResultRepository(MongoSettings);
+            ResultScoreSettings = resultScoreSettings?.Value;
+            MongoSettings = mongoSettings?.Value;
+            _repository = repository;
             Configuration = configuration;
             _logger = logger;
         }
@@ -67,7 +68,7 @@ namespace TestWebApp.Controllers
                 Id = Guid.NewGuid().ToString(),
                 Result = result
             };
-            repository.AddResult(analysisResult);
+            _repository.AddResult(analysisResult);
             _logger.LogDebug($"UploadFile: result saved");
             return Ok(analysisResult.Id);
         }

@@ -6,11 +6,9 @@ using Moq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using TestWebApp.Controllers;
 using WebPaperAnalyzer.DAL;
-using WebPaperAnalyzer.Models;
-using Xunit.Sdk;
+
 
 
 namespace Test
@@ -19,15 +17,15 @@ namespace Test
     public class WebPaperAnalyzerTest
     {
         /// <summary>
-        /// end-to-end тест дл¤ оценки работоспособности сервиса
-        /// ѕосле покрыти¤ кода unit-тестами и корректными интеграционными тестами, следует удалить этот тест
+        /// end-to-end тест для оценки работоспособности сервиса
+        /// После покрытия кода unit-тестами и корректными интеграционными тестами, следует удалить этот тест
         /// 
         /// TODO: проблемы с тестированием
-        /// 1. Ћогика размазана между контроллером, textExtractor и PaperAnalyzer
+        /// 1. Логика размазана между контроллером, textExtractor и PaperAnalyzer
         /// -- оставить в контроллере только первичную валидацию, вызов сервиса и оборачивание ошибок
         /// -- может разделить шаги UploadFile и AnalyzeFile на уровне fe?
         /// 
-        /// 2. ”брать статический класс PaperAnalyzer из контроллера (и сервиса)! ≈го невозможно замокать!
+        /// 2. Убрать статический класс PaperAnalyzer из контроллера (и сервиса)! Его невозможно замокать!
         /// </summary>
         [TestMethod]
         public async Task EndToEndSuccessTest()
@@ -40,10 +38,10 @@ namespace Test
 
             var file = new Mock<IFormFile>();
 
-            // ¬озможно, стоит добавить файл в testResources непосредственно в проект
-            // ѕока на временной основе загружу файл из родительской директории (pdf включен в репозиторий)
+            // Возможно, стоит добавить файл в testResources непосредственно в проект
+            // Пока на временной основе загружу файл из родительской директории (pdf включен в репозиторий)
             var current = Directory.GetCurrentDirectory();
-            // Ќе уверен, что это будет работать на unix-системе или из докер-контейнера
+            // Не уверен, что это будет работать на unix-системе или из докер-контейнера
             var path = Path.GetFullPath(Path.Combine(current, @"..\..\..\..\..\paper_work\icc_2018\paper_short.pdf"));
 
             var testFile = new FileInfo(path);

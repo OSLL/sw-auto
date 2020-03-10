@@ -4,11 +4,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using TestWebApp.Controllers;
 using WebPaperAnalyzer.DAL;
-
-
 
 namespace Test
 {
@@ -17,14 +16,8 @@ namespace Test
     {
         /// <summary>
         /// end-to-end тест для оценки работоспособности сервиса
+        /// Анализ pdf файла
         /// После покрытия кода unit-тестами и корректными интеграционными тестами, следует удалить этот тест
-        /// 
-        /// TODO: проблемы с тестированием
-        /// 1. Логика размазана между контроллером, textExtractor и PaperAnalyzer
-        /// -- оставить в контроллере только первичную валидацию, вызов сервиса и оборачивание ошибок
-        /// -- может разделить шаги UploadFile и AnalyzeFile на уровне fe?
-        /// 
-        /// 2. Убрать статический класс PaperAnalyzer из контроллера (и сервиса)! Его невозможно замокать!
         /// </summary>
         [TestMethod]
         public async Task EndToEndSuccessTest()
@@ -32,20 +25,27 @@ namespace Test
             // Arrange
             var logger = new Mock<ILogger<HomeController>>();
             var repository = new Mock<IResultRepository>();
+            var file = new Mock<IFormFile>();
 
             var controller = new HomeController(logger.Object, repository.Object);
 
-            // Возможно, стоит добавить файл в testResources непосредственно в проект
-            // Пока на временной основе загружу файл из родительской директории (pdf включен в репозиторий)
+            // Временное решение, загрузка pdf файла, который присутствует в репозитории
+            // Путь windows формата
             var current = Directory.GetCurrentDirectory();
-            // Не уверен, что это будет работать на unix-системе или из докер-контейнера
             var path = Path.GetFullPath(Path.Combine(current, @"..\..\..\..\..\paper_work\icc_2018\paper_short.pdf"));
 
-            var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);         
-            var formFile = new FormFile(fileStream, 0, fileStream.Length, "file", "paper_short.pdf");
+            var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            var memoryStream = new MemoryStream();
+            fileStream.CopyTo(memoryStream);
+            memoryStream.Position = 0;
+
+            file.Setup(f => f.Length).Returns(memoryStream.Length);
+            file.Setup(f => f.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+                .Callback<Stream, CancellationToken>((stream, token) => memoryStream.CopyTo(stream))
+                .Returns(Task.CompletedTask);
 
             // Act
-            var result = await controller.UploadFile(formFile, string.Empty, string.Empty, string.Empty);
+            var result = await controller.UploadFile(file.Object, string.Empty, string.Empty, string.Empty);
             var okResult = result as OkObjectResult;
 
             // Assert

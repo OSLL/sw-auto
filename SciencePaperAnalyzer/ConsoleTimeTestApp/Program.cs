@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using AnalyzeResults.Settings;
 using TextExtractor;
 
 namespace ConsoleTimeTestApp
@@ -37,7 +38,7 @@ namespace ConsoleTimeTestApp
                 watch.Stop();
                 textExtractionTime = watch.ElapsedMilliseconds;
                 watch.Restart();
-                var result = PaperAnalyzer.PaperAnalyzer.Instance.ProcessTextWithResult(text, titles, paperName, refsName);
+                var result = PaperAnalyzer.PaperAnalyzer.Instance.ProcessTextWithResult(text, titles, paperName, refsName, new ResultScoreSettings());
                 watch.Stop();
                 analyzingTime = watch.ElapsedMilliseconds;
                 stringLength = text.Length;

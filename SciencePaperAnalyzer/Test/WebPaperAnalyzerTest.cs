@@ -53,7 +53,8 @@ namespace Test
             Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
             Assert.IsNotNull(okResult.Value);
             
-            fileStream.Close();          
+            fileStream.Close();
+            memoryStream.Close();
         }
     }
 }

@@ -21,7 +21,6 @@ namespace TestWebApp.Controllers
     public class HomeController : Controller
     {
         public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
-        IResultRepository repository;
         private readonly ILogger<HomeController> _logger;
 
         protected IConfiguration Configuration;
@@ -76,7 +75,7 @@ namespace TestWebApp.Controllers
         [HttpGet]
         public IActionResult Result(string id)
         {
-            return View(repository.GetResult(id).Result);
+            return View(_repository.GetResult(id).Result);
         }
 
         public IActionResult Index()

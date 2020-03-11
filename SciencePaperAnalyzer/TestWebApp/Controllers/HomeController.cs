@@ -8,15 +8,15 @@ using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using TestWebApp.Models;
-using WebPaperAnalyzer.Models;
-using WebPaperAnalyzer.DAL;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PaperAnalyzer;
 using PaperAnalyzer.Service;
+using TestWebApp.Models;
+using WebPaperAnalyzer.DAL;
+using WebPaperAnalyzer.Models;
 
-namespace TestWebApp.Controllers
+namespace WebPaperAnalyzer.Controllers
 {
     [System.Runtime.InteropServices.Guid("AC77F42B-4207-4468-A583-0999046DBAFD")]
     public class HomeController : Controller

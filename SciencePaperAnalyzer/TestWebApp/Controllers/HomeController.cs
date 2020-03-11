@@ -22,26 +22,26 @@ namespace TestWebApp.Controllers
     public class HomeController : Controller
     {
         public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
-        IResultRepository repository;
         private readonly ILogger<HomeController> _logger;
 
         protected IConfiguration Configuration;
 
         private readonly IPaperAnalyzerService _analyzeService;
+        protected IResultRepository _repository;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
         protected MongoSettings MongoSettings { get; set; }
 
         public HomeController(
             ILogger<HomeController> logger,
             IPaperAnalyzerService analyzeService,
+            IResultRepository repository,
             IOptions<ResultScoreSettings> resultScoreSettings = null,
             IOptions<MongoSettings> mongoSettings = null,
             IConfiguration configuration = null)
         {
-            if (resultScoreSettings != null)
-                ResultScoreSettings = resultScoreSettings.Value;
-            MongoSettings = mongoSettings.Value;
-            repository = new ResultRepository(MongoSettings);
+            ResultScoreSettings = resultScoreSettings?.Value;
+            MongoSettings = mongoSettings?.Value;
+            _repository = repository;
             Configuration = configuration;
             _logger = logger;
             _analyzeService = analyzeService;
@@ -88,8 +88,7 @@ namespace TestWebApp.Controllers
                 Id = Guid.NewGuid().ToString(),
                 Result = result
             };
-
-            repository.AddResult(analysisResult);
+            _repository.AddResult(analysisResult);
 
             return Ok(analysisResult.Id);
         }
@@ -97,7 +96,7 @@ namespace TestWebApp.Controllers
         [HttpGet]
         public IActionResult Result(string id)
         {
-            return View(repository.GetResult(id).Result);
+            return View(_repository.GetResult(id).Result);
         }
 
         public IActionResult Index()

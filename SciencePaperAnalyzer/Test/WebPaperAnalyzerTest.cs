@@ -48,7 +48,8 @@ namespace Test
             // Временное решение, загрузка pdf файла, который присутствует в репозитории
             // Путь windows формата
             var current = Directory.GetCurrentDirectory();
-            var path = Path.GetFullPath(Path.Combine(current, @"..\..\..\..\..\paper_work\icc_2018\paper_short.pdf"));
+            var sep = Path.DirectorySeparatorChar;
+            var path = Path.GetFullPath(Path.Combine(current, $"..{sep}..{sep}..{sep}..{sep}..{sep}paper_work{sep}icc_2018{sep}paper_short.pdf"));
 
             var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             var memoryStream = new MemoryStream();

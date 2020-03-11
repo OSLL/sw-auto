@@ -10,10 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using TestWebApp.Models;
-using TextExtractor;
 using WebPaperAnalyzer.Models;
 using WebPaperAnalyzer.DAL;
 using Microsoft.Extensions.Logging;
+using PaperAnalyzer;
+using PaperAnalyzer.Service;
 
 namespace TestWebApp.Controllers
 {
@@ -25,11 +26,14 @@ namespace TestWebApp.Controllers
         private readonly ILogger<HomeController> _logger;
 
         protected IConfiguration Configuration;
+
+        private readonly IPaperAnalyzerService _analyzeService;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
         protected MongoSettings MongoSettings { get; set; }
 
         public HomeController(
             ILogger<HomeController> logger,
+            IPaperAnalyzerService analyzeService,
             IOptions<ResultScoreSettings> resultScoreSettings = null,
             IOptions<MongoSettings> mongoSettings = null,
             IConfiguration configuration = null)
@@ -40,6 +44,7 @@ namespace TestWebApp.Controllers
             repository = new ResultRepository(MongoSettings);
             Configuration = configuration;
             _logger = logger;
+            _analyzeService = analyzeService;
         }
 
         [HttpPost]
@@ -49,26 +54,43 @@ namespace TestWebApp.Controllers
             {
                 return new PartialViewResult();
             }
-            // full path to file in temp location
-            var filePath = Path.GetTempFileName();
-            _logger.LogDebug($"UploadFile: new file path: {filePath}");
-            if (file.Length > 0)
+
+            var uploadFile = new UploadFile
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+                FileName = file.FileName, 
+                Length = file.Length, 
+                DataStream = new MemoryStream()
+            };
+
+            await file.CopyToAsync(uploadFile.DataStream);
+
+            var settings = new ResultScoreSettings
+            {
+                ErrorCost = double.Parse(Configuration.GetSection("ResultScoreSettings")["ErrorCost"]),
+                KeyWordsCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["KeyWordsCriterionFactor"]),
+                WaterCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["WaterCriterionFactor"]),
+                ZipfFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["ZipfFactor"])
+            };
+
+            PaperAnalysisResult result;
+            try
+            {
+                result = _analyzeService.GetAnalyze(uploadFile, titles, paperName, refsName, settings);
             }
-            _logger.LogDebug($"UploadFile: file saved");
-            var result = AnalyzePaper(filePath, titles, paperName, refsName);
-            _logger.LogDebug($"UploadFile: file analyzed");
+            catch (Exception ex)
+            {
+                result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
+                    new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
+            }
+   
             var analysisResult = new AnalysisResult
             {
                 Id = Guid.NewGuid().ToString(),
                 Result = result
             };
+
             repository.AddResult(analysisResult);
-            _logger.LogDebug($"UploadFile: result saved");
+
             return Ok(analysisResult.Id);
         }
 
@@ -106,32 +128,6 @@ namespace TestWebApp.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        public PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName)
-        {
-            var textExtractor = new PdfTextExtractor(path);
-            try
-            {
-                var text = textExtractor.GetAllText();
-                _logger.LogTrace($"AnalyzePaper: text extracted");
-                // get last from config (updated in runtime)
-                var settings = new ResultScoreSettings
-                {
-                    ErrorCost = double.Parse(Configuration.GetSection("ResultScoreSettings")["ErrorCost"]),
-                    KeyWordsCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["KeyWordsCriterionFactor"]),
-                    WaterCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["WaterCriterionFactor"]),
-                    ZipfFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["ZipfFactor"])
-                };
-                return Analyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogTrace($"AnalyzePaper: ERROR - {ex.Message}:\n {(ex.InnerException != null ? ex.InnerException.Message : "")}");
-                var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(), new List<AnalyzeResults.Errors.Error>());
-                res.Error = ex.Message;
-                return res;
-            }
         }
     }
 }

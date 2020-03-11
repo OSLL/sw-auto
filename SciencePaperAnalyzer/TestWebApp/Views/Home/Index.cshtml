@@ -50,6 +50,22 @@
                 </label>
             </div>
         </div>
+
+        <div class="result-settings-container">
+            <div class="rsetting-label">
+                Настройка оценивания статьи
+            </div>
+            <div class="rsettings-values">
+                <label class="textarea-label">Error cost</label>
+                <textarea class="textarea-value textarea-papername" id="errorCost" placeholder="Введите значение для оценивания"></textarea>
+                <label class="textarea-label">Water Criterion Factor</label>
+                <textarea class="textarea-value textarea-papername" id="waterCriterion" placeholder="Введите значение для оценивания"></textarea>
+                <label class="textarea-label">Key Words Criterion Factor</label>
+                <textarea class="textarea-value textarea-papername" id="keyWordsCriterion" placeholder="Введите значение для оценивания"></textarea>
+                <label class="textarea-label">Zipf Factor</label>
+                <textarea class="textarea-value textarea-papername" id="zipfFactor" placeholder="Введите значение для оценивания"></textarea>
+            </div>
+        </div>
     </div>
 </div>
 <div class="loader-container" id="load">
@@ -140,6 +156,18 @@
 
                 var refsName = $('#refsName')[0].value;
                 fdata.append("refsName", refsName);
+
+                var errorCost = $('#errorCost')[0].value;
+                fdata.append('errorCost', errorCost);
+
+                var waterCriterionFactor = $('#waterCriterion')[0].value;
+                fdata.append('waterCriterionFactor', waterCriterionFactor);
+
+                var keyWordsCriterionFactor = $('#keyWordsCriterion')[0].value;
+                fdata.append('keyWordsCriterionFactor', keyWordsCriterionFactor);
+
+                var zipfFactor = $('#zipfFactor')[0].value;
+                fdata.append('zipfFactor', zipfFactor);
 
                 $('#main')[0].style.display = 'none';
                 $('#load')[0].style.display = 'flex';

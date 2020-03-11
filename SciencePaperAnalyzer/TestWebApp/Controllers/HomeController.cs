@@ -43,7 +43,9 @@ namespace TestWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName)
+        public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
+                                                    string errorCost, string waterCriterionFactor, string keyWordsCriterionFactor,
+                                                    string zipfFactor)
         {
             if (file == null)
             {
@@ -60,7 +62,15 @@ namespace TestWebApp.Controllers
                 }
             }
             _logger.LogDebug($"UploadFile: file saved");
-            var result = AnalyzePaper(filePath, titles, paperName, refsName);
+
+            var settings = new ResultScoreSettings
+                {
+                    ErrorCost = double.Parse(errorCost),
+                    KeyWordsCriterionFactor = double.Parse(keyWordsCriterionFactor),
+                    WaterCriterionFactor = double.Parse(waterCriterionFactor),
+                    ZipfFactor = double.Parse(zipfFactor)
+                };
+            var result = AnalyzePaper(filePath, titles, paperName, refsName, settings);
             _logger.LogDebug($"UploadFile: file analyzed");
             var analysisResult = new AnalysisResult
             {
@@ -108,21 +118,14 @@ namespace TestWebApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName)
+        public PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName, ResultScoreSettings settings)
         {
             var textExtractor = new PdfTextExtractor(path);
             try
             {
                 var text = textExtractor.GetAllText();
                 _logger.LogTrace($"AnalyzePaper: text extracted");
-                // get last from config (updated in runtime)
-                var settings = new ResultScoreSettings
-                {
-                    ErrorCost = double.Parse(Configuration.GetSection("ResultScoreSettings")["ErrorCost"]),
-                    KeyWordsCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["KeyWordsCriterionFactor"]),
-                    WaterCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["WaterCriterionFactor"]),
-                    ZipfFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["ZipfFactor"])
-                };
+
                 return Analyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
             }
             catch (Exception ex)

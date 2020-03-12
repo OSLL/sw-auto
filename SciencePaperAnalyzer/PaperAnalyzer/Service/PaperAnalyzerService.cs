@@ -38,6 +38,9 @@ namespace PaperAnalyzer.Service
                 case ".md":
                     return new MdTextExtractor();
 
+                case ".docx":
+                    return new DocxTextExtractor();
+
                 default:
                     throw new NotImplementedException($"File type {ext} is not supported");
                 

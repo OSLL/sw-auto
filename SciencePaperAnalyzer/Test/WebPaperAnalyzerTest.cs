@@ -46,7 +46,6 @@ namespace Test
                 configuration: configuration.Object);
 
             // Временное решение, загрузка pdf файла, который присутствует в репозитории
-            // Путь windows формата
             var current = Directory.GetCurrentDirectory();
             var sep = Path.DirectorySeparatorChar;
             var path = Path.GetFullPath(Path.Combine(current, $"..{sep}..{sep}..{sep}..{sep}..{sep}paper_work{sep}icc_2018{sep}paper_short.pdf"));

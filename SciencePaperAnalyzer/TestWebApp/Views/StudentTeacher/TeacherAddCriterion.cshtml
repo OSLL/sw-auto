@@ -1,0 +1,39 @@
+﻿@model WebPaperAnalyzer.ViewModels.AddCriterion
+@{
+	ViewBag.Title = "Добавление нового критерия";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Добавление нового критерия</h2>
+
+@using (Html.BeginForm())
+{
+	<fieldset>
+		<p>
+			Название <br />
+			@Html.EditorFor(model => model.Name)
+		</p>
+ 
+		<p>
+			ErrorCost <br />
+			@Html.EditorFor(model => model.ErrorCost)
+		</p>
+ 
+		<p>
+			WaterCriterionFactor  <br />
+			@Html.EditorFor(model => model.WaterCriterionFactor)
+		</p>
+		<p>
+			KeyWordsCriterionFactor <br />
+			@Html.EditorFor(model => model.KeyWordsCriterionFactor)
+		</p>
+		<p>
+			ZipfFactor <br />
+			@Html.EditorFor(model => model.ZipfFactor)
+		</p>
+ 
+		<p>
+			<input type="submit" value="Добавить критерий" />
+		</p>
+	</fieldset>
+}

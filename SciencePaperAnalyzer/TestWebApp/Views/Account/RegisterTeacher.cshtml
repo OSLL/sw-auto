@@ -1,0 +1,27 @@
+﻿@model WebPaperAnalyzer.ViewModels.RegisterModel
+ 
+<h2>Регистрация</h2>
+ 
+<form asp-action="RegisterTeacher" asp-controller="Account" asp-anti-forgery="true">
+	<div class="validation" asp-validation-summary="ModelOnly" />
+	<div>
+		<div>
+			<label asp-for="Login">Введите логин</label><br/>
+			<input type="text" asp-for="Login" />
+			<span asp-validation-for="Login" />
+		</div>
+		<div>
+			<label asp-for="Password">Введите пароль</label><br/>
+			<input asp-for="Password"/>
+			<span asp-validation-for="Password"/>
+		</div>
+		<div>
+			<label asp-for="ConfirmPassword">Повторите пароль</label><br/>
+			<input asp-for="ConfirmPassword"/>
+			<span asp-validation-for="ConfirmPassword"/>
+		</div>
+		<div>
+			<input type="submit" value="Регистрация"/>
+		</div>
+	</div>
+</form>

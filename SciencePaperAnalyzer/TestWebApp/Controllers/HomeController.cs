@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
@@ -9,6 +10,7 @@ using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using TestWebApp.Models;
@@ -25,12 +27,14 @@ namespace TestWebApp.Controllers
         public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
         IResultRepository repository;
         private readonly ILogger<HomeController> _logger;
+        private ApplicationContext _context;
+        private List<ResultCriterion> _criteria;
 
         protected IConfiguration Configuration;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
         protected MongoSettings MongoSettings { get; set; }
 
-        public HomeController(
+        public HomeController(ApplicationContext context,
             ILogger<HomeController> logger,
             IOptions<ResultScoreSettings> resultScoreSettings = null,
             IOptions<MongoSettings> mongoSettings = null,
@@ -42,12 +46,12 @@ namespace TestWebApp.Controllers
             repository = new ResultRepository(MongoSettings);
             Configuration = configuration;
             _logger = logger;
+            _context = context;
         }
 
         [HttpPost]
         public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
-                                                    string errorCost, string waterCriterionFactor, string keyWordsCriterionFactor,
-                                                    string zipfFactor)
+                                                    string criterionName)
         {
             if (file == null)
             {
@@ -65,12 +69,14 @@ namespace TestWebApp.Controllers
             }
             _logger.LogDebug($"UploadFile: file saved");
 
+            var criterion = _criteria.First(c => c.Name == criterionName);
+
             var settings = new ResultScoreSettings
                 {
-                    ErrorCost = double.Parse(errorCost),
-                    KeyWordsCriterionFactor = double.Parse(keyWordsCriterionFactor),
-                    WaterCriterionFactor = double.Parse(waterCriterionFactor),
-                    ZipfFactor = double.Parse(zipfFactor)
+                    ErrorCost = criterion.ErrorCost,
+                    KeyWordsCriterionFactor = criterion.KeyWordsCriterionFactor,
+                    WaterCriterionFactor = criterion.WaterCriterionFactor,
+                    ZipfFactor = criterion.ZipfFactor
                 };
             var result = AnalyzePaper(filePath, titles, paperName, refsName, settings);
             _logger.LogDebug($"UploadFile: file analyzed");
@@ -93,6 +99,21 @@ namespace TestWebApp.Controllers
         [Authorize]
         public IActionResult Index()
         {
+            string tLogin;
+            try
+            {
+                tLogin = _context.Users.Where(u => u.Login == User.Identity.Name).Select(u => u.TeacherLogin).First();
+            }
+            catch (Exception)
+            {
+                tLogin = null;
+            }
+            
+            if (User.Identity.Name == tLogin)
+                return RedirectToAction("TeacherAddCriterion", "StudentTeacher");
+            _criteria = _context.Criteria.Where(c => c.TeacherLogin == tLogin || c.Id == 1).ToList();
+            SelectList criteria = new SelectList(_criteria.Select(c => c.Name));
+            ViewBag.Criteria = criteria;
             return View();
         }
 

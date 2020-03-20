@@ -52,30 +52,14 @@
         </div>
 
         <div class="result-settings-container">
-            <div class="settings-label">
-                Настройка оценивания статьи
-            </div>
-            <div class="settings-values">
-                <div class="settings-column">
-                    <label class="textarea-label">Error cost</label>
-                    <textarea class="textarea-value textarea-papername" id="errorCost" placeholder="Введите значение для оценивания"></textarea>
-                    <label class="textarea-label">Water Criterion Factor</label>
-                    <textarea class="textarea-value textarea-papername" id="waterCriterion" placeholder="Введите значение для оценивания"></textarea>
-                    <label class="textarea-label">Key Words Criterion Factor</label>
-                    <textarea class="textarea-value textarea-papername" id="keyWordsCriterion" placeholder="Введите значение для оценивания"></textarea>
-                    <label class="textarea-label">Zipf Factor</label>
-                    <textarea class="textarea-value textarea-papername" id="zipfFactor" placeholder="Введите значение для оценивания"></textarea>
-                </div>
-                <div class="settings-column">
-                    <div class="settings-manager-container">
-                        <a class="save-settings-button" id="savebtn2" href="#" onClick="saveResultSettings(this)"><i class="glyphicon glyphicon-cloud-download"></i> Сохранить настройки</a>
-                        <input type="file" id="loadbtn2" value="Import" onchange="onLoadSettings(event)" />
-                        <label for="loadbtn2" class="load-settings-button">
-							<i class="glyphicon glyphicon-cloud-upload"></i> Загрузить настройки
-						</label>
-                    </div>
-                </div>
-            </div>
+	        <div class="settings-label">
+		        Настройка оценивания статьи
+	        </div>
+	        <fieldset>
+		        <p id="criterion">
+					@Html.DropDownList("Criteria", ViewBag.Criteria, null, null)
+		        </p>
+	        </fieldset>
         </div>
     </div>
 </div>
@@ -121,18 +105,6 @@
             if (!$('#keywords')[0].value) {
                 $('#keywords')[0].value = obj.keywords || "";
             }
-            if (!$('#errorCost')[0].value) {
-                $('#errorCost')[0].value = obj.errorCost || "";
-            }
-            if (!$('#waterCriterion')[0].value) {
-                $('#waterCriterion')[0].value = obj.waterCriterion || "";
-            }
-            if (!$('#keyWordsCriterion')[0].value) {
-                $('#keyWordsCriterion')[0].value = obj.keyWordsCriterion || "";
-            }
-            if (!$('#zipfFactor')[0].value) {
-                $('#zipfFactor')[0].value = obj.zipfFactor || "";
-            }
         }
 
         function saveOutput(link) {
@@ -147,21 +119,6 @@
             var url  = URL.createObjectURL(blob);
             var a = link;
             a.download = "settings.json";
-            a.href = url;
-        }
-
-        function saveResultSettings(link) {
-            var errorCost = $('#errorCost')[0].value;
-            var waterCriterion = $('#waterCriterion')[0].value;
-            var keyWordsCriterion = $('#keyWordsCriterion')[0].value;
-            var zipfFactor = $('#zipfFactor')[0].value;
-
-            var data = {errorCost, waterCriterion, keyWordsCriterion, zipfFactor};
-            var json = JSON.stringify(data);
-            var blob = new Blob([json], {type: "application/json"});
-            var url  = URL.createObjectURL(blob);
-            var a = link;
-            a.download = "result_settings.json";
             a.href = url;
         }
 
@@ -203,17 +160,9 @@
                 var refsName = $('#refsName')[0].value;
                 fdata.append("refsName", refsName);
 
-                var errorCost = $('#errorCost')[0].value;
-                fdata.append('errorCost', errorCost);
+                var criterion = $('#criterion')[0].value;
+                fdata.append("criterionName", criterion);
 
-                var waterCriterionFactor = $('#waterCriterion')[0].value;
-                fdata.append('waterCriterionFactor', waterCriterionFactor);
-
-                var keyWordsCriterionFactor = $('#keyWordsCriterion')[0].value;
-                fdata.append('keyWordsCriterionFactor', keyWordsCriterionFactor);
-
-                var zipfFactor = $('#zipfFactor')[0].value;
-                fdata.append('zipfFactor', zipfFactor);
 
                 $('#main')[0].style.display = 'none';
                 $('#load')[0].style.display = 'flex';

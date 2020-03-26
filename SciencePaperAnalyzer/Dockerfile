@@ -14,7 +14,10 @@ COPY ["LangAnalyzerStd.Morphology/LangAnalyzerStd.Morphology.csproj", "LangAnaly
 COPY ["LangAnalyzerStd.SentenceSplitter/LangAnalyzerStd.SentenceSplitter.csproj", "LangAnalyzerStd.SentenceSplitter/"]
 COPY ["LangAnalyzerStd.Сrfsuite/LangAnalyzerStd.Сrfsuite.csproj", "LangAnalyzerStd.Сrfsuite/"]
 COPY ["AnalyzeResults/AnalyzeResults.csproj", "AnalyzeResults/"]
+COPY ["Test/Test.csproj", "Test/"]
 COPY . .
+RUN dotnet test -c Release
+
 WORKDIR "/src/TestWebApp"
 
 FROM build AS publish

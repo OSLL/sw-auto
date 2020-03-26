@@ -21,7 +21,7 @@ namespace WebPaperAnalyzer.Controllers
     [System.Runtime.InteropServices.Guid("AC77F42B-4207-4468-A583-0999046DBAFD")]
     public class HomeController : Controller
     {
-        public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
+
         private readonly ILogger<HomeController> _logger;
 
         protected IConfiguration Configuration;
@@ -81,6 +81,8 @@ namespace WebPaperAnalyzer.Controllers
             {
                 result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
                     new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
+
+                return Error();
             }
    
             var analysisResult = new AnalysisResult

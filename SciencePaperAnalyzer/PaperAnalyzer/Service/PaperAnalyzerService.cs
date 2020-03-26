@@ -8,6 +8,13 @@ namespace PaperAnalyzer.Service
 {
     public class PaperAnalyzerService : IPaperAnalyzerService
     {
+        private readonly IPaperAnalyzer _paperAnalyzer;
+
+        public PaperAnalyzerService(IPaperAnalyzer paperAnalyzer)
+        {
+            _paperAnalyzer = paperAnalyzer;
+        }
+
         public PaperAnalysisResult GetAnalyze(UploadFile file, string titles, string paperName, string refsName, ResultScoreSettings settings)
         {
             if (string.IsNullOrEmpty(file?.FileName))
@@ -19,9 +26,7 @@ namespace PaperAnalyzer.Service
 
             var text = extractor.ExtractTextFromFileStream(file.DataStream);
 
-            var analyzer = PaperAnalyzer.Instance;
-
-            var result = analyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
+            var result = _paperAnalyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
 
             return result;
         }

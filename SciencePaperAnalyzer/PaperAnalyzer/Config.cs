@@ -20,6 +20,11 @@ namespace PaperAnalyzer
 
         private static string[] ToFilesArray(this string value)
         {
+            if (value == null)
+            {
+                return new string[] { };
+            }
+
             var array = value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
                              .Select(f => f.Trim())
                              .ToArray();

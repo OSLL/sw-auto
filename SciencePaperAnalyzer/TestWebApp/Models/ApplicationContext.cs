@@ -3,47 +3,62 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using AnalyzeResults.Settings;
 
 namespace WebPaperAnalyzer.Models
 {
-    public sealed class ApplicationContext : DbContext
+    public interface IApplicationContext
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<ResultCriterion> Criteria { get; set; }
+        Task<IEnumerable<User>> GetUsers();
+        Task<IEnumerable<ResultCriterion>> GetCriteria();
+        Task AddUser(User u);
+        Task AddCriterion(ResultCriterion c);
+    }
+    public class ApplicationContext : IApplicationContext
+    {
+        public IMongoCollection<User> Users;
 
-        public ApplicationContext(DbContextOptions<ApplicationContext> options)
-            : base(options)
+        public IMongoCollection<ResultCriterion> Criteria;
+
+        public ApplicationContext(MongoSettings settings)
         {
-            try
-            {
-                Database.EnsureCreated();
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+            string connectionString = @"mongodb://root:example@mongo:27017";
+//            var internalIdentity = new MongoInternalIdentity("admin", settings.User);
+//            var passwordEvidence = new PasswordEvidence(settings.Password);
+//            var mongoCredential = new MongoCredential("SCRAM-SHA-1", internalIdentity, passwordEvidence);
+//            var credentials = new List<MongoCredential> { mongoCredential };
+//            var mongoSettings = new MongoClientSettings {Credentials = credentials};
+//            var address = new MongoServerAddress(settings.Host);
+//            mongoSettings.Server = address;
+            MongoClient client = new MongoClient(connectionString);
+            IMongoDatabase database = client.GetDatabase("resultsDB");
+            Users = database.GetCollection<User>("users");
+            Criteria = database.GetCollection<ResultCriterion>("criteria");
         }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+        public async Task<IEnumerable<User>> GetUsers()
         {
-            var adminLogin = "admin";
-            var adminPassword = "123456";
+            var builder = new FilterDefinitionBuilder<User>();
+            var filter = builder.Empty;
 
-            Role adminRole = new Role { Id = 1, Name = "admin" };
-            Role studentRole = new Role { Id = 2, Name = "student" };
-            Role teacherRole = new Role {Id = 3, Name = "teacher" };
-            User adminUser = new User { Id = 1, Login = adminLogin, Password = adminPassword, RoleId = adminRole.Id};
-            ResultCriterion defaultCriterion = new ResultCriterion()
-            {
-                Id = 1, Name = "Default", ErrorCost = 2,
-                KeyWordsCriterionFactor = 35, ZipfFactor = 30,
-                WaterCriterionFactor = 35
-            };
-
-            modelBuilder.Entity<Role>().HasData(adminRole, studentRole, teacherRole);
-            modelBuilder.Entity<User>().HasData(adminUser);
-            modelBuilder.Entity<ResultCriterion>().HasData(defaultCriterion);
-            base.OnModelCreating(modelBuilder);
+            return await Users.Find(filter).ToListAsync();
         }
+
+        public async Task<IEnumerable<ResultCriterion>> GetCriteria()
+        {
+            var builder = new FilterDefinitionBuilder<ResultCriterion>();
+            var filter = builder.Empty;
+
+            return await Criteria.Find(filter).ToListAsync();
+        }
+
+        public async Task AddUser(User u) => await Users.InsertOneAsync(u);
+
+        public async Task AddCriterion(ResultCriterion c) => await Criteria.InsertOneAsync(c);
     }
 }

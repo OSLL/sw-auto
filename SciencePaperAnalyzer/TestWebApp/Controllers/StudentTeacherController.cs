@@ -4,8 +4,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using WebPaperAnalyzer.Models;
 using WebPaperAnalyzer.ViewModels;
 
@@ -14,13 +16,16 @@ namespace TestWebApp.Controllers
     public class StudentTeacherController : Controller
     {
         private ApplicationContext _context;
-        public StudentTeacherController(ApplicationContext context)
+        private IEnumerable<ResultCriterion> _criteria;
+        public StudentTeacherController(IOptions<MongoSettings> mongoSettings = null)
         {
-            _context = context;
+            var _mongoSettings = mongoSettings.Value;
+            _context = new ApplicationContext(_mongoSettings);
         }
         [HttpGet]
-        public IActionResult TeacherAddCriterion()
+        public async Task<IActionResult> TeacherAddCriterion()
         {
+            _criteria = await _context.GetCriteria();
             return View();
         }
 
@@ -29,7 +34,16 @@ namespace TestWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                ResultCriterion criterion = await _context.Criteria.FirstOrDefaultAsync(u => u.Name == model.Name);
+                ResultCriterion criterion = null;
+                try
+                {
+                    criterion = _criteria.First(u => u.Name == model.Name);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
                 if (criterion == null)
                 {
                     criterion = new ResultCriterion()
@@ -39,10 +53,8 @@ namespace TestWebApp.Controllers
                         ZipfFactor = double.Parse(model.ZipfFactor),
                         WaterCriterionFactor = double.Parse(model.WaterCriterionFactor),
                         KeyWordsCriterionFactor = double.Parse(model.KeyWordsCriterionFactor)
-
                     };
-                    _context.Criteria.Add(criterion);
-                    await _context.SaveChangesAsync();
+                    await _context.AddCriterion(criterion);
                 }
 
             }

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
+using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using WebPaperAnalyzer.Models;
 using WebPaperAnalyzer.ViewModels;
 
@@ -18,9 +18,11 @@ namespace TestWebApp.Controllers
     public class AccountController : Controller
     {
         private ApplicationContext _context;
-        public AccountController(ApplicationContext context)
+        private IEnumerable<User> _users;
+        public AccountController(IOptions<MongoSettings> mongoSettings = null)
         {
-            _context = context;
+            var _mongoSettings = mongoSettings.Value;
+            _context = new ApplicationContext(_mongoSettings);
         }
         [HttpGet]
         public IActionResult Register()
@@ -28,9 +30,10 @@ namespace TestWebApp.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult RegisterStudent()
+        public async Task<IActionResult> RegisterStudent()
         {
-            SelectList teachers = new SelectList(_context.Users.Where(u => u.RoleId == 3).Select(u => u.Login));
+            _users = await _context.GetUsers();
+            SelectList teachers = new SelectList(_users.Where(u => u.Role.Equals("teacher")).Select(u => u.Login));
             ViewBag.Teachers = teachers;
             return View();
         }
@@ -38,19 +41,28 @@ namespace TestWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterStudent(RegisterModel model)
         {
+            _users = await _context.GetUsers();
             if (model.Password != null && model.Login != null && model.TeacherLogin != null
                 && model.Password == model.ConfirmPassword)
             {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
+                User user = null;
+                try
+                {
+                    user = _users.First(u => u.Login == model.Login);
+                }
+                catch (Exception e)
+                {
+                    //It's okay
+                }
                 if (user == null)
                 {
-                    user = new User { Login = model.Login, Password = model.Password, TeacherLogin = model.TeacherLogin};
-                    Role userRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "student");
-                    if (userRole != null)
-                        user.Role = userRole;
+                    user = new User
+                    {
+                        Login = model.Login, Password = model.Password,
+                        TeacherLogin = model.TeacherLogin, Role = "student"
+                    };
 
-                    _context.Users.Add(user);
-                    await _context.SaveChangesAsync();
+                    await _context.AddUser(user);
 
                     await Authenticate(user);
 
@@ -68,18 +80,29 @@ namespace TestWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterTeacher(RegisterModel model)
         {
+            _users = await _context.GetUsers();
+
             if (model.Password != null && model.Login != null && model.Password == model.ConfirmPassword)
             {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
+                User user = null;
+                try
+                {
+                    user = _users.First(u => u.Login == model.Login);
+                }
+                catch (Exception e)
+                {
+                    //It's okay
+                }
+
                 if (user == null)
                 {
-                    user = new User { Login = model.Login, Password = model.Password, TeacherLogin = model.Login };
-                    Role userRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "teacher");
-                    if (userRole != null)
-                        user.Role = userRole;
+                    user = new User
+                    {
+                        Login = model.Login, Password = model.Password,
+                        TeacherLogin = model.Login, Role = "teacher"
+                    };
 
-                    _context.Users.Add(user);
-                    await _context.SaveChangesAsync();
+                    await _context.AddUser(user);
 
                     await Authenticate(user);
 
@@ -99,18 +122,17 @@ namespace TestWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            if (ModelState.IsValid)
+            _users = await _context.GetUsers();
+            if (model.Login != null && model.Password != null)
             {
-                User user = await _context.Users
-                    .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.Login == model.Login && u.Password == model.Password);
+                User user = null;
+                user = _users.First(u => u.Login.Equals(model.Login) && u.Password.Equals(model.Password));
                 if (user != null)
                 {
                     await Authenticate(user);
 
                     return RedirectToAction("Index", "Home");
                 }
-                ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
             return View(model);
         }
@@ -119,8 +141,7 @@ namespace TestWebApp.Controllers
             
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login)
             };
             
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,

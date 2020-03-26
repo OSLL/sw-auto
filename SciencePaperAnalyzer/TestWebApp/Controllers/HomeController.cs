@@ -28,13 +28,12 @@ namespace TestWebApp.Controllers
         IResultRepository repository;
         private readonly ILogger<HomeController> _logger;
         private ApplicationContext _context;
-        private List<ResultCriterion> _criteria;
 
         protected IConfiguration Configuration;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
         protected MongoSettings MongoSettings { get; set; }
 
-        public HomeController(ApplicationContext context,
+        public HomeController(
             ILogger<HomeController> logger,
             IOptions<ResultScoreSettings> resultScoreSettings = null,
             IOptions<MongoSettings> mongoSettings = null,
@@ -44,9 +43,9 @@ namespace TestWebApp.Controllers
                 ResultScoreSettings = resultScoreSettings.Value;
             MongoSettings = mongoSettings.Value;
             repository = new ResultRepository(MongoSettings);
+            _context = new ApplicationContext(MongoSettings);
             Configuration = configuration;
             _logger = logger;
-            _context = context;
         }
 
         [HttpPost]
@@ -68,16 +67,25 @@ namespace TestWebApp.Controllers
                 }
             }
             _logger.LogDebug($"UploadFile: file saved");
+            ResultCriterion criterion = null;
+            try
+            {
+                var criteria = await _context.GetCriteria();
 
-            var criterion = _criteria.First(c => c.Name == criterionName);
+                criterion = criteria.First(c => c.Name == criterionName);
+            }
+            catch (Exception e)
+            {
+                return Content($"{criterionName}");
+            }
 
             var settings = new ResultScoreSettings
-                {
+            {
                     ErrorCost = criterion.ErrorCost,
                     KeyWordsCriterionFactor = criterion.KeyWordsCriterionFactor,
                     WaterCriterionFactor = criterion.WaterCriterionFactor,
                     ZipfFactor = criterion.ZipfFactor
-                };
+            };
             var result = AnalyzePaper(filePath, titles, paperName, refsName, settings);
             _logger.LogDebug($"UploadFile: file analyzed");
             var analysisResult = new AnalysisResult
@@ -97,12 +105,13 @@ namespace TestWebApp.Controllers
         }
 
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             string tLogin;
             try
             {
-                tLogin = _context.Users.Where(u => u.Login == User.Identity.Name).Select(u => u.TeacherLogin).First();
+                var users = await _context.GetUsers();
+                tLogin = users.Where(u => u.Login == User.Identity.Name).Select(u => u.TeacherLogin).First();
             }
             catch (Exception)
             {
@@ -111,9 +120,10 @@ namespace TestWebApp.Controllers
             
             if (User.Identity.Name == tLogin)
                 return RedirectToAction("TeacherAddCriterion", "StudentTeacher");
-            _criteria = _context.Criteria.Where(c => c.TeacherLogin == tLogin || c.Id == 1).ToList();
-            SelectList criteria = new SelectList(_criteria.Select(c => c.Name));
-            ViewBag.Criteria = criteria;
+            var criteria = await _context.GetCriteria();
+            SelectList criteriaList = new SelectList(criteria.Where(c => c.TeacherLogin == tLogin || c.Name == "Default").
+                                                          ToList().Select(c => c.Name));
+            ViewBag.Criteria = criteriaList;
             return View();
         }
 
@@ -155,8 +165,8 @@ namespace TestWebApp.Controllers
             catch (Exception ex)
             {
                 _logger.LogTrace($"AnalyzePaper: ERROR - {ex.Message}:\n {(ex.InnerException != null ? ex.InnerException.Message : "")}");
-                var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(), new List<AnalyzeResults.Errors.Error>());
-                res.Error = ex.Message;
+                var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
+                    new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
                 return res;
             }
         }

@@ -82,7 +82,7 @@ namespace WebPaperAnalyzer.Controllers
                 result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
                     new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
 
-                return Error();
+                return Error(ex.Message);
             }
    
             var analysisResult = new AnalysisResult
@@ -126,9 +126,12 @@ namespace WebPaperAnalyzer.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(string message)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel { 
+                RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier,
+                Message = message
+            });
         }
     }
 }

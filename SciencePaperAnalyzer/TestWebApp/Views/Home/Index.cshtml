@@ -7,6 +7,15 @@
         <div>
             
         </div>
+        @if (User.Identity.Name == null)
+        {
+            <h2>Вы зашли как гость, выполните вход, чтобы сохранять результаты анализов</h2>
+            <input type="button" class="upload-form" value="Войти" onclick="window.location.href = '@Url.Action("Login", "Account")';" />
+        }
+        else
+        {
+            <input type="button" class="upload-form" value="Прошлые результаты" onclick="window.location.href='@Url.Action("PreviousResults", "Home")';" />
+        }
         <div class="index-info">
             Сервис помогает улучшить научную статью, проверяя её на соответствие научному стилю и
             указывая на допущенные ошибки, предоставляя советы по их исправлению.
@@ -56,8 +65,8 @@
 		        Настройка оценивания статьи
 	        </div>
 	        <fieldset>
-		        <p id="criterion">
-					@Html.DropDownList("Criteria", ViewBag.Criteria, null, null)
+		        <p>
+			        @Html.DropDownList("Criteria", ViewBag.Criteria as SelectList, null, null)
 		        </p>
 	        </fieldset>
         </div>

@@ -11,7 +11,7 @@ namespace WebPaperAnalyzer.ViewModels
         public string Login { get; set; }
 
         [Required(ErrorMessage = "Не указан логин")]
-        public string TeacherLogin { get; set; }
+        public string Role { get; set; }
 
         [Required(ErrorMessage = "Не указан пароль")]
         [DataType(DataType.Password)]

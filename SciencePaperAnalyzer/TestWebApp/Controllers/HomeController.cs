@@ -67,17 +67,9 @@ namespace TestWebApp.Controllers
                 }
             }
             _logger.LogDebug($"UploadFile: file saved");
-            ResultCriterion criterion = null;
-            try
-            {
-                var criteria = await _context.GetCriteria();
 
-                criterion = criteria.First(c => c.Name == criterionName);
-            }
-            catch (Exception e)
-            {
-                return Content($"{criterionName}");
-            }
+            var criteria = await _context.GetCriteria();
+            ResultCriterion criterion = criteria.First(c => c.Name == criterionName);
 
             var settings = new ResultScoreSettings
             {
@@ -91,9 +83,13 @@ namespace TestWebApp.Controllers
             var analysisResult = new AnalysisResult
             {
                 Id = Guid.NewGuid().ToString(),
-                Result = result
+                Result = result,
+                StudentLogin = User.Identity.Name,
+                TeacherLogin = criterion.TeacherLogin,
+                Criterion = criterion.Name
             };
-            repository.AddResult(analysisResult);
+            if (User.Identity.Name != null)
+                repository.AddResult(analysisResult);
             _logger.LogDebug($"UploadFile: result saved");
             return Ok(analysisResult.Id);
         }
@@ -104,27 +100,21 @@ namespace TestWebApp.Controllers
             return View(repository.GetResult(id).Result);
         }
 
-        [Authorize]
+        
         public async Task<IActionResult> Index()
         {
-            string tLogin;
-            try
-            {
-                var users = await _context.GetUsers();
-                tLogin = users.Where(u => u.Login == User.Identity.Name).Select(u => u.TeacherLogin).First();
-            }
-            catch (Exception)
-            {
-                tLogin = null;
-            }
-            
-            if (User.Identity.Name == tLogin)
-                return RedirectToAction("TeacherAddCriterion", "StudentTeacher");
+            if (User.Identity.Name != null && User.FindFirst(x => x.Type == ClaimsIdentity.DefaultRoleClaimType).Value == "teacher")
+                return RedirectToAction("TeacherMainPage", "StudentTeacher");
             var criteria = await _context.GetCriteria();
-            SelectList criteriaList = new SelectList(criteria.Where(c => c.TeacherLogin == tLogin || c.Name == "Default").
-                                                          ToList().Select(c => c.Name));
+            SelectList criteriaList = new SelectList(criteria.ToList().Select(c => c.Name));
             ViewBag.Criteria = criteriaList;
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult PreviousResults()
+        {
+            return View(repository.GetResultsByLogin(User.Identity.Name, false));
         }
 
         public IActionResult About()

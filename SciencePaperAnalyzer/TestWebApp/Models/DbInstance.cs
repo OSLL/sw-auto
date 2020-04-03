@@ -15,7 +15,6 @@ namespace WebPaperAnalyzer.Models
         public string Login { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
-        public string TeacherLogin { get; set; }
     }
 
     public class ResultCriterion

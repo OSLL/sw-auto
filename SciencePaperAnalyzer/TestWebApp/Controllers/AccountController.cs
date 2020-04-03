@@ -27,90 +27,33 @@ namespace TestWebApp.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            SelectList roles = new SelectList(new List<string>{"student", "teacher"});
+            ViewBag.Roles = roles;
             return View();
         }
-        [HttpGet]
-        public async Task<IActionResult> RegisterStudent()
-        {
-            _users = await _context.GetUsers();
-            SelectList teachers = new SelectList(_users.Where(u => u.Role.Equals("teacher")).Select(u => u.Login));
-            ViewBag.Teachers = teachers;
-            return View();
-        }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterStudent(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
-            _users = await _context.GetUsers();
-            if (model.Password != null && model.Login != null && model.TeacherLogin != null
-                && model.Password == model.ConfirmPassword)
+            if (model.Login != null && model.Password == model.ConfirmPassword &&
+                model.Password != null && model.Role != null)
             {
-                User user = null;
-                try
-                {
-                    user = _users.First(u => u.Login == model.Login);
-                }
-                catch (Exception e)
-                {
-                    //It's okay
-                }
+                _users = await _context.GetUsers();
+                User user = _users.FirstOrDefault(u => u.Login == model.Login);
                 if (user == null)
                 {
-                    user = new User
+                    user = new User()
                     {
                         Login = model.Login, Password = model.Password,
-                        TeacherLogin = model.TeacherLogin, Role = "student"
+                        Role = model.Role
                     };
-
                     await _context.AddUser(user);
-
                     await Authenticate(user);
 
                     return RedirectToAction("Index", "Home");
                 }
             }
-            return View(model);
-        }
-        [HttpGet]
-        public IActionResult RegisterTeacher()
-        {
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterTeacher(RegisterModel model)
-        {
-            _users = await _context.GetUsers();
 
-            if (model.Password != null && model.Login != null && model.Password == model.ConfirmPassword)
-            {
-                User user = null;
-                try
-                {
-                    user = _users.First(u => u.Login == model.Login);
-                }
-                catch (Exception e)
-                {
-                    //It's okay
-                }
-
-                if (user == null)
-                {
-                    user = new User
-                    {
-                        Login = model.Login, Password = model.Password,
-                        TeacherLogin = model.Login, Role = "teacher"
-                    };
-
-                    await _context.AddUser(user);
-
-                    await Authenticate(user);
-
-                    return RedirectToAction("Index", "Home");
-                }
-
-                ModelState.AddModelError("", "Некорректные логин и(или) пароль");
-            }
             return View(model);
         }
         [HttpGet]
@@ -141,7 +84,8 @@ namespace TestWebApp.Controllers
             
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login)
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
             };
             
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,

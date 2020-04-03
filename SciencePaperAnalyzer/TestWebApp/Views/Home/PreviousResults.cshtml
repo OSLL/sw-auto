@@ -1,0 +1,12 @@
+﻿@model IEnumerable<WebPaperAnalyzer.Models.AnalysisResult>
+<input type="button" class="upload-form" value="Назад" onclick="window.location.href='@Url.Action("Index", "Home")';" />
+<h4>
+    Результаты ваших прошлых анализов
+</h4>
+
+@foreach (var result in Model)
+{
+    <button type="submit" class="upload-form">
+        Преподаватель @result.TeacherLogin, Критерий @result.Criterion, Результат: @result.Result.GetPaperGrade()
+    </button>
+}

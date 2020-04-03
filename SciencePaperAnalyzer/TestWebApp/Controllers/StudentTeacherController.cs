@@ -8,6 +8,7 @@ using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using WebPaperAnalyzer.DAL;
 using WebPaperAnalyzer.Models;
 using WebPaperAnalyzer.ViewModels;
 
@@ -16,16 +17,23 @@ namespace TestWebApp.Controllers
     public class StudentTeacherController : Controller
     {
         private ApplicationContext _context;
+        private IResultRepository _results;
         private IEnumerable<ResultCriterion> _criteria;
         public StudentTeacherController(IOptions<MongoSettings> mongoSettings = null)
         {
             var _mongoSettings = mongoSettings.Value;
             _context = new ApplicationContext(_mongoSettings);
+            _results = new ResultRepository(_mongoSettings);
+        }
+
+        [HttpGet]
+        public IActionResult TeacherMainPage()
+        {
+            return View();
         }
         [HttpGet]
-        public async Task<IActionResult> TeacherAddCriterion()
+        public IActionResult TeacherAddCriterion()
         {
-            _criteria = await _context.GetCriteria();
             return View();
         }
 
@@ -34,15 +42,7 @@ namespace TestWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                ResultCriterion criterion = null;
-                try
-                {
-                    criterion = _criteria.First(u => u.Name == model.Name);
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
+                ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
 
                 if (criterion == null)
                 {
@@ -59,6 +59,12 @@ namespace TestWebApp.Controllers
 
             }
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult TeacherViewResults()
+        {
+            return View(_results.GetResultsByLogin(User.Identity.Name, true));
         }
     }
 }

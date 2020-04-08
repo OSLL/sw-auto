@@ -12,40 +12,43 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using TestWebApp.Models;
-using TextExtractor;
-using WebPaperAnalyzer.Models;
-using WebPaperAnalyzer.DAL;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using PaperAnalyzer;
+using PaperAnalyzer.Service;
+using TestWebApp.Models;
+using WebPaperAnalyzer.DAL;
+using WebPaperAnalyzer.Models;
 
-namespace TestWebApp.Controllers
+namespace WebPaperAnalyzer.Controllers
 {
     [System.Runtime.InteropServices.Guid("AC77F42B-4207-4468-A583-0999046DBAFD")]
     public class HomeController : Controller
     {
-        public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
-        IResultRepository repository;
-        private AnalysisResult result;
         private readonly ILogger<HomeController> _logger;
         private ApplicationContext _context;
         protected IConfiguration Configuration;
+
+        private readonly IPaperAnalyzerService _analyzeService;
+        protected IResultRepository _repository;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
         protected MongoSettings MongoSettings { get; set; }
 
         public HomeController(
             ILogger<HomeController> logger,
+            IPaperAnalyzerService analyzeService,
+            IResultRepository repository,
             IOptions<ResultScoreSettings> resultScoreSettings = null,
             IOptions<MongoSettings> mongoSettings = null,
             IConfiguration configuration = null)
         {
-            if (resultScoreSettings != null)
-                ResultScoreSettings = resultScoreSettings.Value;
-            MongoSettings = mongoSettings.Value;
-            repository = new ResultRepository(MongoSettings);
+            ResultScoreSettings = resultScoreSettings?.Value;
+            MongoSettings = mongoSettings?.Value;
+            _repository = repository;
             _context = new ApplicationContext(MongoSettings);
             Configuration = configuration;
             _logger = logger;
+            _analyzeService = analyzeService;
         }
 
         [HttpPost]
@@ -56,17 +59,15 @@ namespace TestWebApp.Controllers
             {
                 return new PartialViewResult();
             }
-            // full path to file in temp location
-            var filePath = Path.GetTempFileName();
-            _logger.LogDebug($"UploadFile: new file path: {filePath}");
-            if (file.Length > 0)
+
+            var uploadFile = new UploadFile
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-            }
-            _logger.LogDebug($"UploadFile: file saved");
+                FileName = file.FileName, 
+                Length = file.Length, 
+                DataStream = new MemoryStream()
+            };
+
+            await file.CopyToAsync(uploadFile.DataStream);
 
             var criteria = await _context.GetCriteria();
             ResultCriterion criterion = criteria.First(c => c.Name == criterionName);
@@ -78,8 +79,20 @@ namespace TestWebApp.Controllers
                     WaterCriterionFactor = criterion.WaterCriterionFactor,
                     ZipfFactor = criterion.ZipfFactor
             };
-            var result = AnalyzePaper(filePath, titles, paperName, refsName, settings);
-            _logger.LogDebug($"UploadFile: file analyzed");
+
+            PaperAnalysisResult result;
+            try
+            {
+                result = _analyzeService.GetAnalyze(uploadFile, titles, paperName, refsName, settings);
+            }
+            catch (Exception ex)
+            {
+                result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
+                    new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
+
+                return Error(ex.Message);
+            }
+            
             var analysisResult = new AnalysisResult
             {
                 Id = Guid.NewGuid().ToString(),
@@ -89,15 +102,14 @@ namespace TestWebApp.Controllers
                 Criterion = criterion.Name
             };
 
-            repository.AddResult(analysisResult);
-            _logger.LogDebug($"UploadFile: result saved");
+            _repository.AddResult(analysisResult);
             return Ok(analysisResult.Id);
         }
 
         [HttpGet]
         public IActionResult Result(string id)
         {
-            return View(repository.GetResult(id).Result);
+            return View(_repository.GetResult(id).Result);
         }
 
         public async Task<IActionResult> Index()
@@ -113,7 +125,7 @@ namespace TestWebApp.Controllers
         [HttpGet]
         public IActionResult PreviousResults()
         {
-            return View(repository.GetResultsByLogin(User.Identity.Name, false));
+            return View(_repository.GetResultsByLogin(User.Identity.Name, false));
         }
 
         public IActionResult About()
@@ -136,28 +148,12 @@ namespace TestWebApp.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(string message)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        public PaperAnalysisResult AnalyzePaper(string path, string titles, string paperName, string refsName, ResultScoreSettings settings)
-        {
-            var textExtractor = new PdfTextExtractor(path);
-            try
-            {
-                var text = textExtractor.GetAllText();
-                _logger.LogTrace($"AnalyzePaper: text extracted");
-
-                return Analyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogTrace($"AnalyzePaper: ERROR - {ex.Message}:\n {(ex.InnerException != null ? ex.InnerException.Message : "")}");
-                var res = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
-                    new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
-                return res;
-            }
+            return View(new ErrorViewModel { 
+                RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier,
+                Message = message
+            });
         }
     }
 }

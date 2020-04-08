@@ -20,141 +20,14 @@ namespace PaperAnalyzer
     /// <summary>
     /// Analyses paper's text
     /// </summary>
-    public sealed class PaperAnalyzer
+    public sealed class PapersAnalyzer : IPaperAnalyzer
     {
-        #region ctor (Lazy singleton implementation)
-        /// <summary>
-        /// Lazy singleton implementation
-        /// </summary>
-        private static readonly Lazy<PaperAnalyzer> lazy = new Lazy<PaperAnalyzer>(() => new PaperAnalyzer());
+        private readonly IPaperAnalyzerEnvironment _environment;
 
-        public static PaperAnalyzer Instance { get { return lazy.Value; } }
-
-        private PaperAnalyzer()
+        public PapersAnalyzer(IPaperAnalyzerEnvironment environment)
         {
-            Environment = AnalyzerEnvironment.Create();
+            _environment = environment;
         }
-        #endregion
-
-        private static AnalyzerEnvironment Environment { get; set; }
-
-        #region Analyzer Environment
-        /// <summary>
-        /// Analyzer Environment
-        /// </summary>
-        private sealed class AnalyzerEnvironment : IDisposable
-        {
-            private AnalyzerEnvironment()
-            {
-            }
-
-            public void Dispose()
-            {
-                if (Processor != null)
-                {
-                    Processor.Dispose();
-                    Processor = null;
-                }
-
-                if (MorphoModel != null)
-                {
-                    MorphoModel.Dispose();
-                    MorphoModel = null;
-                }
-
-                if (MorphoAmbiguityResolverModel != null)
-                {
-                    MorphoAmbiguityResolverModel.Dispose();
-                    MorphoAmbiguityResolverModel = null;
-                }
-            }
-
-            private MorphoAmbiguityResolverModel MorphoAmbiguityResolverModel
-            {
-                get;
-                set;
-            }
-
-            private IMorphoModel MorphoModel
-            {
-                get;
-                set;
-            }
-
-            public PosTaggerProcessor Processor
-            {
-                get;
-                private set;
-            }
-
-            public static PosTaggerProcessorConfig CreatePosTaggerProcessorConfig()
-            {
-                var sentSplitterConfig = new SentSplitterConfig(Config.SENT_SPLITTER_RESOURCES_XML_FILENAME,
-                                                                 Config.URL_DETECTOR_RESOURCES_XML_FILENAME);
-                var config = new PosTaggerProcessorConfig(Config.TOKENIZER_RESOURCES_XML_FILENAME,
-                    Config.POSTAGGER_RESOURCES_XML_FILENAME,
-                    LanguageTypeEnum.Ru,
-                    sentSplitterConfig)
-                {
-                    ModelFilename = Config.POSTAGGER_MODEL_FILENAME,
-                    TemplateFilename = Config.POSTAGGER_TEMPLATE_FILENAME,
-                };
-
-                return config;
-            }
-
-            private static MorphoModelConfig CreateMorphoModelConfig()
-            {
-                var config = new MorphoModelConfig()
-                {
-                    TreeDictionaryType = TreeDictionaryTypeEnum.Native,
-                    BaseDirectory = Config.MORPHO_BASE_DIRECTORY,
-                    MorphoTypesFilenames = Config.MORPHO_MORPHOTYPES_FILENAMES,
-                    ProperNamesFilenames = Config.MORPHO_PROPERNAMES_FILENAMES,
-                    CommonFilenames = Config.MORPHO_COMMON_FILENAMES,
-                    ModelLoadingErrorCallback = (s1, s2) => { }
-                };
-
-                return config;
-            }
-
-            private static MorphoAmbiguityResolverModel CreateMorphoAmbiguityResolverModel()
-            {
-                var config = new MorphoAmbiguityResolverConfig()
-                {
-                    ModelFilename = Config.MORPHO_AMBIGUITY_MODEL_FILENAME,
-                    TemplateFilename5g = Config.MORPHO_AMBIGUITY_TEMPLATE_FILENAME_5G,
-                    TemplateFilename3g = Config.MORPHO_AMBIGUITY_TEMPLATE_FILENAME_3G,
-                };
-
-                var model = new MorphoAmbiguityResolverModel(config);
-                return model;
-            }
-
-            public static AnalyzerEnvironment Create()
-            {
-                var morphoAmbiguityModel = CreateMorphoAmbiguityResolverModel();
-                var morphoModelConfig = CreateMorphoModelConfig();
-                var morphoModel = MorphoModelFactory.Create(morphoModelConfig);
-                var config = CreatePosTaggerProcessorConfig();
-
-                var posTaggerProcessor = new PosTaggerProcessor(config, morphoModel, morphoAmbiguityModel);
-
-                var environment = new AnalyzerEnvironment()
-                {
-                    MorphoAmbiguityResolverModel = morphoAmbiguityModel,
-                    MorphoModel = morphoModel,
-                    Processor = posTaggerProcessor,
-                };
-
-                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-                GC.WaitForPendingFinalizers();
-                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-
-                return environment;
-            }
-        }
-        #endregion
 
         public PaperAnalysisResult ProcessTextWithResult(string text, string titlesString, string paperName, string refsName, ResultScoreSettings settings)
         {
@@ -318,7 +191,7 @@ namespace PaperAnalyzer
                 if (titleIndex != -1)
                     text = text.Substring(titleIndex);
 
-                var result = Environment.Processor.RunFullAnalysis(text, true, true, true, true);
+                var result = _environment.Processor.RunFullAnalysis(text, true, true, true, true);
 
                 var dictionary = new Dictionary<string, int>();
                 var stopDictionary = new Dictionary<string, int>();
@@ -500,12 +373,13 @@ namespace PaperAnalyzer
 
                 var stopWordsReport = new StringBuilder();
 
-                for (int i = 0; i < 10 || i < top10StopWords.Count; i++)
-                    stopWordsReport.Append($"{top10StopWords[i].Key}:   {top10StopWords[i].Value} раз\n");
+                for (int i = 0; i < 10 && i < top10StopWords.Count; i++)
+                        stopWordsReport.Append($"{top10StopWords[i].Key}:   {top10StopWords[i].Value} раз\n");
+
 
                 var keyWordsReport = new StringBuilder();
-                for (int i = 0; i < 10 || i < top10.Count; i++)
-                    keyWordsReport.Append($"{top10[i].Key}:   {top10[i].Value} раз\n");
+                for (int i = 0; i < 10 && i < top10.Count; i++)
+                        keyWordsReport.Append($"{top10[i].Key}:   {top10[i].Value} раз\n");
 
                 var criteria = new List<Criterion>
                 {

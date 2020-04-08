@@ -25,6 +25,7 @@
     <ProjectReference Include="..\LangAnalyzerStd.Morphology\LangAnalyzerStd.Morphology.csproj" />
     <ProjectReference Include="..\LangAnalyzerStd.Postagger\LangAnalyzerStd.Postagger.csproj" />
     <ProjectReference Include="..\LangAnalyzerStd.SentenceSplitter\LangAnalyzerStd.SentenceSplitter.csproj" />
+    <ProjectReference Include="..\TextExtractor\TextExtractor.csproj" />
   </ItemGroup>
 
   <ItemGroup>

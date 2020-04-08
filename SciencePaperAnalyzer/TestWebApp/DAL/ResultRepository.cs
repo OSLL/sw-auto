@@ -6,6 +6,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using WebPaperAnalyzer.Models;
@@ -18,20 +20,20 @@ namespace WebPaperAnalyzer.DAL
         private readonly IMongoDatabase _database;
         private readonly IMongoCollection<BinaryForm> _resultsCollection;
 
-        public ResultRepository(MongoSettings settings)
+        public ResultRepository(IOptions<MongoSettings> settings)
         {
-            var internalIdentity = new MongoInternalIdentity("admin", settings.User);
-            var passwordEvidence = new PasswordEvidence(settings.Password);
+            var internalIdentity = new MongoInternalIdentity("admin", settings.Value.User);
+            var passwordEvidence = new PasswordEvidence(settings.Value.Password);
             var mongoCredential = new MongoCredential("SCRAM-SHA-1", internalIdentity, passwordEvidence);
             var credentials = new List<MongoCredential> { mongoCredential };
 
-
-            var mongoSettings = new MongoClientSettings {Credentials = credentials};
-            var address = new MongoServerAddress(settings.Host);
+            var mongoSettings = new MongoClientSettings();
+            mongoSettings.Credentials = credentials;
+            var address = new MongoServerAddress(settings.Value.Host);
             mongoSettings.Server = address;
 
             _client = new MongoClient(mongoSettings); //new MongoClient(settings.ConnectionString);
-            _database = _client.GetDatabase(settings.Database);
+            _database = _client.GetDatabase(settings.Value.Database);
             _resultsCollection = _database.GetCollection<BinaryForm>("results");
         }
 

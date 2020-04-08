@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NLog.Web;
 using WebPaperAnalyzer.Models;
+using PaperAnalyzer;
+using PaperAnalyzer.Service;
+using WebPaperAnalyzer.DAL;
 
 namespace TestWebApp
 {
@@ -42,8 +45,13 @@ namespace TestWebApp
 
             services.Configure<ResultScoreSettings>(Configuration.GetSection(nameof(ResultScoreSettings)));
             services.Configure<MongoSettings>(Configuration.GetSection(nameof(MongoSettings)));
-
+            services.AddSingleton<IResultRepository, ResultRepository>();
+            services.AddTransient<IPaperAnalyzerService, PaperAnalyzerService>();
+            services.AddTransient<IPaperAnalyzer, PapersAnalyzer>();
+            services.AddSingleton<IPaperAnalyzerEnvironment, PaperAnalyzerEnvironment>();
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

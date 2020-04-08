@@ -9,33 +9,11 @@ using LangAnalyzerStd.Core;
 
 namespace LangAnalyzerStd.Postagger
 {
-    public sealed class MorphoAmbiguityResolverConfig
+    public class MorphoAmbiguityResolverConfig
     {
-        public MorphoAmbiguityResolverConfig()
-        {
-        }
-        public MorphoAmbiguityResolverConfig(string modelFilename, string templateFilename_5g, string templateFilename_3g)
-        {
-            ModelFilename = modelFilename;
-            TemplateFilename5g = templateFilename_5g;
-            TemplateFilename3g = templateFilename_3g;
-        }
-
-        public string ModelFilename
-        {
-            get;
-            set;
-        }
-        public string TemplateFilename5g
-        {
-            get;
-            set;
-        }
-        public string TemplateFilename3g
-        {
-            get;
-            set;
-        }
+        public string ModelFilename { get; set; }
+        public string TemplateFilename5g { get; set; }
+        public string TemplateFilename3g { get; set; }
     }
 
     internal sealed class ByteIntPtrEqualityComparer : IEqualityComparer<IntPtr>

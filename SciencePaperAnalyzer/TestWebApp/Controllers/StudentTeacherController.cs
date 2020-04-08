@@ -64,7 +64,7 @@ namespace TestWebApp.Controllers
         [HttpGet]
         public IActionResult TeacherViewResults()
         {
-            return View(_results.GetResultsByLogin(User.Identity.Name, true));
+            return View(_results.GetResultsByLogin(User.Identity.Name, true).Where(res => res.StudentLogin != null));
         }
     }
 }

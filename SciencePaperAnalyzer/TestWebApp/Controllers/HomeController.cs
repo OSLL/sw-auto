@@ -26,9 +26,9 @@ namespace TestWebApp.Controllers
     {
         public static PaperAnalyzer.PaperAnalyzer Analyzer = PaperAnalyzer.PaperAnalyzer.Instance;
         IResultRepository repository;
+        private AnalysisResult result;
         private readonly ILogger<HomeController> _logger;
         private ApplicationContext _context;
-
         protected IConfiguration Configuration;
         protected ResultScoreSettings ResultScoreSettings { get; set; }
         protected MongoSettings MongoSettings { get; set; }
@@ -88,8 +88,8 @@ namespace TestWebApp.Controllers
                 TeacherLogin = criterion.TeacherLogin,
                 Criterion = criterion.Name
             };
-            if (User.Identity.Name != null)
-                repository.AddResult(analysisResult);
+
+            repository.AddResult(analysisResult);
             _logger.LogDebug($"UploadFile: result saved");
             return Ok(analysisResult.Id);
         }
@@ -100,7 +100,6 @@ namespace TestWebApp.Controllers
             return View(repository.GetResult(id).Result);
         }
 
-        
         public async Task<IActionResult> Index()
         {
             if (User.Identity.Name != null && User.FindFirst(x => x.Type == ClaimsIdentity.DefaultRoleClaimType).Value == "teacher")

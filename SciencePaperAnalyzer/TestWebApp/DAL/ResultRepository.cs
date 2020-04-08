@@ -90,7 +90,7 @@ namespace WebPaperAnalyzer.DAL
                     var obj = binForm.Deserialize(memStream);
                     resultList.Add(new AnalysisResult
                     {
-                        Id = result.Id, StudentLogin = result.StudentLogin, TeacherLogin = login, 
+                        Id = result.Id, StudentLogin = result.StudentLogin, TeacherLogin = result.TeacherLogin, 
                         Criterion = result.Criterion, Result = obj as PaperAnalysisResult
                     });
                 }

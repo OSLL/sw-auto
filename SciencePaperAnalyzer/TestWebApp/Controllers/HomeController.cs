@@ -53,7 +53,7 @@ namespace WebPaperAnalyzer.Controllers
 
         [HttpPost]
         public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
-                                                    string criterionName)
+                                                    string criterionName = null)
         {
             if (file == null)
             {

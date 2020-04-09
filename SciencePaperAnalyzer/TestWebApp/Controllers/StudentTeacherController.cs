@@ -19,11 +19,11 @@ namespace TestWebApp.Controllers
         private ApplicationContext _context;
         private IResultRepository _results;
         private IEnumerable<ResultCriterion> _criteria;
-        public StudentTeacherController(IOptions<MongoSettings> mongoSettings = null)
+        public StudentTeacherController(IResultRepository repository, IOptions<MongoSettings> mongoSettings = null)
         {
             var _mongoSettings = mongoSettings.Value;
             _context = new ApplicationContext(_mongoSettings);
-            _results = new ResultRepository(_mongoSettings);
+            _results = repository;
         }
 
         [HttpGet]
@@ -42,6 +42,7 @@ namespace TestWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                _criteria = await _context.GetCriteria();
                 ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
 
                 if (criterion == null)

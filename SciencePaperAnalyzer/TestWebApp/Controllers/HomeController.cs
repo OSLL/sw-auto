@@ -27,26 +27,20 @@ namespace WebPaperAnalyzer.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private ApplicationContext _context;
-        protected IConfiguration Configuration;
 
         private readonly IPaperAnalyzerService _analyzeService;
-        protected IResultRepository _repository;
-        protected ResultScoreSettings ResultScoreSettings { get; set; }
+        protected IResultRepository Repository;
         protected MongoSettings MongoSettings { get; set; }
 
         public HomeController(
             ILogger<HomeController> logger,
             IPaperAnalyzerService analyzeService,
             IResultRepository repository,
-            IOptions<ResultScoreSettings> resultScoreSettings = null,
-            IOptions<MongoSettings> mongoSettings = null,
-            IConfiguration configuration = null)
+            IOptions<MongoSettings> mongoSettings = null)
         {
-            ResultScoreSettings = resultScoreSettings?.Value;
             MongoSettings = mongoSettings?.Value;
-            _repository = repository;
+            Repository = repository;
             _context = new ApplicationContext(MongoSettings);
-            Configuration = configuration;
             _logger = logger;
             _analyzeService = analyzeService;
         }
@@ -69,16 +63,41 @@ namespace WebPaperAnalyzer.Controllers
 
             await file.CopyToAsync(uploadFile.DataStream);
 
-            var criteria = await _context.GetCriteria();
-            ResultCriterion criterion = criteria.First(c => c.Name == criterionName);
+            ResultCriterion criterion = null;
 
-            var settings = new ResultScoreSettings
+            try
             {
+                var criteria = await _context.GetCriteria();
+                criterion = criteria.First(c => c.Name == criterionName);
+            }
+            catch (Exception)
+            {
+                //Возможно только во время выполнения теста
+            }
+
+            ResultScoreSettings settings = null;
+
+            if (criterion != null)
+            {
+                settings = new ResultScoreSettings
+                {
                     ErrorCost = criterion.ErrorCost,
                     KeyWordsCriterionFactor = criterion.KeyWordsCriterionFactor,
                     WaterCriterionFactor = criterion.WaterCriterionFactor,
                     ZipfFactor = criterion.ZipfFactor
-            };
+                };
+            }
+            else
+            {
+                //Возможно только во время выполнения теста
+                settings = new ResultScoreSettings()
+                {
+                    ErrorCost = 2,
+                    KeyWordsCriterionFactor = 35,
+                    WaterCriterionFactor = 35,
+                    ZipfFactor = 30
+                };
+            }
 
             PaperAnalysisResult result;
             try
@@ -92,24 +111,39 @@ namespace WebPaperAnalyzer.Controllers
 
                 return Error(ex.Message);
             }
-            
-            var analysisResult = new AnalysisResult
-            {
-                Id = Guid.NewGuid().ToString(),
-                Result = result,
-                StudentLogin = User.Identity.Name,
-                TeacherLogin = criterion.TeacherLogin,
-                Criterion = criterion.Name
-            };
 
-            _repository.AddResult(analysisResult);
+            AnalysisResult analysisResult = null;
+            if (criterion != null)
+            {
+                analysisResult = new AnalysisResult
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Result = result,
+                    StudentLogin = User.Identity.Name,
+                    TeacherLogin = criterion.TeacherLogin,
+                    Criterion = criterion.Name
+                };
+            }
+            else
+            {
+                analysisResult = new AnalysisResult
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Result = result,
+                    StudentLogin = null,
+                    TeacherLogin = null,
+                    Criterion = null
+                };
+            }
+
+            Repository.AddResult(analysisResult);
             return Ok(analysisResult.Id);
         }
 
         [HttpGet]
         public IActionResult Result(string id)
         {
-            return View(_repository.GetResult(id).Result);
+            return View(Repository.GetResult(id).Result);
         }
 
         public async Task<IActionResult> Index()
@@ -125,7 +159,7 @@ namespace WebPaperAnalyzer.Controllers
         [HttpGet]
         public IActionResult PreviousResults()
         {
-            return View(_repository.GetResultsByLogin(User.Identity.Name, false));
+            return View(Repository.GetResultsByLogin(User.Identity.Name, false));
         }
 
         public IActionResult About()

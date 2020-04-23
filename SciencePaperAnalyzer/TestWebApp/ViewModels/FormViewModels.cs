@@ -42,11 +42,17 @@ namespace WebPaperAnalyzer.ViewModels
 
         [Required(ErrorMessage = "Не указан критерий")]
         public string WaterCriterionFactor { get; set; }
+        public string WaterCriterionLowerBound { get; set; }
+        public string WaterCriterionUpperBound { get; set; }
 
         [Required(ErrorMessage = "Не указан критерий")]
         public string KeyWordsCriterionFactor { get; set; }
+        public string KeyWordsCriterionLowerBound { get; set; }
+        public string KeyWordsCriterionUpperBound { get; set; }
 
         [Required(ErrorMessage = "Не указан критерий")]
         public string ZipfFactor { get; set; }
+        public string ZipfFactorLowerBound { get; set; }
+        public string ZipfFactorUpperBound { get; set; }
     }
 }

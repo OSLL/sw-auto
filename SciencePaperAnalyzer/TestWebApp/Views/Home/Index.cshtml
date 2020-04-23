@@ -14,7 +14,10 @@
         }
         else
         {
-            <input type="button" class="upload-form" value="Прошлые результаты" onclick="window.location.href='@Url.Action("PreviousResults", "Home")';" />
+            <div>
+                <input type="button" value="Прошлые результаты" onclick="window.location.href = '@Url.Action("PreviousResults", "Home")';"/>
+                <input type="button" value="Выйти" onclick="window.location.href = '@Url.Action("Logout", "Account")';"/>
+            </div>
         }
         <div class="index-info">
             Сервис помогает улучшить научную статью, проверяя её на соответствие научному стилю и

@@ -383,15 +383,18 @@ namespace PaperAnalyzer
 
                 var criteria = new List<Criterion>
                 {
-                    new NumericalCriterion("Уровень водности", waterLvl, 14, 20, settings.WaterCriterionFactor,
+                    new NumericalCriterion("Уровень водности", waterLvl, 
+                        settings.WaterCriterionLowerBound, settings.WaterCriterionUpperBound, settings.WaterCriterionFactor,
                         "Процентное соотношение стоп-слов и общего количества слов в тексте",
                         $"Постарайтесь снизить количество используемых стоп-слов. Часто употребляемые стоп-слова в статье:\n{stopWordsReport.ToString()}",
                         "Текст слишком \"сухой\". Попробуйте добавить связки между разделами."),
-                    new NumericalCriterion("Тошнота", keyWordsLvl, 6, 14, settings.KeyWordsCriterionFactor,
+                    new NumericalCriterion("Тошнота", keyWordsLvl, 
+                        settings.KeyWordsCriterionLowerBound, settings.KeyWordsCriterionUpperBound, settings.KeyWordsCriterionFactor,
                         "Показатель повторений в текстовом документе ключевых слов и фраз",
                         $"Слишком частое повторение слов, при возможности, старайтесь использовать синонимы. Наиболее употребляемые слова в тексте:\n{keyWordsReport.ToString()}",
                         $"Постарайтесь увеличить частоту употребления ключевых слов текста:\n{keyWordsReport.ToString()}"),
-                    new NumericalCriterion("Zipf", zipfLvl, 5.5, 9.5, settings.ZipfFactor,
+                    new NumericalCriterion("Zipf", zipfLvl, 
+                        settings.ZipfFactorLowerBound, settings.ZipfFactorUpperBound, settings.ZipfFactor,
                         "Значение отклонения текста статьи от идеальной кривой по Ципфу",
                         "Постарайтесь разнообразить текст, добавить связки между разделами, возможно, увеличить количество прилагательных.",
                         "Постарайтесь увеличить частоту употребления ключевых слов, возможно, снизить количество прилагательных.")

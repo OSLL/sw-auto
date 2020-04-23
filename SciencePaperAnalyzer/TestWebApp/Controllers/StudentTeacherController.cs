@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using WebPaperAnalyzer.DAL;
@@ -32,8 +33,11 @@ namespace TestWebApp.Controllers
             return View();
         }
         [HttpGet]
-        public IActionResult TeacherAddCriterion()
+        public async Task<IActionResult> TeacherAddCriterion()
         {
+            _criteria = await _context.GetCriteria();
+            _criteria = await _context.GetCriteria();
+            ViewBag.Criteria = _criteria.ToList();
             return View();
         }
 
@@ -52,16 +56,22 @@ namespace TestWebApp.Controllers
                         Name = model.Name, TeacherLogin = User.Identity.Name,
                         ErrorCost = double.Parse(model.ErrorCost),
                         ZipfFactor = double.Parse(model.ZipfFactor),
+                        ZipfFactorLowerBound = double.Parse(model.ZipfFactorLowerBound),
+                        ZipfFactorUpperBound = double.Parse(model.ZipfFactorUpperBound),
                         WaterCriterionFactor = double.Parse(model.WaterCriterionFactor),
-                        KeyWordsCriterionFactor = double.Parse(model.KeyWordsCriterionFactor)
+                        WaterCriterionLowerBound = double.Parse(model.WaterCriterionLowerBound),
+                        WaterCriterionUpperBound = double.Parse(model.WaterCriterionUpperBound),
+                        KeyWordsCriterionFactor = double.Parse(model.KeyWordsCriterionFactor),
+                        KeyWordsCriterionLowerBound = double.Parse(model.KeyWordsCriterionLowerBound),
+                        KeyWordsCriterionUpperBound = double.Parse(model.KeyWordsCriterionUpperBound)
                     };
                     await _context.AddCriterion(criterion);
                 }
-
             }
-            return View();
-        }
 
+            return RedirectToAction("TeacherAddCriterion", "StudentTeacher");
+        }
+        
         [HttpGet]
         public IActionResult TeacherViewResults()
         {

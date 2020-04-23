@@ -83,8 +83,14 @@ namespace WebPaperAnalyzer.Controllers
                 {
                     ErrorCost = criterion.ErrorCost,
                     KeyWordsCriterionFactor = criterion.KeyWordsCriterionFactor,
+                    KeyWordsCriterionLowerBound = criterion.KeyWordsCriterionLowerBound,
+                    KeyWordsCriterionUpperBound = criterion.KeyWordsCriterionUpperBound,
                     WaterCriterionFactor = criterion.WaterCriterionFactor,
-                    ZipfFactor = criterion.ZipfFactor
+                    WaterCriterionLowerBound = criterion.WaterCriterionLowerBound,
+                    WaterCriterionUpperBound = criterion.WaterCriterionUpperBound,
+                    ZipfFactor = criterion.ZipfFactor,
+                    ZipfFactorLowerBound = criterion.ZipfFactorLowerBound,
+                    ZipfFactorUpperBound = criterion.ZipfFactorUpperBound
                 };
             }
             else
@@ -94,8 +100,14 @@ namespace WebPaperAnalyzer.Controllers
                 {
                     ErrorCost = 2,
                     KeyWordsCriterionFactor = 35,
+                    KeyWordsCriterionUpperBound = 6,
+                    KeyWordsCriterionLowerBound = 14,
                     WaterCriterionFactor = 35,
-                    ZipfFactor = 30
+                    WaterCriterionLowerBound = 14,
+                    WaterCriterionUpperBound = 20,
+                    ZipfFactor = 30,
+                    ZipfFactorLowerBound = 5.5,
+                    ZipfFactorUpperBound = 9.5
                 };
             }
 

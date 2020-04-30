@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using WebPaperAnalyzer.DAL;
 using WebPaperAnalyzer.Models;
 using WebPaperAnalyzer.ViewModels;
@@ -76,6 +77,27 @@ namespace TestWebApp.Controllers
         public IActionResult TeacherViewResults()
         {
             return View(_results.GetResultsByLogin(User.Identity.Name, true).Where(res => res.StudentLogin != null));
+        }
+
+        [HttpGet]
+        public IActionResult EditDeleteCriterion(string name)
+        {
+            ResultCriterion criterion = _context.GetCriteriaByName(name);
+            return View(criterion);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCriterion(ResultCriterion editCriterion)
+        {
+            await _context.EditCriterion(editCriterion);
+            return RedirectToAction("EditDeleteCriterion", "StudentTeacher", new {name = editCriterion.Name});
+        }
+
+
+        public async Task<IActionResult> DeleteCriterion(string id)
+        {
+            await _context.DeleteCriterion(id);
+            return RedirectToAction("TeacherAddCriterion", "StudentTeacher");
         }
     }
 }

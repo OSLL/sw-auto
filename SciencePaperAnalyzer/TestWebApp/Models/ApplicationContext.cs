@@ -18,6 +18,8 @@ namespace WebPaperAnalyzer.Models
         Task<IEnumerable<ResultCriterion>> GetCriteria();
         Task AddUser(User u);
         Task AddCriterion(ResultCriterion c);
+        Task DeleteCriterion(string id);
+        Task EditCriterion(ResultCriterion c);
     }
     public class ApplicationContext : IApplicationContext
     {
@@ -57,8 +59,18 @@ namespace WebPaperAnalyzer.Models
             return await Criteria.Find(filter).ToListAsync();
         }
 
+        public ResultCriterion GetCriteriaByName(string name)
+        {
+            var filter = Builders<ResultCriterion>.Filter.Eq("Name", name);
+            return Criteria.Find(filter).FirstOrDefault();
+        }
+
         public async Task AddUser(User u) => await Users.InsertOneAsync(u);
 
         public async Task AddCriterion(ResultCriterion c) => await Criteria.InsertOneAsync(c);
+
+        public async Task DeleteCriterion(string id) => await Criteria.DeleteOneAsync(new BsonDocument("_id", new ObjectId(id)));
+
+        public async Task EditCriterion(ResultCriterion c) => await Criteria.ReplaceOneAsync(new BsonDocument("_id", new ObjectId(c.Id)), c);
     }
 }

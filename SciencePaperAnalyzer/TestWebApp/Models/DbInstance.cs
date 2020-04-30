@@ -10,8 +10,8 @@ namespace WebPaperAnalyzer.Models
 {
     public class User
     {
-        [BsonId]
-        public ObjectId Id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
@@ -19,8 +19,8 @@ namespace WebPaperAnalyzer.Models
 
     public class ResultCriterion
     {
-        [BsonId]
-        public ObjectId Id { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
         public string TeacherLogin { get; set; }
         public string Name { get; set; }
         public double ErrorCost { get; set; }

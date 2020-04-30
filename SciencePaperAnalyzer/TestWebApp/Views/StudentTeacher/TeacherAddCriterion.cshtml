@@ -62,7 +62,7 @@
 <h2>Существующие критерии</h2>
 @foreach (var criterion in (IEnumerable<ResultCriterion>) ViewBag.Criteria)
 {
-    <button type="submit" class="upload-form">
+    <button type="submit" class="upload-form", onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
         Критерий @criterion.Name, Создатель @criterion.TeacherLogin,
         Цена ошибки: @criterion.ErrorCost, Критерий водности: @criterion.WaterCriterionFactor,
         Тошнота: @criterion.KeyWordsCriterionFactor, Zipf: @criterion.ZipfFactor

@@ -10,5 +10,8 @@ namespace WebPaperAnalyzer.Models
         public string Id { get; set; }
         [BsonElement("result")]
         public PaperAnalysisResult Result { get; set; }
+        public string StudentLogin { get; set; }
+        public string TeacherLogin { get; set; }
+        public string Criterion { get; set; }
     }
 }

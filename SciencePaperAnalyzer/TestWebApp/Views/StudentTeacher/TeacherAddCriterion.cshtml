@@ -1,0 +1,72 @@
+﻿@using WebPaperAnalyzer.Models
+@model WebPaperAnalyzer.ViewModels.AddCriterion
+@{
+    ViewBag.Title = "Добавление нового критерия";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<input type="button" class="upload-form2" value="Назад" onclick="window.location.href = '@Url.Action("TeacherMainPage", "StudentTeacher")';" />
+
+<h2>Добавление нового критерия</h2>
+
+@using (Html.BeginForm())
+{
+    <fieldset>
+        <div class="criterion-add-submit">
+            <h3>
+                Название
+            </h3>
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { placeholder = "Название" } })
+
+            <h3>
+                ErrorCost
+            </h3>
+            @Html.EditorFor(model => model.ErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+
+            <input type="submit" value="Добавить критерий" />
+        </div>
+
+        <div class="criterion-add-edit">
+            <h3>
+                WaterCriterionFactor
+            </h3>
+            @Html.EditorFor(model => model.WaterCriterionFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+
+            <div class="criterion-add-bounds">
+                @Html.EditorFor(model => model.WaterCriterionLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
+                @Html.EditorFor(model => model.WaterCriterionUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
+            </div>
+        </div>
+        <div class="criterion-add-edit">
+            <h3>
+                KeyWordsCriterionFactor
+            </h3>
+            @Html.EditorFor(model => model.KeyWordsCriterionFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+
+            <div class="criterion-add-bounds">
+                @Html.EditorFor(model => model.KeyWordsCriterionLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
+                @Html.EditorFor(model => model.KeyWordsCriterionUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
+            </div>
+        </div>
+        <div class="criterion-add-edit">
+            <h3>
+                ZipfFactor
+            </h3>
+            @Html.EditorFor(model => model.ZipfFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+            <div class="criterion-add-bounds">
+                @Html.EditorFor(model => model.ZipfFactorLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
+                @Html.EditorFor(model => model.ZipfFactorUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
+            </div>
+        </div>
+    </fieldset>
+}
+
+<h2>Существующие критерии</h2>
+<input type="button" class="upload-form2" value="Показать критерии добавленные мной" onclick="window.location.href='@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = true})';" />
+@foreach (var criterion in (IEnumerable<ResultCriterion>)ViewBag.Criteria)
+{
+    <button type="submit" class="upload-form" , onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
+        Критерий @criterion.Name, Создатель @criterion.TeacherLogin,
+        Цена ошибки: @criterion.ErrorCost, Критерий водности: @criterion.WaterCriterionFactor,
+        Тошнота: @criterion.KeyWordsCriterionFactor, Zipf: @criterion.ZipfFactor
+    </button>
+}

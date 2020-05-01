@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
 using Microsoft.CodeAnalysis.Options;
@@ -26,7 +27,6 @@ namespace WebPaperAnalyzer.DAL
             var mongoCredential = new MongoCredential("SCRAM-SHA-1", internalIdentity, passwordEvidence);
             var credentials = new List<MongoCredential> { mongoCredential };
 
-
             var mongoSettings = new MongoClientSettings();
             mongoSettings.Credentials = credentials;
             var address = new MongoServerAddress(settings.Value.Host);
@@ -48,13 +48,15 @@ namespace WebPaperAnalyzer.DAL
                     bf.Serialize(ms, result.Result);
                     data = ms.ToArray();
                 }
-                var test = new BinaryForm();
-                test.Id = result.Id;
-                test.Data = data;
-            
+
+                var test = new BinaryForm {Id = result.Id, Data = data,
+                    StudentLogin = result.StudentLogin, TeacherLogin = result.TeacherLogin,
+                    Criterion = result.Criterion
+                };
+
                 _resultsCollection.InsertOne(test);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
@@ -75,6 +77,30 @@ namespace WebPaperAnalyzer.DAL
             }
         }
 
+        public IEnumerable<AnalysisResult> GetResultsByLogin(string login, bool type)
+        {
+            var filter = Builders<BinaryForm>.Filter.Eq(type ? "TeacherLogin" : "StudentLogin", login);
+            var binaryFormCollection =  _resultsCollection.Find(filter).ToList();
+            var resultList = new List<AnalysisResult>();
+            foreach (var result in binaryFormCollection)
+            {
+                using (var memStream = new MemoryStream())
+                {
+                    var binForm = new BinaryFormatter();
+                    memStream.Write(result.Data, 0, result.Data.Length);
+                    memStream.Seek(0, SeekOrigin.Begin);
+                    var obj = binForm.Deserialize(memStream);
+                    resultList.Add(new AnalysisResult
+                    {
+                        Id = result.Id, StudentLogin = result.StudentLogin, TeacherLogin = result.TeacherLogin, 
+                        Criterion = result.Criterion, Result = obj as PaperAnalysisResult
+                    });
+                }
+            }
+
+            return resultList;
+        }
+
         public class BinaryForm
         {
             [BsonId]
@@ -82,6 +108,10 @@ namespace WebPaperAnalyzer.DAL
 
             [BsonElement("data")]
             public byte[] Data { get; set; }
+
+            public string StudentLogin { get; set; }
+            public string TeacherLogin { get; set; }
+            public string Criterion { get; set; }
         }
     }
 }

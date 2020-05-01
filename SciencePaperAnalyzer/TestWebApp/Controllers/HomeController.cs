@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,34 +25,29 @@ namespace WebPaperAnalyzer.Controllers
     [System.Runtime.InteropServices.Guid("AC77F42B-4207-4468-A583-0999046DBAFD")]
     public class HomeController : Controller
     {
-
         private readonly ILogger<HomeController> _logger;
-
-        protected IConfiguration Configuration;
+        private ApplicationContext _context;
 
         private readonly IPaperAnalyzerService _analyzeService;
-        protected IResultRepository _repository;
-        protected ResultScoreSettings ResultScoreSettings { get; set; }
+        protected IResultRepository Repository;
         protected MongoSettings MongoSettings { get; set; }
 
         public HomeController(
             ILogger<HomeController> logger,
             IPaperAnalyzerService analyzeService,
             IResultRepository repository,
-            IOptions<ResultScoreSettings> resultScoreSettings = null,
-            IOptions<MongoSettings> mongoSettings = null,
-            IConfiguration configuration = null)
+            IOptions<MongoSettings> mongoSettings = null)
         {
-            ResultScoreSettings = resultScoreSettings?.Value;
             MongoSettings = mongoSettings?.Value;
-            _repository = repository;
-            Configuration = configuration;
+            Repository = repository;
+            _context = new ApplicationContext(MongoSettings);
             _logger = logger;
             _analyzeService = analyzeService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName)
+        public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
+                                                    string criterionName = null)
         {
             if (file == null)
             {
@@ -64,13 +63,53 @@ namespace WebPaperAnalyzer.Controllers
 
             await file.CopyToAsync(uploadFile.DataStream);
 
-            var settings = new ResultScoreSettings
+            ResultCriterion criterion = null;
+
+            try
             {
-                ErrorCost = double.Parse(Configuration.GetSection("ResultScoreSettings")["ErrorCost"]),
-                KeyWordsCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["KeyWordsCriterionFactor"]),
-                WaterCriterionFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["WaterCriterionFactor"]),
-                ZipfFactor = double.Parse(Configuration.GetSection("ResultScoreSettings")["ZipfFactor"])
-            };
+                var criteria = await _context.GetCriteria();
+                criterion = criteria.First(c => c.Name == criterionName);
+            }
+            catch (Exception)
+            {
+                //Возможно только во время выполнения теста
+            }
+
+            ResultScoreSettings settings = null;
+
+            if (criterion != null)
+            {
+                settings = new ResultScoreSettings
+                {
+                    ErrorCost = criterion.ErrorCost,
+                    KeyWordsCriterionFactor = criterion.KeyWordsCriterionFactor,
+                    KeyWordsCriterionLowerBound = criterion.KeyWordsCriterionLowerBound,
+                    KeyWordsCriterionUpperBound = criterion.KeyWordsCriterionUpperBound,
+                    WaterCriterionFactor = criterion.WaterCriterionFactor,
+                    WaterCriterionLowerBound = criterion.WaterCriterionLowerBound,
+                    WaterCriterionUpperBound = criterion.WaterCriterionUpperBound,
+                    ZipfFactor = criterion.ZipfFactor,
+                    ZipfFactorLowerBound = criterion.ZipfFactorLowerBound,
+                    ZipfFactorUpperBound = criterion.ZipfFactorUpperBound
+                };
+            }
+            else
+            {
+                //Возможно только во время выполнения теста
+                settings = new ResultScoreSettings()
+                {
+                    ErrorCost = 2,
+                    KeyWordsCriterionFactor = 35,
+                    KeyWordsCriterionUpperBound = 6,
+                    KeyWordsCriterionLowerBound = 14,
+                    WaterCriterionFactor = 35,
+                    WaterCriterionLowerBound = 14,
+                    WaterCriterionUpperBound = 20,
+                    ZipfFactor = 30,
+                    ZipfFactorLowerBound = 5.5,
+                    ZipfFactorUpperBound = 9.5
+                };
+            }
 
             PaperAnalysisResult result;
             try
@@ -84,26 +123,53 @@ namespace WebPaperAnalyzer.Controllers
 
                 return Error(ex.Message);
             }
-   
-            var analysisResult = new AnalysisResult
-            {
-                Id = Guid.NewGuid().ToString(),
-                Result = result
-            };
-            _repository.AddResult(analysisResult);
 
+            AnalysisResult analysisResult = null;
+            if (criterion != null)
+            {
+                analysisResult = new AnalysisResult
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Result = result,
+                    StudentLogin = User.Identity.Name,
+                    TeacherLogin = criterion.TeacherLogin,
+                    Criterion = criterion.Name
+                };
+            }
+            else
+            {
+                analysisResult = new AnalysisResult
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Result = result,
+                    StudentLogin = null,
+                    TeacherLogin = null,
+                    Criterion = null
+                };
+            }
+
+            Repository.AddResult(analysisResult);
             return Ok(analysisResult.Id);
         }
 
         [HttpGet]
         public IActionResult Result(string id)
         {
-            return View(_repository.GetResult(id).Result);
+            return View(Repository.GetResult(id).Result);
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var criteria = await _context.GetCriteria();
+            SelectList criteriaList = new SelectList(criteria.ToList().Select(c => c.Name));
+            ViewBag.Criteria = criteriaList;
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult PreviousResults()
+        {
+            return View(Repository.GetResultsByLogin(User.Identity.Name, false));
         }
 
         public IActionResult About()

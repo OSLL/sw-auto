@@ -1,0 +1,57 @@
+﻿@model WebPaperAnalyzer.Models.ResultCriterion
+
+<input type="button" value="Назад" onclick="window.location.href = '@Url.Action("TeacherAddCriterion", "StudentTeacher")';"/>
+
+<h3>Изменение критерия</h3>
+<form asp-action="EditCriterion" asp-controller="StudentTeacher">
+    <div class="criterion-add-submit">
+        <h3>
+            Название
+        </h3>
+        <input type="text" asp-for="Name" />
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="TeacherLogin"/>
+        <h3>
+            ErrorCost
+        </h3>
+        <input type="text" asp-for="ErrorCost" />
+        @if (User.Identity.Name == @Model.TeacherLogin)
+        {
+            <input type="submit" value="Сохранить изменения" />
+            <input type="button" value="Удалить критерий" onclick="window.location.href = '@Url.Action("DeleteCriterion", "StudentTeacher", new {id = @Model.Id})';" />
+        }
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            WaterCriterionFactor
+        </h3>
+        <input type="text" asp-for="WaterCriterionFactor" />
+
+        <div class="criterion-add-bounds">
+            <input type="text" asp-for="WaterCriterionLowerBound" />
+            <input type="text" asp-for="WaterCriterionUpperBound" />
+        </div>
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            KeyWordsCriterionFactor
+        </h3>
+        <input type="text" asp-for="KeyWordsCriterionFactor" />
+
+        <div class="criterion-add-bounds">
+            <input type="text" asp-for="KeyWordsCriterionLowerBound" />
+            <input type="text" asp-for="KeyWordsCriterionUpperBound" />
+        </div>
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            ZipfFactor
+        </h3>
+        <input type="text" asp-for="ZipfFactor" />
+
+        <div class="criterion-add-bounds">
+            <input type="text" asp-for="ZipfFactorLowerBound" />
+            <input type="text" asp-for="ZipfFactorUpperBound" />
+        </div>
+    </div>
+</form>

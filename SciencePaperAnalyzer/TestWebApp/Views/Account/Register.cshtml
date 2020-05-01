@@ -1,0 +1,36 @@
+﻿@model WebPaperAnalyzer.ViewModels.RegisterModel
+@{
+	  ViewBag.Title = "Регистрация пользователя";
+	  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Регистрация пользователя</h2>
+
+@using (Html.BeginForm())
+{
+	  <fieldset>
+		    <legend>Пользователь</legend>
+
+		    <p>
+			      Логин <br/>
+			      @Html.EditorFor(model => model.Login)
+			  </p>
+
+		    <p>
+			      Пароль <br />
+			      @Html.EditorFor(model => model.Password)
+			  </p>
+
+	 	    <p>
+			      Подтвердите пароль  <br />
+			      @Html.EditorFor(model => model.ConfirmPassword)
+		    </p>
+		    <p>
+			      Выберите роль <br />
+            @Html.DropDownListFor(model => model.Role, ViewBag.Roles as SelectList)
+        </p>
+
+		    <p>
+			      <input type="submit" value="Подтвердить" />
+		    </p>
+	  </fieldset>
+}

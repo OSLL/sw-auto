@@ -1,4 +1,5 @@
-﻿@model AnalyzeResults.Presentation.PaperAnalysisResult
+﻿@using System.Security.Claims
+@model AnalyzeResults.Presentation.PaperAnalysisResult
 @{
     ViewData["Title"] = "Basic test web app";
 }
@@ -7,6 +8,25 @@
         <div>
             
         </div>
+        @if (User.Identity.Name == null)
+        {
+            <h2>Вы зашли как гость, выполните вход, чтобы сохранять результаты анализов</h2>
+            <input type="button" class="upload-form2" value="Войти" onclick="window.location.href = '@Url.Action("Login", "Account")';" />
+        }
+        else
+        {
+            <div>
+                <input type="button" value="Прошлые результаты" onclick="window.location.href = '@Url.Action("PreviousResults", "Home")';" />
+                @if (User.FindFirst(x => x.Type == ClaimsIdentity.DefaultRoleClaimType).Value == "student")
+                {
+                    <input type="button" value="Выйти" onclick="window.location.href = '@Url.Action("Logout", "Account")';" />
+                }
+                else
+                {
+                    <input type="button" value="Назад в меню" onclick="window.location.href = '@Url.Action("TeacherMainPage", "StudentTeacher")';" />
+                }
+            </div>
+        }
         <div class="index-info">
             Сервис помогает улучшить научную статью, проверяя её на соответствие научному стилю и
             указывая на допущенные ошибки, предоставляя советы по их исправлению.
@@ -46,9 +66,20 @@
                 <a class="save-settings-button" id="savebtn" href="#" onClick="saveOutput(this)"><i class="glyphicon glyphicon-cloud-download"></i> Сохранить настройки</a>
                 <input type="file" id="loadbtn" value="Import" onchange="onLoadSettings(event)" />
                 <label for="loadbtn" class="load-settings-button">
-                    <i class="glyphicon glyphicon-cloud-upload"></i> Загрузите настройки из файла
+                    <i class="glyphicon glyphicon-cloud-upload"></i> Загрузить настройки из файла
                 </label>
             </div>
+        </div>
+
+        <div class="result-settings-container">
+	        <div class="settings-label">
+		        Настройка оценивания статьи
+	        </div>
+	        <fieldset>
+		        <p>
+			        @Html.DropDownList("Criteria", ViewBag.Criteria as SelectList, null, null)
+		        </p>
+	        </fieldset>
         </div>
     </div>
 </div>
@@ -82,10 +113,18 @@
 
         function onReaderLoad(event){
             var obj = JSON.parse(event.target.result);
-            $('#titles')[0].value = obj.titles;
-            $('#paperName')[0].value = obj.paperName;
-            $('#refsName')[0].value = obj.refsName;
-            $('#keywords')[0].value = obj.keywords;
+            if (!$('#titles')[0].value) {
+                $('#titles')[0].value = obj.titles || "";
+            }
+            if (!$('#paperName')[0].value) {
+                $('#paperName')[0].value = obj.paperName || "";
+            }
+            if (!$('#refsName')[0].value) {
+                $('#refsName')[0].value = obj.refsName || "";
+            }
+            if (!$('#keywords')[0].value) {
+                $('#keywords')[0].value = obj.keywords || "";
+            }
         }
 
         function saveOutput(link) {
@@ -140,6 +179,10 @@
 
                 var refsName = $('#refsName')[0].value;
                 fdata.append("refsName", refsName);
+
+                var criterion = document.getElementById("Criteria").value;
+                fdata.append("criterionName", criterion);
+
 
                 $('#main')[0].style.display = 'none';
                 $('#load')[0].style.display = 'flex';

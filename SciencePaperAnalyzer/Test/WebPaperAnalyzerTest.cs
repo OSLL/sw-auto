@@ -93,8 +93,7 @@ namespace Test
             var analyzer = new PapersAnalyzer(env);
             var service = new PaperAnalyzerService(analyzer);
 
-            var controller = new HomeController(_mockLogger.Object, service, _mockRepository.Object, 
-                configuration: _mockConfiguration.Object);
+            var controller = new HomeController(_mockLogger.Object, service, _mockRepository.Object);
 
             // Загрузка pdf файла для тестирования из текущей директории
             // TODO: Нестабильное решение с множеством сторонних эффектов (если кто-то поменяет структуру папок в решении?)
@@ -135,8 +134,7 @@ namespace Test
             var analyzer = new PapersAnalyzer(env);
             var service = new PaperAnalyzerService(analyzer);
 
-            var controller = new HomeController(_mockLogger.Object, service, _mockRepository.Object,
-                configuration: _mockConfiguration.Object);
+            var controller = new HomeController(_mockLogger.Object, service, _mockRepository.Object);
 
             // Загрузка pdf файла для тестирования из текущей директории
             // TODO: Нестабильное решение с множеством сторонних эффектов (если кто-то поменяет структуру папок в решении?)
@@ -182,8 +180,7 @@ namespace Test
             var analyzer = new PapersAnalyzer(env);
             var service = new PaperAnalyzerService(analyzer);
 
-            var controller = new HomeController(_mockLogger.Object, service, _mockRepository.Object,
-                configuration: _mockConfiguration.Object);
+            var controller = new HomeController(_mockLogger.Object, service, _mockRepository.Object);
 
             var memoryStream = new MemoryStream();
 

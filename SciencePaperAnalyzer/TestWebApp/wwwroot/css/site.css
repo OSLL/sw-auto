@@ -743,3 +743,46 @@ input[type="file"] {
     background: var(--basic_hover);
     color: var(--darkText);
 }
+
+.upload-form2 {
+    width: 20%;
+    height: 40px;
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.criterion-add-submit, .criterion-add-edit {
+    width: 15%;
+    height: 300px;
+    display: -webkit-inline-flex;
+    display: -moz-inline-flex;
+    display: inline-flex;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.criterion-add-submit input {
+    text-align: center;
+}
+
+.criterion-add-edit {
+    width: 20%;
+    margin: 0 2%;
+}
+
+.criterion-add-edit input {
+    width: 30%;
+    text-align: center;
+}
+
+.criterion-add-bounds {
+    width: 80%;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 100px;
+}

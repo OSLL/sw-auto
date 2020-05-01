@@ -1,4 +1,6 @@
 ﻿<div align="center">
     <input type="button" class="upload-form2" value="Добавить критерий" onclick="window.location.href='@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = false})';"/>
     <input type="button" class="upload-form2" value="Посмотреть результаты" onclick="window.location.href='@Url.Action("TeacherViewResults", "StudentTeacher")';" />
+    <input type="button" class="upload-form2" value="Выполнить проверку" onclick="window.location.href = '@Url.Action("Index", "Home")';"/>
+    <input type="button" class="upload-form2" value="Выйти из аккаунта" onclick="window.location.href='@Url.Action("Logout", "Account")';"/>
 </div>

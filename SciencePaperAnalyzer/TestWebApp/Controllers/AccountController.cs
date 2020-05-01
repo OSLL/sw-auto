@@ -50,6 +50,8 @@ namespace TestWebApp.Controllers
                     await _context.AddUser(user);
                     await Authenticate(user);
 
+                    if (user.Role == "teacher")
+                        return RedirectToAction("TeacherMainPage", "StudentTeacher");
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -74,6 +76,8 @@ namespace TestWebApp.Controllers
                 {
                     await Authenticate(user);
 
+                    if (user.Role == "teacher")
+                        return RedirectToAction("TeacherMainPage", "StudentTeacher");
                     return RedirectToAction("Index", "Home");
                 }
             }

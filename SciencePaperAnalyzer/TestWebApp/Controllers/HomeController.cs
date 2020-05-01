@@ -160,8 +160,6 @@ namespace WebPaperAnalyzer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (User.Identity.Name != null && User.FindFirst(x => x.Type == ClaimsIdentity.DefaultRoleClaimType).Value == "teacher")
-                return RedirectToAction("TeacherMainPage", "StudentTeacher");
             var criteria = await _context.GetCriteria();
             SelectList criteriaList = new SelectList(criteria.ToList().Select(c => c.Name));
             ViewBag.Criteria = criteriaList;

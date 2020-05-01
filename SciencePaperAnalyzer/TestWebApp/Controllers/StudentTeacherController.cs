@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AnalyzeResults.Settings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -29,11 +30,13 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "teacher")]
         public IActionResult TeacherMainPage()
         {
             return View();
         }
         [HttpGet]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> TeacherAddCriterion(bool mine)
         {
             _criteria = await _context.GetCriteria();
@@ -42,6 +45,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
         {
             if (model.IsValid())
@@ -73,12 +77,14 @@ namespace TestWebApp.Controllers
         }
         
         [HttpGet]
+        [Authorize(Roles = "teacher")]
         public IActionResult TeacherViewResults()
         {
             return View(_results.GetResultsByLogin(User.Identity.Name, true).Where(res => res.StudentLogin != null));
         }
 
         [HttpGet]
+        [Authorize(Roles = "teacher")]
         public IActionResult EditDeleteCriterion(string name)
         {
             var criterion = _context.GetCriteriaByName(name);
@@ -86,6 +92,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> EditCriterion(ResultCriterion editCriterion)
         {
             if (editCriterion.IsValid())
@@ -101,7 +108,8 @@ namespace TestWebApp.Controllers
             }
         }
 
-
+        [HttpPost]
+        [Authorize(Roles = "teacher")]
         public async Task<IActionResult> DeleteCriterion(string id)
         {
             await _context.DeleteCriterion(id);

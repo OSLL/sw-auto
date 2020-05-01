@@ -33,5 +33,13 @@ namespace WebPaperAnalyzer.Models
         public double ZipfFactor { get; set; }
         public double ZipfFactorLowerBound { get; set; }
         public double ZipfFactorUpperBound { get; set; }
+
+        public bool IsValid()
+        {
+            return (Math.Abs(WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor - 100) < 0.001) &&
+                   WaterCriterionLowerBound < WaterCriterionUpperBound &&
+                   KeyWordsCriterionLowerBound < KeyWordsCriterionUpperBound &&
+                   ZipfFactorLowerBound < ZipfFactorUpperBound;
+        }
     }
 }

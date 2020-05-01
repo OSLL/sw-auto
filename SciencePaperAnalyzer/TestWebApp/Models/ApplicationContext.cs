@@ -30,13 +30,6 @@ namespace WebPaperAnalyzer.Models
         public ApplicationContext(MongoSettings settings)
         {
             string connectionString = @"mongodb://root:example@mongo:27017";
-//            var internalIdentity = new MongoInternalIdentity("admin", settings.User);
-//            var passwordEvidence = new PasswordEvidence(settings.Password);
-//            var mongoCredential = new MongoCredential("SCRAM-SHA-1", internalIdentity, passwordEvidence);
-//            var credentials = new List<MongoCredential> { mongoCredential };
-//            var mongoSettings = new MongoClientSettings {Credentials = credentials};
-//            var address = new MongoServerAddress(settings.Host);
-//            mongoSettings.Server = address;
             MongoClient client = new MongoClient(connectionString);
             IMongoDatabase database = client.GetDatabase("resultsDB");
             Users = database.GetCollection<User>("users");
@@ -62,6 +55,12 @@ namespace WebPaperAnalyzer.Models
         public ResultCriterion GetCriteriaByName(string name)
         {
             var filter = Builders<ResultCriterion>.Filter.Eq("Name", name);
+            return Criteria.Find(filter).FirstOrDefault();
+        }
+
+        public ResultCriterion GetCriteriaById(string id)
+        {
+            var filter = Builders<ResultCriterion>.Filter.Eq("_id", id);
             return Criteria.Find(filter).FirstOrDefault();
         }
 

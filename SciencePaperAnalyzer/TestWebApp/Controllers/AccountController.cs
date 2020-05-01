@@ -69,7 +69,7 @@ namespace TestWebApp.Controllers
             if (model.Login != null && model.Password != null)
             {
                 User user = null;
-                user = _users.First(u => u.Login.Equals(model.Login) && u.Password.Equals(model.Password));
+                user = _users.FirstOrDefault(u => u.Login.Equals(model.Login) && u.Password.Equals(model.Password));
                 if (user != null)
                 {
                     await Authenticate(user);

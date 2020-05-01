@@ -34,43 +34,42 @@ namespace TestWebApp.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> TeacherAddCriterion()
+        public async Task<IActionResult> TeacherAddCriterion(bool mine)
         {
             _criteria = await _context.GetCriteria();
-            _criteria = await _context.GetCriteria();
-            ViewBag.Criteria = _criteria.ToList();
+            ViewBag.Criteria = mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
         {
-            if (ModelState.IsValid)
+            if (model.IsValid())
             {
                 _criteria = await _context.GetCriteria();
                 ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
-
                 if (criterion == null)
                 {
                     criterion = new ResultCriterion()
                     {
-                        Name = model.Name, TeacherLogin = User.Identity.Name,
-                        ErrorCost = double.Parse(model.ErrorCost),
-                        ZipfFactor = double.Parse(model.ZipfFactor),
-                        ZipfFactorLowerBound = double.Parse(model.ZipfFactorLowerBound),
-                        ZipfFactorUpperBound = double.Parse(model.ZipfFactorUpperBound),
-                        WaterCriterionFactor = double.Parse(model.WaterCriterionFactor),
-                        WaterCriterionLowerBound = double.Parse(model.WaterCriterionLowerBound),
-                        WaterCriterionUpperBound = double.Parse(model.WaterCriterionUpperBound),
-                        KeyWordsCriterionFactor = double.Parse(model.KeyWordsCriterionFactor),
-                        KeyWordsCriterionLowerBound = double.Parse(model.KeyWordsCriterionLowerBound),
-                        KeyWordsCriterionUpperBound = double.Parse(model.KeyWordsCriterionUpperBound)
+                        Name = model.Name,
+                        TeacherLogin = User.Identity.Name,
+                        ErrorCost = model.ErrorCost,
+                        ZipfFactor = model.ZipfFactor,
+                        ZipfFactorLowerBound = model.ZipfFactorLowerBound,
+                        ZipfFactorUpperBound = model.ZipfFactorUpperBound,
+                        WaterCriterionFactor = model.WaterCriterionFactor,
+                        WaterCriterionLowerBound = model.WaterCriterionLowerBound,
+                        WaterCriterionUpperBound = model.WaterCriterionUpperBound,
+                        KeyWordsCriterionFactor = model.KeyWordsCriterionFactor,
+                        KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound,
+                        KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound
                     };
                     await _context.AddCriterion(criterion);
                 }
             }
 
-            return RedirectToAction("TeacherAddCriterion", "StudentTeacher");
+            return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});
         }
         
         [HttpGet]
@@ -82,22 +81,31 @@ namespace TestWebApp.Controllers
         [HttpGet]
         public IActionResult EditDeleteCriterion(string name)
         {
-            ResultCriterion criterion = _context.GetCriteriaByName(name);
+            var criterion = _context.GetCriteriaByName(name);
             return View(criterion);
         }
 
         [HttpPost]
         public async Task<IActionResult> EditCriterion(ResultCriterion editCriterion)
         {
-            await _context.EditCriterion(editCriterion);
-            return RedirectToAction("EditDeleteCriterion", "StudentTeacher", new {name = editCriterion.Name});
+            if (editCriterion.IsValid())
+            {
+                await _context.EditCriterion(editCriterion);
+                return RedirectToAction("EditDeleteCriterion", "StudentTeacher",
+                    new {name = editCriterion.Name});
+            }
+            else
+            {
+                return RedirectToAction("EditDeleteCriterion", "StudentTeacher",
+                    new {name = _context.GetCriteriaById(editCriterion.Id).Name});
+            }
         }
 
 
         public async Task<IActionResult> DeleteCriterion(string id)
         {
             await _context.DeleteCriterion(id);
-            return RedirectToAction("TeacherAddCriterion", "StudentTeacher");
+            return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});
         }
     }
 }

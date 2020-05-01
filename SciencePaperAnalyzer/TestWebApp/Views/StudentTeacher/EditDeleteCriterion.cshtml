@@ -9,14 +9,17 @@
             Название
         </h3>
         <input type="text" asp-for="Name" />
-        <input type="text" asp-for="Id" />
-
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="TeacherLogin"/>
         <h3>
             ErrorCost
         </h3>
         <input type="text" asp-for="ErrorCost" />
-        <input type="submit" value="Сохранить изменения" />
-        <input type="button" value="Удалить критерий" onclick="window.location.href = '@Url.Action("DeleteCriterion", "StudentTeacher", new {id = @Model.Id})';" />
+        @if (User.Identity.Name == @Model.TeacherLogin)
+        {
+            <input type="submit" value="Сохранить изменения" />
+            <input type="button" value="Удалить критерий" onclick="window.location.href = '@Url.Action("DeleteCriterion", "StudentTeacher", new {id = @Model.Id})';" />
+        }
     </div>
     <div class="criterion-add-edit">
         <h3>

@@ -170,20 +170,8 @@ namespace PaperAnalyzer
                 }
 
                 text = text.Replace("\n", "");
-                //var paperName = "АВТОМАТИЗАЦИЯ ПРОЦЕССА ПРОВЕРКИ ТЕКСТА НА СООТВЕТСТВИЕ НАУЧНОМУ СТИЛЮ";
-                //var refsName = "Список использованных источников";
 
-                var titles = new List<string>();
-                titles = titlesString.Split("\n").Select(x => x.Trim()).ToList();
-                //{
-                //    "Проблема и её актуальность",
-                //    "Обзор предметной области",
-                //    "Выбор метода решения",
-                //    "Описание метода решения",
-                //    "Исследование решения",
-                //    "Результаты исследования",
-                //    "Заключение"
-                //};
+                var titles = titlesString.Split("\n").Select(x => x.Trim()).ToList();
 
                 titles.Add(paperName);
 
@@ -455,10 +443,6 @@ namespace PaperAnalyzer
 
                 foreach (var notRefdTable in tablesNotRefd)
                     errors.Add(new TableNotReferencedError(notRefdTable));
-
-                //test
-                errors.Add(new PictureNotReferencedError(1337));
-                errors.Add(new TableNotReferencedError(1337));
 
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.ErrorCost);
 

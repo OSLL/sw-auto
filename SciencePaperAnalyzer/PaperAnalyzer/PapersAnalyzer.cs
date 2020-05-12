@@ -1,12 +1,9 @@
 ﻿using LangAnalyzerStd.Morphology;
 using LangAnalyzerStd.Postagger;
-using LangAnalyzerStd.SentenceSplitter;
-using LangAnalyzerStd.Tokenizing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using AnalyzeResults.Presentation;
-using static LangAnalyzerStd.Morphology.MorphoModelConfig;
 using SentenceHtml = AnalyzeResults.Presentation.Sentence;
 using WordHtml = AnalyzeResults.Presentation.Word;
 using Word = LangAnalyzerStd.Tokenizing.Word;
@@ -24,15 +21,37 @@ namespace PaperAnalyzer
     {
         private readonly IPaperAnalyzerEnvironment _environment;
 
+        private static readonly List<string> personalPronouns = new List<string>
+        {
+            "я", "ты", "он", "она", "оно", "мой", "мое", "моё", "моя", "твой", "твое", "твоё", "твоя", "его", "её"
+        };
+
         public PapersAnalyzer(IPaperAnalyzerEnvironment environment)
         {
             _environment = environment;
         }
 
-        public PaperAnalysisResult ProcessTextWithResult(string text, string titlesString, string paperName, string refsName, ResultScoreSettings settings)
+        public PaperAnalysisResult ProcessTextWithResult(
+            string text, 
+            string titlesString, 
+            string paperName, 
+            string refsName, 
+            ResultScoreSettings settings)
         {
             try
             {
+                var forbiddenDicts = new List<ForbiddenWordHashSet>();
+                // IEnumerable из словарей надо привести к HashSet
+                foreach (var dict in settings.ForbiddenWords)
+                {
+                    var items = new ForbiddenWordHashSet()
+                    {
+                        Name = dict.Name,
+                        Words = dict.Words.ToHashSet()
+                    };
+                }
+
+
                 if (string.IsNullOrEmpty(refsName))
                     refsName = "Список литературы";
                 if (string.IsNullOrEmpty(paperName))
@@ -348,6 +367,14 @@ namespace PaperAnalyzer
                             else
                                 dictionary.Add(normalForm, 1);
                         }
+
+                        foreach (var dict in forbiddenDicts)
+                        {
+                            if (dict.Words.Contains(word.morphology.NormalForm))
+                            {
+                                dict.Errors.Add(word.valueOriginal);
+                            }
+                        }
                     }
                 }
 
@@ -456,9 +483,13 @@ namespace PaperAnalyzer
                 foreach (var notRefdTable in tablesNotRefd)
                     errors.Add(new TableNotReferencedError(notRefdTable));
 
-                //test
-                errors.Add(new PictureNotReferencedError(1337));
-                errors.Add(new TableNotReferencedError(1337));
+                foreach (var dict in forbiddenDicts)
+                {
+                    foreach (var errorWord in dict.Errors)
+                    {
+                        errors.Add(new UseOfForbiddenWordsError(dict.Name, errorWord));
+                    }
+                }
 
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.ErrorCost);
 
@@ -489,10 +520,5 @@ namespace PaperAnalyzer
 
             return Math.Sqrt(deviation / idealZipf.Count);
         }
-
-        private static List<string> personalPronouns = new List<string>
-        {
-            "я", "ты", "он", "она", "оно", "мой", "мое", "моё", "моя", "твой", "твое", "твоё", "твоя", "его", "её"
-        };
     }
 }

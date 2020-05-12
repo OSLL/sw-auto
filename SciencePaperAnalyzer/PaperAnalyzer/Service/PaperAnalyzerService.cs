@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
 using TextExtractor;
+using WebPaperAnalyzer.Models;
 
 namespace PaperAnalyzer.Service
 {

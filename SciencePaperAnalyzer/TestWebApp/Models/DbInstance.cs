@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.ComponentModel.DataAnnotations;
 
 namespace WebPaperAnalyzer.Models
 {
@@ -33,6 +30,7 @@ namespace WebPaperAnalyzer.Models
         public double ZipfFactor { get; set; }
         public double ZipfFactorLowerBound { get; set; }
         public double ZipfFactorUpperBound { get; set; }
+        public IEnumerable<string> ForbiddenWordDictionary { get; set; }
 
         public bool IsValid()
         {
@@ -42,4 +40,6 @@ namespace WebPaperAnalyzer.Models
                    ZipfFactorLowerBound < ZipfFactorUpperBound;
         }
     }
+
+
 }

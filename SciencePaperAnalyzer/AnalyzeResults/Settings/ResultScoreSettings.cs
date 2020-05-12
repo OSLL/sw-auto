@@ -1,4 +1,5 @@
-﻿using AnalyzeResults.Helpers;
+﻿using System.Collections.Generic;
+using WebPaperAnalyzer.Models;
 
 namespace AnalyzeResults.Settings
 {
@@ -14,5 +15,7 @@ namespace AnalyzeResults.Settings
         public double ZipfFactor { get; set; }
         public double ZipfFactorLowerBound { get; set; }
         public double ZipfFactorUpperBound { get; set; }
+
+        public IEnumerable<ForbiddenWords> ForbiddenWords { get; set; }
     }
 }

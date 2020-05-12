@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PaperAnalyzer;
@@ -75,10 +72,12 @@ namespace WebPaperAnalyzer.Controllers
                 //Возможно только во время выполнения теста
             }
 
-            ResultScoreSettings settings = null;
+            ResultScoreSettings settings;
 
             if (criterion != null)
             {
+
+
                 settings = new ResultScoreSettings
                 {
                     ErrorCost = criterion.ErrorCost,
@@ -90,7 +89,8 @@ namespace WebPaperAnalyzer.Controllers
                     WaterCriterionUpperBound = criterion.WaterCriterionUpperBound,
                     ZipfFactor = criterion.ZipfFactor,
                     ZipfFactorLowerBound = criterion.ZipfFactorLowerBound,
-                    ZipfFactorUpperBound = criterion.ZipfFactorUpperBound
+                    ZipfFactorUpperBound = criterion.ZipfFactorUpperBound,
+                    ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary),
                 };
             }
             else
@@ -107,7 +107,7 @@ namespace WebPaperAnalyzer.Controllers
                     WaterCriterionUpperBound = 20,
                     ZipfFactor = 30,
                     ZipfFactorLowerBound = 5.5,
-                    ZipfFactorUpperBound = 9.5
+                    ZipfFactorUpperBound = 9.5,
                 };
             }
 
@@ -118,9 +118,6 @@ namespace WebPaperAnalyzer.Controllers
             }
             catch (Exception ex)
             {
-                result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
-                    new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
-
                 return Error(ex.Message);
             }
 
@@ -198,6 +195,17 @@ namespace WebPaperAnalyzer.Controllers
                 RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier,
                 Message = message
             });
+        }
+
+        private async Task<IEnumerable<ForbiddenWords>> GetForbiddenWords(IEnumerable<string> forbiddenDictNames)
+        {
+            var res = new List<ForbiddenWords>();
+            foreach (var dict in forbiddenDictNames)
+            {
+                var item = await _context.GetDictionary(dict);
+                res.Add(item);
+            }
+            return res;
         }
     }
 }

@@ -67,7 +67,9 @@ namespace TestWebApp.Controllers
                         WaterCriterionUpperBound = model.WaterCriterionUpperBound,
                         KeyWordsCriterionFactor = model.KeyWordsCriterionFactor,
                         KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound,
-                        KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound
+                        KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound,
+                        ForbiddenWordDictionary = model.ForbiddenWordDictionary,
+                        
                     };
                     await _context.AddCriterion(criterion);
                 }

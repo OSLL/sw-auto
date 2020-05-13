@@ -10,54 +10,65 @@
 
 @using (Html.BeginForm())
 {
-    <fieldset>
-        <div class="criterion-add-submit">
-            <h3>
-                Название
-            </h3>
-            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { placeholder = "Название" } })
+<fieldset>
+    <div class="criterion-add-submit">
+        <h3>
+            Название
+        </h3>
+        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { placeholder = "Название" } })
 
-            <h3>
-                ErrorCost
-            </h3>
-            @Html.EditorFor(model => model.ErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+        <h3>
+            ErrorCost
+        </h3>
+        @Html.EditorFor(model => model.ErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
 
-            <input type="submit" value="Добавить критерий" />
+        <input type="submit" value="Добавить критерий" />
+    </div>
+
+    <div class="criterion-add-edit">
+        <h3>
+            WaterCriterionFactor
+        </h3>
+        @Html.EditorFor(model => model.WaterCriterionFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+
+        <div class="criterion-add-bounds">
+            @Html.EditorFor(model => model.WaterCriterionLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
+            @Html.EditorFor(model => model.WaterCriterionUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
         </div>
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            KeyWordsCriterionFactor
+        </h3>
+        @Html.EditorFor(model => model.KeyWordsCriterionFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
 
-        <div class="criterion-add-edit">
-            <h3>
-                WaterCriterionFactor
-            </h3>
-            @Html.EditorFor(model => model.WaterCriterionFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-
-            <div class="criterion-add-bounds">
-                @Html.EditorFor(model => model.WaterCriterionLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
-                @Html.EditorFor(model => model.WaterCriterionUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
-            </div>
+        <div class="criterion-add-bounds">
+            @Html.EditorFor(model => model.KeyWordsCriterionLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
+            @Html.EditorFor(model => model.KeyWordsCriterionUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
         </div>
-        <div class="criterion-add-edit">
-            <h3>
-                KeyWordsCriterionFactor
-            </h3>
-            @Html.EditorFor(model => model.KeyWordsCriterionFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-
-            <div class="criterion-add-bounds">
-                @Html.EditorFor(model => model.KeyWordsCriterionLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
-                @Html.EditorFor(model => model.KeyWordsCriterionUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
-            </div>
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            ZipfFactor
+        </h3>
+        @Html.EditorFor(model => model.ZipfFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+        <div class="criterion-add-bounds">
+            @Html.EditorFor(model => model.ZipfFactorLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
+            @Html.EditorFor(model => model.ZipfFactorUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
         </div>
-        <div class="criterion-add-edit">
-            <h3>
-                ZipfFactor
-            </h3>
-            @Html.EditorFor(model => model.ZipfFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-            <div class="criterion-add-bounds">
-                @Html.EditorFor(model => model.ZipfFactorLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
-                @Html.EditorFor(model => model.ZipfFactorUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
-            </div>
+    </div>
+    @Html.EditorFor(model => model.ForbiddenWordDictionary)
+    @foreach (var item in ViewBag.Dicts)
+    {
+        <div class="checkbox">
+            <label>
+                <input type="checkbox"
+                       name="SelectedDicts"
+                       value="@item" />
+            </label>
         </div>
-    </fieldset>
+    }
+</fieldset>
 }
 
 <h2>Существующие критерии</h2>

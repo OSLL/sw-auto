@@ -9,7 +9,7 @@ namespace WebPaperAnalyzer.Models
 {
     public class ForbiddenWords
     {
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonId]
         public string Name { get; set; }
 
         public IEnumerable<string> Words { get; set; }

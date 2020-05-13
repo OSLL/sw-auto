@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -108,6 +109,7 @@ namespace WebPaperAnalyzer.Controllers
                     ZipfFactor = 30,
                     ZipfFactorLowerBound = 5.5,
                     ZipfFactorUpperBound = 9.5,
+                    ForbiddenWords = new List<ForbiddenWords>(),
                 };
             }
 

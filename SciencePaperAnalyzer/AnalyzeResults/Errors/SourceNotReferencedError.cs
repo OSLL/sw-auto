@@ -6,9 +6,9 @@ namespace AnalyzeResults.Errors
     [Serializable]
     public class SourceNotReferencedError : Error
     {
-        public SourceNotReferencedError(int number)
+        public SourceNotReferencedError(int number, double errorCost, double weight)
             : base(ErrorType.SourceNotReferenced, "Нет ссылки на источник", $"Источник №{number}",
-                  "Необходимо хотя бы раз сослаться на каждый из перечисленных источников.")
+                  "Необходимо хотя бы раз сослаться на каждый из перечисленных источников.", errorCost, weight)
         {
             Number = number;
         }

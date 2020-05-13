@@ -46,31 +46,28 @@ namespace TestWebApp.Controllers
 
         [HttpPost]
         [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
+        public async Task<IActionResult> TeacherAddCriterion(ResultCriterion model)
         {
-            if (model.IsValid())
+            _criteria = await _context.GetCriteria();
+            if (_criteria.FirstOrDefault(u => u.Name == model.Name) == null)
             {
-                _criteria = await _context.GetCriteria();
-                ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
-                if (criterion == null)
+                /*criterion = new ResultCriterion()
                 {
-                    criterion = new ResultCriterion()
-                    {
-                        Name = model.Name,
-                        TeacherLogin = User.Identity.Name,
-                        ErrorCost = model.ErrorCost,
-                        ZipfFactor = model.ZipfFactor,
-                        ZipfFactorLowerBound = model.ZipfFactorLowerBound,
-                        ZipfFactorUpperBound = model.ZipfFactorUpperBound,
-                        WaterCriterionFactor = model.WaterCriterionFactor,
-                        WaterCriterionLowerBound = model.WaterCriterionLowerBound,
-                        WaterCriterionUpperBound = model.WaterCriterionUpperBound,
-                        KeyWordsCriterionFactor = model.KeyWordsCriterionFactor,
-                        KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound,
-                        KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound
-                    };
-                    await _context.AddCriterion(criterion);
-                }
+                    Name = model.Name,
+                    TeacherLogin = User.Identity.Name,
+                    ZipfFactor = model.ZipfFactor,
+                    ZipfFactorLowerBound = model.ZipfFactorLowerBound,
+                    ZipfFactorUpperBound = model.ZipfFactorUpperBound,
+                    WaterCriterionFactor = model.WaterCriterionFactor,
+                    WaterCriterionLowerBound = model.WaterCriterionLowerBound,
+                    WaterCriterionUpperBound = model.WaterCriterionUpperBound,
+                    KeyWordsCriterionFactor = model.KeyWordsCriterionFactor,
+                    KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound,
+                    KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound
+                };*/
+                model.TeacherLogin = User.Identity.Name;
+                model.Recalculate();
+                await _context.AddCriterion(model);
             }
 
             return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});
@@ -95,17 +92,9 @@ namespace TestWebApp.Controllers
         [Authorize(Roles = "teacher")]
         public async Task<IActionResult> EditCriterion(ResultCriterion editCriterion)
         {
-            if (editCriterion.IsValid())
-            {
-                await _context.EditCriterion(editCriterion);
-                return RedirectToAction("EditDeleteCriterion", "StudentTeacher",
-                    new {name = editCriterion.Name});
-            }
-            else
-            {
-                return RedirectToAction("EditDeleteCriterion", "StudentTeacher",
-                    new {name = _context.GetCriteriaById(editCriterion.Id).Name});
-            }
+            editCriterion.Recalculate();
+            await _context.EditCriterion(editCriterion);
+            return RedirectToAction("EditDeleteCriterion", "StudentTeacher",new {name = editCriterion.Name});
         }
 
         [HttpPost]

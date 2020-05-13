@@ -17,29 +17,27 @@ namespace WebPaperAnalyzer.Models
         public string Role { get; set; }
     }
 
-    public class ResultCriterion
+    public class ResultCriterion : AnalyzeResults.Settings.ResultScoreSettings
     {
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+
         public string TeacherLogin { get; set; }
         public string Name { get; set; }
-        public double ErrorCost { get; set; }
-        public double WaterCriterionFactor { get; set; }
-        public double WaterCriterionLowerBound { get; set; }
-        public double WaterCriterionUpperBound { get; set; }
-        public double KeyWordsCriterionFactor { get; set; }
-        public double KeyWordsCriterionLowerBound { get; set; }
-        public double KeyWordsCriterionUpperBound { get; set; }
-        public double ZipfFactor { get; set; }
-        public double ZipfFactorLowerBound { get; set; }
-        public double ZipfFactorUpperBound { get; set; }
 
-        public bool IsValid()
+        public void Recalculate()
         {
-            return (Math.Abs(WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor - 100) < 0.001) &&
-                   WaterCriterionLowerBound < WaterCriterionUpperBound &&
-                   KeyWordsCriterionLowerBound < KeyWordsCriterionUpperBound &&
-                   ZipfFactorLowerBound < ZipfFactorUpperBound;
+            var stabilizer = 100 / (WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor +
+                                    UseOfPersonalPronounsCost + SourceNotReferencedCost + ShortSectionCost +
+                                    PictureNotReferencedCost + TableNotReferencedCost);
+            WaterCriterionFactor *= stabilizer;
+            KeyWordsCriterionFactor *= stabilizer;
+            ZipfFactor *= stabilizer;
+            UseOfPersonalPronounsCost *= stabilizer;
+            SourceNotReferencedCost *= stabilizer;
+            ShortSectionCost *= stabilizer;
+            PictureNotReferencedCost *= stabilizer;
+            TableNotReferencedCost *= stabilizer;
         }
     }
 }

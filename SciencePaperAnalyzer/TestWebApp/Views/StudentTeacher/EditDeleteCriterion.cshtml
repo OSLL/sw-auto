@@ -10,11 +10,7 @@
         </h3>
         <input type="text" asp-for="Name" />
         <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="TeacherLogin"/>
-        <h3>
-            ErrorCost
-        </h3>
-        <input type="text" asp-for="ErrorCost" />
+        <input type="hidden" asp-for="TeacherLogin" />
         @if (User.Identity.Name == @Model.TeacherLogin)
         {
             <input type="submit" value="Сохранить изменения" />
@@ -53,5 +49,40 @@
             <input type="text" asp-for="ZipfFactorLowerBound" />
             <input type="text" asp-for="ZipfFactorUpperBound" />
         </div>
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            UseOfPersonalPronouns
+        </h3>
+        <input type="text" asp-for="UseOfPersonalPronounsCost" />
+        <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            SourceNotReferenced
+        </h3>
+        <input type="text" asp-for="SourceNotReferencedCost" />
+        <input type="text" asp-for="SourceNotReferencedErrorCost" />
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            ShortSection
+        </h3>
+        <input type="text" asp-for="ShortSectionCost" />
+        <input type="text" asp-for="ShortSectionErrorCost" />
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            PictureNotReferenced
+        </h3>
+        <input type="text" asp-for="PictureNotReferencedCost" />
+        <input type="text" asp-for="PictureNotReferencedErrorCost" />
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            TableNotReferenced
+        </h3>
+        <input type="text" asp-for="TableNotReferencedCost" />
+        <input type="text" asp-for="TableNotReferencedErrorCost" />
     </div>
 </form>

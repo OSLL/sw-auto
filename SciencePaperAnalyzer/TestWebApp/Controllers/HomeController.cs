@@ -75,30 +75,17 @@ namespace WebPaperAnalyzer.Controllers
                 //Возможно только во время выполнения теста
             }
 
-            ResultScoreSettings settings = null;
+            ResultScoreSettings settings;
 
             if (criterion != null)
             {
-                settings = new ResultScoreSettings
-                {
-                    ErrorCost = criterion.ErrorCost,
-                    KeyWordsCriterionFactor = criterion.KeyWordsCriterionFactor,
-                    KeyWordsCriterionLowerBound = criterion.KeyWordsCriterionLowerBound,
-                    KeyWordsCriterionUpperBound = criterion.KeyWordsCriterionUpperBound,
-                    WaterCriterionFactor = criterion.WaterCriterionFactor,
-                    WaterCriterionLowerBound = criterion.WaterCriterionLowerBound,
-                    WaterCriterionUpperBound = criterion.WaterCriterionUpperBound,
-                    ZipfFactor = criterion.ZipfFactor,
-                    ZipfFactorLowerBound = criterion.ZipfFactorLowerBound,
-                    ZipfFactorUpperBound = criterion.ZipfFactorUpperBound
-                };
+                settings = criterion;
             }
             else
             {
                 //Возможно только во время выполнения теста
                 settings = new ResultScoreSettings()
                 {
-                    ErrorCost = 2,
                     KeyWordsCriterionFactor = 35,
                     KeyWordsCriterionUpperBound = 6,
                     KeyWordsCriterionLowerBound = 14,
@@ -107,7 +94,17 @@ namespace WebPaperAnalyzer.Controllers
                     WaterCriterionUpperBound = 20,
                     ZipfFactor = 30,
                     ZipfFactorLowerBound = 5.5,
-                    ZipfFactorUpperBound = 9.5
+                    ZipfFactorUpperBound = 9.5,
+                    UseOfPersonalPronounsCost = 0,
+                    UseOfPersonalPronounsErrorCost = 0,
+                    SourceNotReferencedCost = 0,
+                    SourceNotReferencedErrorCost = 0,
+                    ShortSectionCost = 0,
+                    ShortSectionErrorCost = 0,
+                    PictureNotReferencedCost = 0,
+                    PictureNotReferencedErrorCost = 0,
+                    TableNotReferencedCost = 0,
+                    TableNotReferencedErrorCost = 0
                 };
             }
 
@@ -124,7 +121,7 @@ namespace WebPaperAnalyzer.Controllers
                 return Error(ex.Message);
             }
 
-            AnalysisResult analysisResult = null;
+            AnalysisResult analysisResult;
             if (criterion != null)
             {
                 analysisResult = new AnalysisResult

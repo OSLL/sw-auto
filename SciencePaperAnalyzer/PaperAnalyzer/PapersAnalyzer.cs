@@ -319,7 +319,8 @@ namespace PaperAnalyzer
                         if (word.morphology.PartOfSpeech == PartOfSpeechEnum.Pronoun)
                         {
                             if (personalPronouns.Contains(word.morphology.NormalForm))
-                                errors.Add(new UseOfPersonalPronounsError(new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex)));
+                                errors.Add(new UseOfPersonalPronounsError(new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex),
+                                    settings.UseOfPersonalPronounsErrorCost, settings.UseOfPersonalPronounsCost));
                         }
 
                         if (stopPartsOfSpeech.Contains(word.morphology.PartOfSpeech))
@@ -407,7 +408,7 @@ namespace PaperAnalyzer
                 {
                     if (!reference.ReferedTo)
                     {
-                        errors.Add(new SourceNotReferencedError(reference.Number));
+                        errors.Add(new SourceNotReferencedError(reference.Number, settings.SourceNotReferencedErrorCost, settings.SourceNotReferencedCost));
                     }
                 }
 
@@ -420,7 +421,7 @@ namespace PaperAnalyzer
                     {
                         sections[i].HasErrors = true;
                         var error = new ShortSectionError(sections[i].Id, sections[i].ToStringVersion(),
-                            sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count);
+                            sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count, settings.ShortSectionErrorCost, settings.ShortSectionCost);
                         errors.Add(error);
                     }
                 }
@@ -439,12 +440,12 @@ namespace PaperAnalyzer
                 var tablesNotRefd = tableMatches.Except(tableRefMatches).ToList();
 
                 foreach (var notRefdPic in picsNotRefd)
-                    errors.Add(new PictureNotReferencedError(notRefdPic));
+                    errors.Add(new PictureNotReferencedError(notRefdPic, settings.PictureNotReferencedErrorCost, settings.PictureNotReferencedCost));
 
                 foreach (var notRefdTable in tablesNotRefd)
-                    errors.Add(new TableNotReferencedError(notRefdTable));
+                    errors.Add(new TableNotReferencedError(notRefdTable, settings.TableNotReferencedErrorCost, settings.TableNotReferencedCost));
 
-                var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.ErrorCost);
+                var analysisResult = new PaperAnalysisResult(sections, criteria, errors);
 
                 GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
                 GC.WaitForPendingFinalizers();

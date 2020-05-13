@@ -31,36 +31,4 @@ namespace WebPaperAnalyzer.ViewModels
         [DataType(DataType.Password)]
         public string Password { get; set; }
     }
-
-    public class AddCriterion
-    {
-        [Required(ErrorMessage = "Не указан критерий")]
-        public string Name { get; set; }
-
-        [Required(ErrorMessage = "Не указан критерий")]
-        public double ErrorCost { get; set; }
-
-        [Required(ErrorMessage = "Сумма весов должна равняться 100")]
-        public double WaterCriterionFactor { get; set; }
-        public double WaterCriterionLowerBound { get; set; }
-        public double WaterCriterionUpperBound { get; set; }
-
-        [Required(ErrorMessage = "Сумма весов должна равняться 100")]
-        public double KeyWordsCriterionFactor { get; set; }
-        public double KeyWordsCriterionLowerBound { get; set; }
-        public double KeyWordsCriterionUpperBound { get; set; }
-
-        [Required(ErrorMessage = "Сумма весов должна равняться 100")]
-        public double ZipfFactor { get; set; }
-        public double ZipfFactorLowerBound { get; set; }
-        public double ZipfFactorUpperBound { get; set; }
-
-        public bool IsValid()
-        {
-            return (Math.Abs(WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor - 100) < 0.001) &&
-                   WaterCriterionLowerBound < WaterCriterionUpperBound &&
-                   KeyWordsCriterionLowerBound < KeyWordsCriterionUpperBound &&
-                   ZipfFactorLowerBound < ZipfFactorUpperBound;
-        }
-    }
 }

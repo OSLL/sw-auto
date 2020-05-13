@@ -9,7 +9,7 @@ namespace AnalyzeResults.Presentation
     [Serializable]
     public class PaperAnalysisResult
     {
-        public PaperAnalysisResult(IEnumerable<Section> sections, IEnumerable<Criterion> criteria, IEnumerable<Error> errors, double errorCost = 2.0)
+        public PaperAnalysisResult(IEnumerable<Section> sections, IEnumerable<Criterion> criteria, IEnumerable<Error> errors)
         {
             Sections = new List<Section>();
             Sections.AddRange(sections);
@@ -18,7 +18,6 @@ namespace AnalyzeResults.Presentation
             Errors = new List<Error>();
             Errors.AddRange(errors);
             Error = "";
-            ErrorCost = errorCost;
         }
 
         [BsonElement("sections")]
@@ -33,9 +32,6 @@ namespace AnalyzeResults.Presentation
         [BsonElement("error")]
         public string Error { get; set; }
 
-        [BsonElement("error_cost")]
-        public double ErrorCost { get; set; }
-
         public bool IsScientific()
         {
             return Criteria.All(x => x.IsMet());
@@ -43,10 +39,22 @@ namespace AnalyzeResults.Presentation
 
         public double GetPaperGrade()
         {
-            var baseValue = Criteria.Where(x => x is NumericalCriterion).Select(crit => (crit as NumericalCriterion).GetGradePart())
+            var resultScore = Criteria.Where(x => x is NumericalCriterion).Select(crit => (crit as NumericalCriterion).GetGradePart())
                 .Aggregate((result, part) => result + part);
-            var fines = Errors.Count * ErrorCost;
-            return Math.Max(baseValue - fines, 0);
+
+            foreach (var error in Enum.GetValues(typeof(ErrorType)))
+            {
+                var specialError = Errors.FirstOrDefault(e => e.ErrorType == ((ErrorType) error));
+
+                if (specialError == null)
+                    continue;
+
+                var weight = specialError.Weight;
+                var errorCost = specialError.ErrorCost;
+                resultScore += Math.Max(weight - Errors.Count(e => e.ErrorType == (ErrorType)error)*errorCost, 0);
+            }
+
+            return resultScore;
         }
     }
 }

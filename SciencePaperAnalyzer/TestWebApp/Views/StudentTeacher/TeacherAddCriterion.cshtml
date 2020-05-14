@@ -72,7 +72,8 @@
     {
         <li>
         @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
-        @Html.LabelFor(m => m.Dictionaries[i].IsSelected, Model.Dictionaries[i].Name)
+        @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
+        @Html.HiddenFor(m => m.Dictionaries[i].Name)
         </li>
     }
 </fieldset>

@@ -116,6 +116,7 @@ namespace TestWebApp.Controllers
         {
             _logger.LogDebug("Received Post request AddCriterion");
             _logger.LogDebug($"Selected {model.Dictionaries.Count(x => x.IsSelected)} dictionaries");
+            _logger.LogDebug($"Name selected dictionary: {string.Join(",", model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name))}");
             if (model.IsValid())
             {
                 _criteria = await _context.GetCriteria();

@@ -57,16 +57,23 @@
             @Html.EditorFor(model => model.ZipfFactorUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
         </div>
     </div>
-    @Html.EditorFor(model => model.ForbiddenWordDictionary)
-    @foreach (var item in ViewBag.Dicts)
+    <!--
+    Html.EditorFor(model => model.ForbiddenWordDictionary)
+    foreach (var item in ViewBag.Dicts)
     {
         <div class="checkbox">
-            <label>
-                <input type="checkbox"
-                       name="SelectedDicts"
-                       value="@item" />
-            </label>
+            <label><input type="checkbox" name="SelectedSource" value=item/>item</label>
+            <!--<label><input type="checkbox" name="item" /></label>
+            <label for="item">item</label>
         </div>
+    }-->
+    
+    @for (int i = 0; i < Model.Dictionaries.Count; i++)
+    {
+        <li>
+        @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
+        @Html.LabelFor(m => m.Dictionaries[i].IsSelected, Model.Dictionaries[i].Name)
+        </li>
     }
 </fieldset>
 }

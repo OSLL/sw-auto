@@ -95,17 +95,27 @@ namespace TestWebApp.Controllers
         [Authorize(Roles = "teacher")]
         public async Task<IActionResult> TeacherAddCriterion(bool mine)
         {
+            _logger.LogDebug("Received Get request AddCriterion");
+            Console.WriteLine("Received Get request AddCriterion");
             _criteria = await _context.GetCriteria();
             ViewBag.Criteria = mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
             var dict = await _context.GetForbiddenWordDictionary();
-            ViewBag.Dicts = dict.Select(d => d.Name);
-            return View();
+            _logger.LogError($"Finded {dict.ToList().Count} dictionary");
+            //ViewBag.Dicts = dict.Select(d => d.Name).ToList();
+            _logger.LogDebug(string.Join(",", dict.Select(d => d.Name).ToList()));
+            var model = new AddCriterion()
+            {
+                Dictionaries = dict.Select(x => new DictionaryCheckBoxModel() { Name = x.Name, IsSelected = false }).ToList(),
+            };
+            return View(model);
         }
 
         [HttpPost]
         [Authorize(Roles = "teacher")]
         public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
         {
+            _logger.LogDebug("Received Post request AddCriterion");
+            _logger.LogDebug($"Selected {model.Dictionaries.Count(x => x.IsSelected)} dictionaries");
             if (model.IsValid())
             {
                 _criteria = await _context.GetCriteria();
@@ -126,8 +136,7 @@ namespace TestWebApp.Controllers
                         KeyWordsCriterionFactor = model.KeyWordsCriterionFactor,
                         KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound,
                         KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound,
-                        ForbiddenWordDictionary = model.ForbiddenWordDictionary,
-                        
+                        ForbiddenWordDictionary = model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name),
                     };
                     await _context.AddCriterion(criterion);
                 }

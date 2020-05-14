@@ -55,7 +55,7 @@ namespace WebPaperAnalyzer.ViewModels
         public double ZipfFactorLowerBound { get; set; }
         public double ZipfFactorUpperBound { get; set; }
 
-        public IEnumerable<string> ForbiddenWordDictionary { get; set; }
+        public List<DictionaryCheckBoxModel> Dictionaries { get; set; }
 
         public bool IsValid()
         {
@@ -64,5 +64,11 @@ namespace WebPaperAnalyzer.ViewModels
                    KeyWordsCriterionLowerBound < KeyWordsCriterionUpperBound &&
                    ZipfFactorLowerBound < ZipfFactorUpperBound;
         }
+    }
+
+    public class DictionaryCheckBoxModel
+    {
+        public string Name { get; set; }
+        public bool IsSelected { get; set; }
     }
 }

@@ -54,7 +54,7 @@ namespace AnalyzeResults.Presentation
                 resultScore += Math.Max(weight - Errors.Count(e => e.ErrorType == (ErrorType)error)*errorCost, 0);
             }
 
-            return resultScore;
+            return Math.Round(resultScore);
         }
     }
 }

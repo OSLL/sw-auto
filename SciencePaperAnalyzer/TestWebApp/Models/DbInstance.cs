@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.ComponentModel.DataAnnotations;
 
 namespace WebPaperAnalyzer.Models
 {
@@ -24,6 +19,7 @@ namespace WebPaperAnalyzer.Models
 
         public string TeacherLogin { get; set; }
         public string Name { get; set; }
+        public string Summary { get; set; }
 
         public void Recalculate()
         {

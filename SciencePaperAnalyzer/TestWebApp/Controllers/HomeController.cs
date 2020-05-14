@@ -68,7 +68,7 @@ namespace WebPaperAnalyzer.Controllers
             try
             {
                 var criteria = await _context.GetCriteria();
-                criterion = criteria.First(c => c.Name == criterionName);
+                criterion = criteria.FirstOrDefault(c => c.Name == criterionName);
             }
             catch (Exception)
             {

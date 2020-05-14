@@ -57,35 +57,41 @@
             UseOfPersonalPronouns
         </h3>
         @Html.EditorFor(model => model.UseOfPersonalPronounsCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-        @Html.EditorFor(model => model.UseOfPersonalPronounsErrorCost, new { htmlAttributes = new { placeholder = "Вес ошибки в критерии" } })
+        @Html.EditorFor(model => model.UseOfPersonalPronounsErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
     </div>
     <div class="criterion-add-edit">
         <h3>
             SourceNotReferenced
         </h3>
         @Html.EditorFor(model => model.SourceNotReferencedCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-        @Html.EditorFor(model => model.SourceNotReferencedErrorCost, new { htmlAttributes = new { placeholder = "Вес ошибки в критерии" } })
+        @Html.EditorFor(model => model.SourceNotReferencedErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
     </div>
     <div class="criterion-add-edit">
         <h3>
             ShortSection
         </h3>
         @Html.EditorFor(model => model.ShortSectionCost, new { htmlAttributes = new {placeholder = "Вес критерия"}})
-        @Html.EditorFor(model => model.ShortSectionErrorCost, new { htmlAttributes = new {placeholder = "Вес ошибки в критерии"}})
+        @Html.EditorFor(model => model.ShortSectionErrorCost, new { htmlAttributes = new {placeholder = "Цена ошибки" } })
     </div>
     <div class="criterion-add-edit">
         <h3>
             PictureNotReferenced
         </h3>
         @Html.EditorFor(model => model.PictureNotReferencedCost, new { htmlAttributes = new {placeholder = "Вес критерия"}})
-        @Html.EditorFor(model => model.PictureNotReferencedErrorCost, new { htmlAttributes = new {placeholder = "Вес ошибки в критерии"}})
+        @Html.EditorFor(model => model.PictureNotReferencedErrorCost, new { htmlAttributes = new {placeholder = "Цена ошибки" } })
     </div>
     <div class="criterion-add-edit">
         <h3>
             TableNotReferenced
         </h3>
         @Html.EditorFor(model => model.TableNotReferencedCost, new { htmlAttributes = new {placeholder = "Вес критерия"}})
-        @Html.EditorFor(model => model.TableNotReferencedErrorCost, new { htmlAttributes = new {placeholder = "Вес ошибки в критерии"}})
+        @Html.EditorFor(model => model.TableNotReferencedErrorCost, new { htmlAttributes = new {placeholder = "Цена ошибки" } })
+    </div>
+    <div class="criterion-add-edit">
+        <h3>
+            Краткое описание
+        </h3>
+        @Html.EditorFor(model => model.Summary, new { htmlAttributes = new { placeholder = "Описание" } })
     </div>
 </fieldset>
 }
@@ -95,8 +101,7 @@
 @foreach (var criterion in (IEnumerable<ResultCriterion>)ViewBag.Criteria)
 {
     <button type="submit" class="upload-form" , onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
-        Критерий @criterion.Name, Создатель @criterion.TeacherLogin,
-        Критерий водности: @criterion.WaterCriterionFactor,
-        Тошнота: @criterion.KeyWordsCriterionFactor, Zipf: @criterion.ZipfFactor
+        Критерий: @criterion.Name, Создатель: @criterion.TeacherLogin,
+        Описание: @criterion.Summary
     </button>
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
+using NLog;
 using TextExtractor;
 using WebPaperAnalyzer.Models;
 

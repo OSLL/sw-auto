@@ -49,6 +49,7 @@ namespace PaperAnalyzer
                         Name = dict.Name,
                         Words = dict.Words.ToHashSet()
                     };
+                    forbiddenDicts.Add(items);
                 }
 
 
@@ -372,7 +373,7 @@ namespace PaperAnalyzer
                         {
                             if (dict.Words.Contains(word.morphology.NormalForm))
                             {
-                                dict.Errors.Add(word.valueOriginal);
+                                errors.Add(new UseOfForbiddenWordsError(dict.Name, new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex)));
                             }
                         }
                     }
@@ -430,14 +431,28 @@ namespace PaperAnalyzer
                 var personalPronErrorsWordIds = errors.Where(x => x is UseOfPersonalPronounsError)
                     .Select(y => (y as UseOfPersonalPronounsError).ErrorWord.StartIndex).Distinct().ToList();
 
+                var forbiddenWordErorrsWordIds = errors.Where(x => x is UseOfForbiddenWordsError)
+                    .Select(x => (x as UseOfForbiddenWordsError).ErrorWord.StartIndex)
+                    .Distinct()
+                    .ToList();
+
                 foreach(var sect in sections)
                 {
                     foreach (var sent in sect.Sentences)
                     {
                         foreach (var word in sent.Words)
                         {
-                            word.HasErrors = personalPronErrorsWordIds.Contains(word.StartIndex);
-                            word.ErrorCodes = $"{word.ErrorCodes}{(int)ErrorType.UseOfPersonalPronouns}";
+                            if (personalPronErrorsWordIds.Contains(word.StartIndex))
+                            {
+                                word.HasErrors = true;
+                                word.ErrorCodes = $"{word.ErrorCodes}{(int)ErrorType.UseOfPersonalPronouns}";
+                            }
+
+                            if (forbiddenWordErorrsWordIds.Contains(word.StartIndex))
+                            {
+                                word.HasErrors = true;
+                                word.ErrorCodes = $"{word.ErrorCodes}{(int)ErrorType.UseOfForbiddenWord}";
+                            }
                         }
                     }
                 }
@@ -482,14 +497,6 @@ namespace PaperAnalyzer
 
                 foreach (var notRefdTable in tablesNotRefd)
                     errors.Add(new TableNotReferencedError(notRefdTable));
-
-                foreach (var dict in forbiddenDicts)
-                {
-                    foreach (var errorWord in dict.Errors)
-                    {
-                        errors.Add(new UseOfForbiddenWordsError(dict.Name, errorWord));
-                    }
-                }
 
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.ErrorCost);
 

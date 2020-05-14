@@ -85,7 +85,7 @@ namespace WebPaperAnalyzer.Models
 
         public async Task<ForbiddenWords> GetDictionary(string name)
         {
-            var filter = Builders<ForbiddenWords>.Filter.Eq("name", name);
+            var filter = Builders<ForbiddenWords>.Filter.Eq("_id", name);
 
             return await Words.Find(filter).FirstOrDefaultAsync();
         }
@@ -93,6 +93,6 @@ namespace WebPaperAnalyzer.Models
         public async Task AddDictionary(ForbiddenWords fw) => await Words.InsertOneAsync(fw);
 
         public async Task DeleteDictionary(string name) =>
-            await Words.DeleteOneAsync(Builders<ForbiddenWords>.Filter.Eq("name", name));
+            await Words.DeleteOneAsync(Builders<ForbiddenWords>.Filter.Eq("_id", name));
     }
 }

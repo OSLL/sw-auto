@@ -47,6 +47,7 @@ namespace WebPaperAnalyzer.Controllers
         public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
                                                     string criterionName = null)
         {
+            _logger.LogInformation($"Received request UploadFile with criterionName {criterionName}");
             if (file == null)
             {
                 return new PartialViewResult();
@@ -78,7 +79,7 @@ namespace WebPaperAnalyzer.Controllers
             if (criterion != null)
             {
 
-
+                _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
                 settings = new ResultScoreSettings
                 {
                     ErrorCost = criterion.ErrorCost,
@@ -116,6 +117,7 @@ namespace WebPaperAnalyzer.Controllers
             PaperAnalysisResult result;
             try
             {
+                _logger.LogInformation($"Settings have {settings.ForbiddenWords.Count(x => true)} dictionary");
                 result = _analyzeService.GetAnalyze(uploadFile, titles, paperName, refsName, settings);
             }
             catch (Exception ex)
@@ -147,6 +149,7 @@ namespace WebPaperAnalyzer.Controllers
                 };
             }
 
+            _logger.LogDebug($"Result saved by Id {analysisResult.Id}");
             Repository.AddResult(analysisResult);
             return Ok(analysisResult.Id);
         }
@@ -154,6 +157,7 @@ namespace WebPaperAnalyzer.Controllers
         [HttpGet]
         public IActionResult Result(string id)
         {
+            _logger.LogDebug($"Try to show result by ID: {id}");
             return View(Repository.GetResult(id).Result);
         }
 
@@ -204,8 +208,10 @@ namespace WebPaperAnalyzer.Controllers
             var res = new List<ForbiddenWords>();
             foreach (var dict in forbiddenDictNames)
             {
+                _logger.LogInformation($"Try to upload dictionary with name: {dict}");
                 var item = await _context.GetDictionary(dict);
                 res.Add(item);
+                _logger.LogInformation($"Added forbidden words: {string.Join(",", item.Words)}");
             }
             return res;
         }

@@ -5,16 +5,18 @@
 <h3>Изменение критерия</h3>
 <form asp-action="EditCriterion" asp-controller="StudentTeacher">
     <div class="criterion-add-submit">
-        <h3>
-            Название
-        </h3>
-        <input type="text" asp-for="Name" />
-        <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="TeacherLogin" />
+        <div>
+            <h3>
+                Название
+            </h3>
+            <input type="text" asp-for="Name"/>
+        </div>
+        <input type="hidden" asp-for="Id"/>
+        <input type="hidden" asp-for="TeacherLogin"/>
         @if (User.Identity.Name == @Model.TeacherLogin)
         {
-            <input type="submit" value="Сохранить изменения" />
-            <input type="button" value="Удалить критерий" onclick="window.location.href = '@Url.Action("DeleteCriterion", "StudentTeacher", new {id = @Model.Id})';" />
+            <input type="submit" value="Сохранить изменения"/>
+            <input type="button" value="Удалить критерий" onclick="window.location.href = '@Url.Action("DeleteCriterion", "StudentTeacher", new {id = @Model.Id})';"/>
         }
     </div>
     <div class="criterion-add-edit">
@@ -50,45 +52,51 @@
             <input type="text" asp-for="ZipfFactorUpperBound" />
         </div>
     </div>
-    <div class="criterion-add-edit">
-        <h3>
-            UseOfPersonalPronouns
-        </h3>
-        <input type="text" asp-for="UseOfPersonalPronounsCost" />
-        <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
+    <div class="criterion-add-submit">
+        <div>
+            <h3>
+                UseOfPersonalPronouns
+            </h3>
+            <input type="text" asp-for="UseOfPersonalPronounsCost" />
+            <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
+        </div>
+        <div>
+            <h3>
+                SourceNotReferenced
+            </h3>
+            <input type="text" asp-for="SourceNotReferencedCost" />
+            <input type="text" asp-for="SourceNotReferencedErrorCost" />
+        </div>
     </div>
-    <div class="criterion-add-edit">
-        <h3>
-            SourceNotReferenced
-        </h3>
-        <input type="text" asp-for="SourceNotReferencedCost" />
-        <input type="text" asp-for="SourceNotReferencedErrorCost" />
+    <div class="criterion-add-submit">
+        <div>
+            <h3>
+                ShortSection
+            </h3>
+            <input type="text" asp-for="ShortSectionCost" />
+            <input type="text" asp-for="ShortSectionErrorCost" />
+        </div>
+        <div>
+            <h3>
+                PictureNotReferenced
+            </h3>
+            <input type="text" asp-for="PictureNotReferencedCost" />
+            <input type="text" asp-for="PictureNotReferencedErrorCost" />
+        </div>
     </div>
-    <div class="criterion-add-edit">
-        <h3>
-            ShortSection
-        </h3>
-        <input type="text" asp-for="ShortSectionCost" />
-        <input type="text" asp-for="ShortSectionErrorCost" />
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            PictureNotReferenced
-        </h3>
-        <input type="text" asp-for="PictureNotReferencedCost" />
-        <input type="text" asp-for="PictureNotReferencedErrorCost" />
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            TableNotReferenced
-        </h3>
-        <input type="text" asp-for="TableNotReferencedCost" />
-        <input type="text" asp-for="TableNotReferencedErrorCost" />
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            Краткое описание
-        </h3>
-        <input type="text" asp-for="Summary"/>
+    <div class="criterion-add-submit">
+        <div>
+            <h3>
+                TableNotReferenced
+            </h3>
+            <input type="text" asp-for="TableNotReferencedCost" />
+            <input type="text" asp-for="TableNotReferencedErrorCost" />
+        </div>
+        <div>
+            <h3>
+                Краткое описание
+            </h3>
+            <input type="text" asp-for="Summary"/>
+        </div>
     </div>
 </form>

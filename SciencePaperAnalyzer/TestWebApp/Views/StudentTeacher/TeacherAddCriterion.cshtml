@@ -12,12 +12,14 @@
 {
 <fieldset>
     <div class="criterion-add-submit">
-        <h3>
-            Название
-        </h3>
-        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { placeholder = "Название" } })
+        <div>
+            <h3>
+                Название
+            </h3>
+            @Html.EditorFor(model => model.Name, new {htmlAttributes = new {placeholder = "Название"}})
+        </div>
 
-        <input type="submit" value="Добавить критерий" />
+        <input type="submit" value="Добавить критерий"/>
     </div>
 
     <div class="criterion-add-edit">
@@ -52,46 +54,52 @@
             @Html.EditorFor(model => model.ZipfFactorUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
         </div>
     </div>
-    <div class="criterion-add-edit">
-        <h3>
-            UseOfPersonalPronouns
-        </h3>
-        @Html.EditorFor(model => model.UseOfPersonalPronounsCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-        @Html.EditorFor(model => model.UseOfPersonalPronounsErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+    <div class="criterion-add-submit">
+        <div>
+            <h3>
+                UseOfPersonalPronouns
+            </h3>
+            @Html.EditorFor(model => model.UseOfPersonalPronounsCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+            @Html.EditorFor(model => model.UseOfPersonalPronounsErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+        </div>
+        <div>
+            <h3>
+                SourceNotReferenced
+            </h3>
+            @Html.EditorFor(model => model.SourceNotReferencedCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+            @Html.EditorFor(model => model.SourceNotReferencedErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+        </div>
     </div>
-    <div class="criterion-add-edit">
-        <h3>
-            SourceNotReferenced
-        </h3>
-        @Html.EditorFor(model => model.SourceNotReferencedCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-        @Html.EditorFor(model => model.SourceNotReferencedErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+    <div class="criterion-add-submit">
+        <div>
+            <h3>
+                ShortSection
+            </h3>
+            @Html.EditorFor(model => model.ShortSectionCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+            @Html.EditorFor(model => model.ShortSectionErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+        </div>
+        <div>
+            <h3>
+                PictureNotReferenced
+            </h3>
+            @Html.EditorFor(model => model.PictureNotReferencedCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+            @Html.EditorFor(model => model.PictureNotReferencedErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+        </div>
     </div>
-    <div class="criterion-add-edit">
-        <h3>
-            ShortSection
-        </h3>
-        @Html.EditorFor(model => model.ShortSectionCost, new { htmlAttributes = new {placeholder = "Вес критерия"}})
-        @Html.EditorFor(model => model.ShortSectionErrorCost, new { htmlAttributes = new {placeholder = "Цена ошибки" } })
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            PictureNotReferenced
-        </h3>
-        @Html.EditorFor(model => model.PictureNotReferencedCost, new { htmlAttributes = new {placeholder = "Вес критерия"}})
-        @Html.EditorFor(model => model.PictureNotReferencedErrorCost, new { htmlAttributes = new {placeholder = "Цена ошибки" } })
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            TableNotReferenced
-        </h3>
-        @Html.EditorFor(model => model.TableNotReferencedCost, new { htmlAttributes = new {placeholder = "Вес критерия"}})
-        @Html.EditorFor(model => model.TableNotReferencedErrorCost, new { htmlAttributes = new {placeholder = "Цена ошибки" } })
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            Краткое описание
-        </h3>
-        @Html.EditorFor(model => model.Summary, new { htmlAttributes = new { placeholder = "Описание" } })
+    <div class="criterion-add-submit">
+        <div>
+            <h3>
+                TableNotReferenced
+            </h3>
+            @Html.EditorFor(model => model.TableNotReferencedCost, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+            @Html.EditorFor(model => model.TableNotReferencedErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
+        </div>
+        <div>
+            <h3>
+                Краткое описание
+            </h3>
+            @Html.EditorFor(model => model.Summary, new { htmlAttributes = new { placeholder = "Описание" } })
+        </div>
     </div>
 </fieldset>
 }

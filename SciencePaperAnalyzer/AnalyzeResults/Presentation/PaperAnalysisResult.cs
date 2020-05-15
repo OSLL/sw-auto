@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AnalyzeResults.Errors;
+using AnalyzeResults.Settings;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace AnalyzeResults.Presentation
@@ -41,20 +42,26 @@ namespace AnalyzeResults.Presentation
         {
             var resultScore = Criteria.Where(x => x is NumericalCriterion).Select(crit => (crit as NumericalCriterion).GetGradePart())
                 .Aggregate((result, part) => result + part);
+            var weightTmp = 100 - Criteria.Where(x => x is NumericalCriterion)
+                .Sum(crit => (crit as NumericalCriterion).Factor);
+
 
             foreach (var error in Enum.GetValues(typeof(ErrorType)))
             {
                 var specialError = Errors.FirstOrDefault(e => e.ErrorType == ((ErrorType) error));
 
                 if (specialError == null)
+                {
                     continue;
-
+                }
+                
                 var weight = specialError.Weight;
+                weightTmp -= weight;
                 var errorCost = specialError.ErrorCost;
                 resultScore += Math.Max(weight - Errors.Count(e => e.ErrorType == (ErrorType)error)*errorCost, 0);
             }
 
-            return Math.Round(resultScore);
+            return Math.Round(resultScore) + weightTmp;
         }
     }
 }

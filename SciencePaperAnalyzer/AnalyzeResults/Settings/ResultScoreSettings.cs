@@ -1,7 +1,10 @@
-﻿using AnalyzeResults.Helpers;
+﻿using System;
+using AnalyzeResults.Errors;
+using AnalyzeResults.Helpers;
 
 namespace AnalyzeResults.Settings
 {
+    [Serializable]
     public class ResultScoreSettings
     {
         public double WaterCriterionFactor { get; set; }

@@ -51,20 +51,6 @@ namespace TestWebApp.Controllers
             _criteria = await _context.GetCriteria();
             if (_criteria.FirstOrDefault(u => u.Name == model.Name) == null)
             {
-                /*criterion = new ResultCriterion()
-                {
-                    Name = model.Name,
-                    TeacherLogin = User.Identity.Name,
-                    ZipfFactor = model.ZipfFactor,
-                    ZipfFactorLowerBound = model.ZipfFactorLowerBound,
-                    ZipfFactorUpperBound = model.ZipfFactorUpperBound,
-                    WaterCriterionFactor = model.WaterCriterionFactor,
-                    WaterCriterionLowerBound = model.WaterCriterionLowerBound,
-                    WaterCriterionUpperBound = model.WaterCriterionUpperBound,
-                    KeyWordsCriterionFactor = model.KeyWordsCriterionFactor,
-                    KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound,
-                    KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound
-                };*/
                 model.TeacherLogin = User.Identity.Name;
                 model.Recalculate();
                 await _context.AddCriterion(model);
@@ -97,7 +83,7 @@ namespace TestWebApp.Controllers
             return RedirectToAction("EditDeleteCriterion", "StudentTeacher",new {name = editCriterion.Name});
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize(Roles = "teacher")]
         public async Task<IActionResult> DeleteCriterion(string id)
         {

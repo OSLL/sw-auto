@@ -116,7 +116,7 @@ namespace WebPaperAnalyzer.Controllers
             catch (Exception ex)
             {
                 result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
-                    new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
+                    new List<AnalyzeResults.Errors.Error>(), 0) {Error = ex.Message};
 
                 return Error(ex.Message);
             }

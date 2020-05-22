@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace WebPaperAnalyzer.Models
@@ -23,17 +24,17 @@ namespace WebPaperAnalyzer.Models
 
         public void Recalculate()
         {
-            var stabilizer = 100 / (WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor +
-                                    UseOfPersonalPronounsCost + SourceNotReferencedCost + ShortSectionCost +
-                                    PictureNotReferencedCost + TableNotReferencedCost);
-            WaterCriterionFactor *= stabilizer;
-            KeyWordsCriterionFactor *= stabilizer;
-            ZipfFactor *= stabilizer;
-            UseOfPersonalPronounsCost *= stabilizer;
-            SourceNotReferencedCost *= stabilizer;
-            ShortSectionCost *= stabilizer;
-            PictureNotReferencedCost *= stabilizer;
-            TableNotReferencedCost *= stabilizer;
+            var stabilizer = MaxScore / (WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor +
+                                         UseOfPersonalPronounsCost + SourceNotReferencedCost + ShortSectionCost +
+                                         PictureNotReferencedCost + TableNotReferencedCost);
+            WaterCriterionFactor = Math.Round(stabilizer*WaterCriterionFactor, 2);
+            KeyWordsCriterionFactor = Math.Round(stabilizer*KeyWordsCriterionFactor, 2);
+            ZipfFactor = Math.Round(stabilizer*ZipfFactor, 2);
+            UseOfPersonalPronounsCost = Math.Round(stabilizer*UseOfPersonalPronounsCost, 2);
+            SourceNotReferencedCost = Math.Round(stabilizer*SourceNotReferencedCost, 2);
+            ShortSectionCost = Math.Round(stabilizer*ShortSectionCost, 2);
+            PictureNotReferencedCost = Math.Round(stabilizer*PictureNotReferencedCost, 2);
+            TableNotReferencedCost = Math.Round(stabilizer*TableNotReferencedCost, 2);
         }
     }
 }

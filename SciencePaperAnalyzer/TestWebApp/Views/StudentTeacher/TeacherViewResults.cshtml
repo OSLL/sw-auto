@@ -7,6 +7,6 @@
 @foreach (var result in Model)
 {
     <button type="submit" class="upload-form" onclick="window.location.href='@Url.Action("Result", "Home", new {id = result.Id})';">
-        Студент @result.StudentLogin, Критерий @result.Criterion, Результат: @result.Result.GetPaperGrade()
+        Студент @result.StudentLogin, Критерий @result.Criterion, Результат: @result.Result.GetPaperGrade() из @result.Result.MaxScore
     </button>
 }

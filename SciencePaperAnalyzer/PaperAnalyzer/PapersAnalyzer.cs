@@ -445,7 +445,7 @@ namespace PaperAnalyzer
                 foreach (var notRefdTable in tablesNotRefd)
                     errors.Add(new TableNotReferencedError(notRefdTable, settings.TableNotReferencedErrorCost, settings.TableNotReferencedCost));
 
-                var analysisResult = new PaperAnalysisResult(sections, criteria, errors);
+                var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.MaxScore);
 
                 GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
                 GC.WaitForPendingFinalizers();

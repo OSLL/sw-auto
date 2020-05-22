@@ -26,5 +26,6 @@ namespace AnalyzeResults.Settings
         public double PictureNotReferencedErrorCost { get; set; }
         public double TableNotReferencedCost { get; set; }
         public double TableNotReferencedErrorCost { get; set; }
+        public double MaxScore { get; set; }
     }
 }

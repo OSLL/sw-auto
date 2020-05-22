@@ -10,7 +10,7 @@ namespace AnalyzeResults.Presentation
     [Serializable]
     public class PaperAnalysisResult
     {
-        public PaperAnalysisResult(IEnumerable<Section> sections, IEnumerable<Criterion> criteria, IEnumerable<Error> errors)
+        public PaperAnalysisResult(IEnumerable<Section> sections, IEnumerable<Criterion> criteria, IEnumerable<Error> errors, double maxScore)
         {
             Sections = new List<Section>();
             Sections.AddRange(sections);
@@ -19,6 +19,7 @@ namespace AnalyzeResults.Presentation
             Errors = new List<Error>();
             Errors.AddRange(errors);
             Error = "";
+            MaxScore = maxScore;
         }
 
         [BsonElement("sections")]
@@ -33,6 +34,9 @@ namespace AnalyzeResults.Presentation
         [BsonElement("error")]
         public string Error { get; set; }
 
+        [BsonElement("maxScore")]
+        public double MaxScore { get; set; }
+
         public bool IsScientific()
         {
             return Criteria.All(x => x.IsMet());
@@ -42,7 +46,7 @@ namespace AnalyzeResults.Presentation
         {
             var resultScore = Criteria.Where(x => x is NumericalCriterion).Select(crit => (crit as NumericalCriterion).GetGradePart())
                 .Aggregate((result, part) => result + part);
-            var weightTmp = 100 - Criteria.Where(x => x is NumericalCriterion)
+            var weightTmp = MaxScore - Criteria.Where(x => x is NumericalCriterion)
                 .Sum(crit => (crit as NumericalCriterion).Factor);
 
 
@@ -54,7 +58,7 @@ namespace AnalyzeResults.Presentation
                 {
                     continue;
                 }
-                
+
                 var weight = specialError.Weight;
                 weightTmp -= weight;
                 var errorCost = specialError.ErrorCost;

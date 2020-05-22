@@ -18,6 +18,13 @@
             </h3>
             @Html.EditorFor(model => model.Name, new {htmlAttributes = new {placeholder = "Название"}})
         </div>
+        
+        <div>
+            <h3>
+                Максимальная оценка за статью
+            </h3>
+            @Html.EditorFor(model => model.MaxScore, new { htmlAttributes = new { placeholder = "Максимум баллов" } })
+        </div>
 
         <input type="submit" value="Добавить критерий"/>
     </div>

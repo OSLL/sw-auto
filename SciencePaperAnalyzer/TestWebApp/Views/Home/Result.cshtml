@@ -37,19 +37,19 @@
                         Оценка стиля статьи:
                     </div>
                     <div class="grade-value-container">
-                        <div class="grade-value @(Model.GetPaperGrade() > 90.0
+                        <div class="grade-value @(Model.GetPaperGrade() > 0.9*@Model.MaxScore
                                                     ? "grade-perfect"
-                                                    : Model.GetPaperGrade() > 70.0
+                                                    : Model.GetPaperGrade() > 0.7*@Model.MaxScore
                                                         ? "grade-good"
-                                                        : Model.GetPaperGrade() > 55.0
+                                                        : Model.GetPaperGrade() > 0.55*@Model.MaxScore
                                                             ? "grade-meh"
-                                                            : Model.GetPaperGrade() > 40.0
+                                                            : Model.GetPaperGrade() > 0.4*@Model.MaxScore
                                                                 ? "grade-bad"
                                                                 : "grade-awful")">
                             @Model.GetPaperGrade()
                         </div>
                         <div class="grade-label">
-                            из 100
+                            из @Model.MaxScore
                         </div>
                     </div>
                 </div>

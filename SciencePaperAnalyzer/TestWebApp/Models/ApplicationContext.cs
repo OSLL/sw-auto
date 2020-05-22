@@ -27,6 +27,8 @@ namespace WebPaperAnalyzer.Models
 
         public IMongoCollection<ResultCriterion> Criteria;
 
+        public IMongoCollection<ForbiddenWords> Words;
+
         public ApplicationContext(MongoSettings settings)
         {
             string connectionString = @"mongodb://root:example@mongo:27017";
@@ -34,6 +36,7 @@ namespace WebPaperAnalyzer.Models
             IMongoDatabase database = client.GetDatabase("resultsDB");
             Users = database.GetCollection<User>("users");
             Criteria = database.GetCollection<ResultCriterion>("criteria");
+            Words = database.GetCollection<ForbiddenWords>("words");
         }
 
         public async Task<IEnumerable<User>> GetUsers()
@@ -71,5 +74,25 @@ namespace WebPaperAnalyzer.Models
         public async Task DeleteCriterion(string id) => await Criteria.DeleteOneAsync(new BsonDocument("_id", new ObjectId(id)));
 
         public async Task EditCriterion(ResultCriterion c) => await Criteria.ReplaceOneAsync(new BsonDocument("_id", new ObjectId(c.Id)), c);
+
+        public async Task<IEnumerable<ForbiddenWords>> GetForbiddenWordDictionary()
+        {
+            var builder = new FilterDefinitionBuilder<ForbiddenWords>();
+            var filter = builder.Empty;
+
+            return await Words.Find(filter).ToListAsync();
+        }
+
+        public async Task<ForbiddenWords> GetDictionary(string name)
+        {
+            var filter = Builders<ForbiddenWords>.Filter.Eq("_id", name);
+
+            return await Words.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task AddDictionary(ForbiddenWords fw) => await Words.InsertOneAsync(fw);
+
+        public async Task DeleteDictionary(string name) =>
+            await Words.DeleteOneAsync(Builders<ForbiddenWords>.Filter.Eq("_id", name));
     }
 }

@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
-using Microsoft.AspNetCore.Authorization;
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PaperAnalyzer;
@@ -49,6 +47,7 @@ namespace WebPaperAnalyzer.Controllers
         public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
                                                     string criterionName = null)
         {
+            _logger.LogInformation($"Received request UploadFile with criterionName {criterionName}");
             if (file == null)
             {
                 return new PartialViewResult();
@@ -75,10 +74,12 @@ namespace WebPaperAnalyzer.Controllers
                 //Возможно только во время выполнения теста
             }
 
-            ResultScoreSettings settings = null;
+            ResultScoreSettings settings;
 
             if (criterion != null)
             {
+
+                _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
                 settings = new ResultScoreSettings
                 {
                     ErrorCost = criterion.ErrorCost,
@@ -90,7 +91,8 @@ namespace WebPaperAnalyzer.Controllers
                     WaterCriterionUpperBound = criterion.WaterCriterionUpperBound,
                     ZipfFactor = criterion.ZipfFactor,
                     ZipfFactorLowerBound = criterion.ZipfFactorLowerBound,
-                    ZipfFactorUpperBound = criterion.ZipfFactorUpperBound
+                    ZipfFactorUpperBound = criterion.ZipfFactorUpperBound,
+                    ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary),
                 };
             }
             else
@@ -107,20 +109,19 @@ namespace WebPaperAnalyzer.Controllers
                     WaterCriterionUpperBound = 20,
                     ZipfFactor = 30,
                     ZipfFactorLowerBound = 5.5,
-                    ZipfFactorUpperBound = 9.5
+                    ZipfFactorUpperBound = 9.5,
+                    ForbiddenWords = new List<ForbiddenWords>(),
                 };
             }
 
             PaperAnalysisResult result;
             try
             {
+                _logger.LogInformation($"Settings have {settings.ForbiddenWords.Count(x => true)} dictionary");
                 result = _analyzeService.GetAnalyze(uploadFile, titles, paperName, refsName, settings);
             }
             catch (Exception ex)
             {
-                result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
-                    new List<AnalyzeResults.Errors.Error>()) {Error = ex.Message};
-
                 return Error(ex.Message);
             }
 
@@ -148,6 +149,7 @@ namespace WebPaperAnalyzer.Controllers
                 };
             }
 
+            _logger.LogDebug($"Result saved by Id {analysisResult.Id}");
             Repository.AddResult(analysisResult);
             return Ok(analysisResult.Id);
         }
@@ -155,6 +157,7 @@ namespace WebPaperAnalyzer.Controllers
         [HttpGet]
         public IActionResult Result(string id)
         {
+            _logger.LogDebug($"Try to show result by ID: {id}");
             return View(Repository.GetResult(id).Result);
         }
 
@@ -198,6 +201,19 @@ namespace WebPaperAnalyzer.Controllers
                 RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier,
                 Message = message
             });
+        }
+
+        private async Task<IEnumerable<ForbiddenWords>> GetForbiddenWords(IEnumerable<string> forbiddenDictNames)
+        {
+            var res = new List<ForbiddenWords>();
+            foreach (var dict in forbiddenDictNames)
+            {
+                _logger.LogInformation($"Try to upload dictionary with name: {dict}");
+                var item = await _context.GetDictionary(dict);
+                res.Add(item);
+                _logger.LogInformation($"Added forbidden words: {string.Join(",", item.Words)}");
+            }
+            return res;
         }
     }
 }

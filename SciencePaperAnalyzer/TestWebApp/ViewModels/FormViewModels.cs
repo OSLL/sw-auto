@@ -31,4 +31,15 @@ namespace WebPaperAnalyzer.ViewModels
         [DataType(DataType.Password)]
         public string Password { get; set; }
     }
+
+    public class AddCriterion : WebPaperAnalyzer.Models.ResultCriterion
+    {
+        public List<DictionaryCheckBoxModel> Dictionaries { get; set; }
+    }
+
+    public class DictionaryCheckBoxModel
+    {
+        public string Name { get; set; }
+        public bool IsSelected { get; set; }
+    }
 }

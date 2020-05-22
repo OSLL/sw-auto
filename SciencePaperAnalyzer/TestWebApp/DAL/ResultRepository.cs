@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
 using Microsoft.CodeAnalysis.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
@@ -19,8 +20,9 @@ namespace WebPaperAnalyzer.DAL
         private readonly IMongoClient _client;
         private readonly IMongoDatabase _database;
         private readonly IMongoCollection<BinaryForm> _resultsCollection;
+        private readonly ILogger<ResultRepository> _logger;
 
-        public ResultRepository(IOptions<MongoSettings> settings)
+        public ResultRepository(IOptions<MongoSettings> settings, ILogger<ResultRepository> logger)
         {
             var internalIdentity = new MongoInternalIdentity("admin", settings.Value.User);
             var passwordEvidence = new PasswordEvidence(settings.Value.Password);
@@ -35,6 +37,7 @@ namespace WebPaperAnalyzer.DAL
             _client = new MongoClient(mongoSettings); //new MongoClient(settings.ConnectionString);
             _database = _client.GetDatabase(settings.Value.Database);
             _resultsCollection = _database.GetCollection<BinaryForm>("results");
+            _logger = logger;
         }
 
         public void AddResult(AnalysisResult result)
@@ -49,15 +52,20 @@ namespace WebPaperAnalyzer.DAL
                     data = ms.ToArray();
                 }
 
-                var test = new BinaryForm {Id = result.Id, Data = data,
-                    StudentLogin = result.StudentLogin, TeacherLogin = result.TeacherLogin,
+                var test = new BinaryForm {
+                    Id = result.Id, 
+                    Data = data,
+                    StudentLogin = result.StudentLogin, 
+                    TeacherLogin = result.TeacherLogin,
                     Criterion = result.Criterion
                 };
 
                 _resultsCollection.InsertOne(test);
+                _logger.LogInformation($"Successfull save result by {result.Id}");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
             }
         }
 

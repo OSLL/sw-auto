@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using AnalyzeResults.Errors;
 using AnalyzeResults.Helpers;
+using System.Collections.Generic;
+using WebPaperAnalyzer.Models;
 
 namespace AnalyzeResults.Settings
 {
@@ -27,5 +29,6 @@ namespace AnalyzeResults.Settings
         public double TableNotReferencedCost { get; set; }
         public double TableNotReferencedErrorCost { get; set; }
         public double MaxScore { get; set; }
+        public IEnumerable<ForbiddenWords> ForbiddenWords { get; set; }
     }
 }

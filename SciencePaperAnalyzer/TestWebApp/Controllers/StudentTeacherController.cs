@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AnalyzeResults.Settings;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using WebPaperAnalyzer.DAL;
@@ -22,11 +28,15 @@ namespace TestWebApp.Controllers
         private ApplicationContext _context;
         private IResultRepository _results;
         private IEnumerable<ResultCriterion> _criteria;
-        public StudentTeacherController(IResultRepository repository, IOptions<MongoSettings> mongoSettings = null)
+        private readonly ILogger<StudentTeacherController> _logger;
+        public StudentTeacherController(IResultRepository repository, 
+            ILogger<StudentTeacherController> logger,
+            IOptions<MongoSettings> mongoSettings = null)
         {
             var _mongoSettings = mongoSettings.Value;
             _context = new ApplicationContext(_mongoSettings);
             _results = repository;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -35,25 +45,87 @@ namespace TestWebApp.Controllers
         {
             return View();
         }
+
         [HttpGet]
-        [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> TeacherAddCriterion(bool mine)
+        [Authorize(Roles ="teacher")]
+        public IActionResult AddDictionary()
         {
-            _criteria = await _context.GetCriteria();
-            ViewBag.Criteria = mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
+            _logger.LogDebug("Received Get request AddDictionary");
             return View();
         }
 
         [HttpPost]
         [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> TeacherAddCriterion(ResultCriterion model)
+        public async Task<IActionResult> AddDictionary(DictionaryModel model)
         {
-            _criteria = await _context.GetCriteria();
-            if (_criteria.FirstOrDefault(u => u.Name == model.Name) == null)
+            _logger.LogDebug("Received Post request AddDictionary");
+            Console.WriteLine("Received Post request AddDictionary");
+            var dataStream = new MemoryStream();
+            model.File.CopyTo(dataStream);
+            _logger.LogDebug("dataStream successfull copied");
+            _logger.LogDebug($"dataStream length: {dataStream.Length}");
+            _logger.LogDebug($"dictionary name: {model.Name}");
+
+            dataStream.Position = 0;
+            var rows = new List<string>();
+            using (var reader = new StreamReader(dataStream, Encoding.UTF8))
             {
-                model.TeacherLogin = User.Identity.Name;
-                model.Recalculate();
-                await _context.AddCriterion(model);
+                var line = reader.ReadLine();
+                while (line != null)
+                {
+                    rows.Add(line);
+                    _logger.LogDebug($"Add forbidden words: {line}");
+                    line = reader.ReadLine();
+                }
+            }
+            _logger.LogDebug($"Read from file {rows.Count} lines");
+
+            var fw = new ForbiddenWords()
+            {
+                Name = model.Name,
+                Words = rows,
+            };
+            await _context.AddDictionary(fw);
+            _logger.LogDebug($"Successfull write to database");
+            Console.WriteLine("Successfull write to database");
+            return RedirectToAction("TeacherMainPage");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "teacher")]
+        public async Task<IActionResult> TeacherAddCriterion(bool mine)
+        {
+            _logger.LogDebug("Received Get request AddCriterion");
+            Console.WriteLine("Received Get request AddCriterion");
+            _criteria = await _context.GetCriteria();
+            ViewBag.Criteria = mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
+            var dict = await _context.GetForbiddenWordDictionary();
+            _logger.LogError($"Finded {dict.ToList().Count} dictionary");
+            //ViewBag.Dicts = dict.Select(d => d.Name).ToList();
+            _logger.LogDebug(string.Join(",", dict.Select(d => d.Name).ToList()));
+            var model = new AddCriterion()
+            {
+                Dictionaries = dict.Select(x => new DictionaryCheckBoxModel() { Name = x.Name, IsSelected = false }).ToList(),
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "teacher")]
+        public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
+        {
+            _logger.LogDebug("Received Post request AddCriterion");
+            _logger.LogDebug($"Selected {model.Dictionaries.Count(x => x.IsSelected)} dictionaries");
+            _logger.LogDebug($"Name selected dictionary: {string.Join(",", model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name))}");
+            _criteria = await _context.GetCriteria();
+            ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
+            if (criterion == null)
+            {
+                criterion = model;
+                criterion.TeacherLogin = User.Identity.Name;
+                criterion.ForbiddenWordDictionary = model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name);
+                criterion.Recalculate();
+                await _context.AddCriterion(criterion);
             }
 
             return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});

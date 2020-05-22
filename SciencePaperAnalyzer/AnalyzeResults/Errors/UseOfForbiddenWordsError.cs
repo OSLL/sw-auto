@@ -11,7 +11,7 @@ namespace AnalyzeResults.Errors
     {
         public UseOfForbiddenWordsError(string dictionaryName, Word errorWord)
             : base(ErrorType.UseOfForbiddenWord, "Использование запрещенного слова", errorWord.Original,
-                  $"Данное слово включено в список запрещенных слов.")
+                  $"Данное слово включено в список запрещенных слов.",1, 10)
         {
             ErrorWord = errorWord;
         }

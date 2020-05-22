@@ -1,5 +1,5 @@
 @using WebPaperAnalyzer.Models
-@model WebPaperAnalyzer.Models.ResultCriterion
+@model WebPaperAnalyzer.ViewModels.AddCriterion
 @{
     ViewBag.Title = "Добавление нового набора критериев";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -176,12 +176,12 @@
                 <input type="text" asp-for="TableNotReferencedErrorCost" />
             </div>
         </div>
-        @for (int i = 0; i < Model.Dictionaries.Count; i++)
+        @for (int i = 0; i < @Model.Dictionaries.Count; i++)
         {
           <li>
-          @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
-          @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
-          @Html.HiddenFor(m => m.Dictionaries[i].Name)
+            @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
+            @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
+            @Html.HiddenFor(m => m.Dictionaries[i].Name)
           </li>
         }
         <div class="criterion-add-submit">

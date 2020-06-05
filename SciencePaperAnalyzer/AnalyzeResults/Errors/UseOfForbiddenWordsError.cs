@@ -9,9 +9,9 @@ namespace AnalyzeResults.Errors
     [Serializable]
     public class UseOfForbiddenWordsError : Error
     {
-        public UseOfForbiddenWordsError(string dictionaryName, Word errorWord)
+        public UseOfForbiddenWordsError(string dictionaryName, Word errorWord, double errorCost, double weight)
             : base(ErrorType.UseOfForbiddenWord, "Использование запрещенного слова", errorWord.Original,
-                  $"Данное слово включено в список запрещенных слов.",1, 10)
+                  $"Данное слово включено в список запрещенных слов.",errorCost, weight)
         {
             ErrorWord = errorWord;
         }

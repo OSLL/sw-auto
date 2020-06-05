@@ -26,19 +26,20 @@ namespace WebPaperAnalyzer.Models
         
         public void Recalculate()
         {
-            var stabilizer = MaxScore / (WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor +
-                                         UseOfPersonalPronounsCost + SourceNotReferencedCost + ShortSectionCost +
-                                         PictureNotReferencedCost + TableNotReferencedCost);
-            WaterCriterionFactor = Math.Round(stabilizer*WaterCriterionFactor, 2);
-            KeyWordsCriterionFactor = Math.Round(stabilizer*KeyWordsCriterionFactor, 2);
-            ZipfFactor = Math.Round(stabilizer*ZipfFactor, 2);
-            UseOfPersonalPronounsCost = Math.Round(stabilizer*UseOfPersonalPronounsCost, 2);
-            SourceNotReferencedCost = Math.Round(stabilizer*SourceNotReferencedCost, 2);
-            ShortSectionCost = Math.Round(stabilizer*ShortSectionCost, 2);
-            PictureNotReferencedCost = Math.Round(stabilizer*PictureNotReferencedCost, 2);
-            TableNotReferencedCost = Math.Round(stabilizer*TableNotReferencedCost, 2);
+            var totalWeight = WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor +
+                                UseOfPersonalPronounsCost + SourceNotReferencedCost + ShortSectionCost +
+                                PictureNotReferencedCost + TableNotReferencedCost + ForbiddenWordsCost;
+            double stabilizer = Math.Abs(totalWeight) > 0.01 ? MaxScore / totalWeight : 0;
+
+            WaterCriterionFactor = Math.Round(stabilizer * WaterCriterionFactor, 2);
+            KeyWordsCriterionFactor = Math.Round(stabilizer * KeyWordsCriterionFactor, 2);
+            ZipfFactor = Math.Round(stabilizer * ZipfFactor, 2);
+            UseOfPersonalPronounsCost = Math.Round(stabilizer * UseOfPersonalPronounsCost, 2);
+            SourceNotReferencedCost = Math.Round(stabilizer * SourceNotReferencedCost, 2);
+            ShortSectionCost = Math.Round(stabilizer * ShortSectionCost, 2);
+            PictureNotReferencedCost = Math.Round(stabilizer * PictureNotReferencedCost, 2);
+            TableNotReferencedCost = Math.Round(stabilizer * TableNotReferencedCost, 2);
+            ForbiddenWordsCost = Math.Round(stabilizer * ForbiddenWordsCost, 2);
         }
     }
-
-
 }

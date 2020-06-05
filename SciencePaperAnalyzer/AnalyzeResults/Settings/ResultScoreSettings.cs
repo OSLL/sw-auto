@@ -30,5 +30,7 @@ namespace AnalyzeResults.Settings
         public double TableNotReferencedErrorCost { get; set; }
         public double MaxScore { get; set; }
         public IEnumerable<ForbiddenWords> ForbiddenWords { get; set; }
+        public double ForbiddenWordsCost { get; set; }
+        public double ForbiddenWordsErrorCost { get; set; }
     }
 }

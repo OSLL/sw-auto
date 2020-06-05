@@ -362,7 +362,7 @@ namespace PaperAnalyzer
                         {
                             if (dict.Words.Contains(word.morphology.NormalForm))
                             {
-                                errors.Add(new UseOfForbiddenWordsError(dict.Name, new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex)));
+                                errors.Add(new UseOfForbiddenWordsError(dict.Name, new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex), settings.ForbiddenWordsErrorCost, settings.ForbiddenWordsCost));
                             }
                         }
                     }

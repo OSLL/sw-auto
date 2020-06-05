@@ -172,6 +172,21 @@
             <input type="text" asp-for="TableNotReferencedErrorCost" />
         </div>
     </div>
+    <div class="criterion-add-submit" style="margin-bottom: 3%">
+        <div>
+            <h3>
+                Запрещенные словари
+            </h3>
+            <h5>
+                Вес критерия
+            </h5>
+            <input type="text" asp-for="ForbiddenWordsCost" />
+            <h5>
+                Штраф
+            </h5>
+            <input type="text" asp-for="ForbiddenWordsErrorCost" />
+        </div>
+    </div>
 
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="TeacherLogin" />

@@ -115,19 +115,36 @@ namespace TestWebApp.Controllers
         public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
         {
             _logger.LogDebug("Received Post request AddCriterion");
-            _logger.LogDebug($"Selected {model.Dictionaries.Count(x => x.IsSelected)} dictionaries");
-            _logger.LogDebug($"Name selected dictionary: {string.Join(",", model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name))}");
+            try
+            {
+                _logger.LogDebug($"Selected {model.Dictionaries.Count(x => x.IsSelected)} dictionaries");
+                _logger.LogDebug(
+                    $"Name selected dictionary: {string.Join(",", model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name))}");
+            }
+            catch (Exception)
+            {
+                _logger.LogDebug("No selected dictionaries");
+            }
+
             _criteria = await _context.GetCriteria();
             ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
             if (criterion == null)
             {
                 criterion = model;
                 criterion.TeacherLogin = User.Identity.Name;
-                criterion.ForbiddenWordDictionary = model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name);
+                try
+                {
+                    criterion.ForbiddenWordDictionary =
+                        model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name);
+                }
+                catch (Exception)
+                {
+                    criterion.ForbiddenWordDictionary = null;
+                }
+
                 criterion.Recalculate();
                 await _context.AddCriterion(criterion);
             }
-
             return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});
         }
         

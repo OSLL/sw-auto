@@ -115,34 +115,36 @@ namespace TestWebApp.Controllers
         public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
         {
             _logger.LogDebug("Received Post request AddCriterion");
-            _logger.LogDebug($"Selected {model.Dictionaries.Count(x => x.IsSelected)} dictionaries");
-            _logger.LogDebug($"Name selected dictionary: {string.Join(",", model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name))}");
-            if (model.IsValid())
+            try
             {
-                _criteria = await _context.GetCriteria();
-                ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
-                if (criterion == null)
-                {
-                    criterion = new ResultCriterion()
-                    {
-                        Name = model.Name,
-                        TeacherLogin = User.Identity.Name,
-                        ErrorCost = model.ErrorCost,
-                        ZipfFactor = model.ZipfFactor,
-                        ZipfFactorLowerBound = model.ZipfFactorLowerBound,
-                        ZipfFactorUpperBound = model.ZipfFactorUpperBound,
-                        WaterCriterionFactor = model.WaterCriterionFactor,
-                        WaterCriterionLowerBound = model.WaterCriterionLowerBound,
-                        WaterCriterionUpperBound = model.WaterCriterionUpperBound,
-                        KeyWordsCriterionFactor = model.KeyWordsCriterionFactor,
-                        KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound,
-                        KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound,
-                        ForbiddenWordDictionary = model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name),
-                    };
-                    await _context.AddCriterion(criterion);
-                }
+                _logger.LogDebug($"Selected {model.Dictionaries.Count(x => x.IsSelected)} dictionaries");
+                _logger.LogDebug(
+                    $"Name selected dictionary: {string.Join(",", model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name))}");
+            }
+            catch (Exception)
+            {
+                _logger.LogDebug("No selected dictionaries");
             }
 
+            _criteria = await _context.GetCriteria();
+            ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
+            if (criterion == null)
+            {
+                criterion = model;
+                criterion.TeacherLogin = User.Identity.Name;
+                try
+                {
+                    criterion.ForbiddenWordDictionary =
+                        model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name);
+                }
+                catch (Exception)
+                {
+                    criterion.ForbiddenWordDictionary = null;
+                }
+
+                criterion.Recalculate();
+                await _context.AddCriterion(criterion);
+            }
             return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});
         }
         
@@ -165,20 +167,12 @@ namespace TestWebApp.Controllers
         [Authorize(Roles = "teacher")]
         public async Task<IActionResult> EditCriterion(ResultCriterion editCriterion)
         {
-            if (editCriterion.IsValid())
-            {
-                await _context.EditCriterion(editCriterion);
-                return RedirectToAction("EditDeleteCriterion", "StudentTeacher",
-                    new {name = editCriterion.Name});
-            }
-            else
-            {
-                return RedirectToAction("EditDeleteCriterion", "StudentTeacher",
-                    new {name = _context.GetCriteriaById(editCriterion.Id).Name});
-            }
+            editCriterion.Recalculate();
+            await _context.EditCriterion(editCriterion);
+            return RedirectToAction("EditDeleteCriterion", "StudentTeacher",new {name = editCriterion.Name});
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize(Roles = "teacher")]
         public async Task<IActionResult> DeleteCriterion(string id)
         {

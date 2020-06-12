@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AnalyzeResults.Errors;
+using AnalyzeResults.Settings;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace AnalyzeResults.Presentation
@@ -9,7 +10,7 @@ namespace AnalyzeResults.Presentation
     [Serializable]
     public class PaperAnalysisResult
     {
-        public PaperAnalysisResult(IEnumerable<Section> sections, IEnumerable<Criterion> criteria, IEnumerable<Error> errors, double errorCost = 2.0)
+        public PaperAnalysisResult(IEnumerable<Section> sections, IEnumerable<Criterion> criteria, IEnumerable<Error> errors, double maxScore)
         {
             Sections = new List<Section>();
             Sections.AddRange(sections);
@@ -18,7 +19,7 @@ namespace AnalyzeResults.Presentation
             Errors = new List<Error>();
             Errors.AddRange(errors);
             Error = "";
-            ErrorCost = errorCost;
+            MaxScore = maxScore;
         }
 
         [BsonElement("sections")]
@@ -33,8 +34,8 @@ namespace AnalyzeResults.Presentation
         [BsonElement("error")]
         public string Error { get; set; }
 
-        [BsonElement("error_cost")]
-        public double ErrorCost { get; set; }
+        [BsonElement("maxScore")]
+        public double MaxScore { get; set; }
 
         public bool IsScientific()
         {
@@ -43,10 +44,28 @@ namespace AnalyzeResults.Presentation
 
         public double GetPaperGrade()
         {
-            var baseValue = Criteria.Where(x => x is NumericalCriterion).Select(crit => (crit as NumericalCriterion).GetGradePart())
+            var resultScore = Criteria.Where(x => x is NumericalCriterion).Select(crit => (crit as NumericalCriterion).GetGradePart())
                 .Aggregate((result, part) => result + part);
-            var fines = Errors.Count * ErrorCost;
-            return Math.Max(baseValue - fines, 0);
+            var weightTmp = MaxScore - Criteria.Where(x => x is NumericalCriterion)
+                .Sum(crit => (crit as NumericalCriterion).Factor);
+
+
+            foreach (var error in Enum.GetValues(typeof(ErrorType)))
+            {
+                var specialError = Errors.FirstOrDefault(e => e.ErrorType == ((ErrorType) error));
+
+                if (specialError == null)
+                {
+                    continue;
+                }
+
+                var weight = specialError.Weight;
+                weightTmp -= weight;
+                var errorCost = specialError.ErrorCost;
+                resultScore += Math.Max(weight - Errors.Count(e => e.ErrorType == (ErrorType)error)*errorCost, 0);
+            }
+
+            return Math.Round(resultScore) + weightTmp;
         }
     }
 }

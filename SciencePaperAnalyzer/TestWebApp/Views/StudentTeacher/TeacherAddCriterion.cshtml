@@ -1,91 +1,218 @@
-﻿@using WebPaperAnalyzer.Models
+@using WebPaperAnalyzer.Models
 @model WebPaperAnalyzer.ViewModels.AddCriterion
 @{
-    ViewBag.Title = "Добавление нового критерия";
+    ViewBag.Title = "Добавление нового набора критериев";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <input type="button" class="upload-form2" value="Назад" onclick="window.location.href = '@Url.Action("TeacherMainPage", "StudentTeacher")';" />
 
-<h2>Добавление нового критерия</h2>
-
-@using (Html.BeginForm())
-{
-<fieldset>
-    <div class="criterion-add-submit">
-        <h3>
-            Название
-        </h3>
-        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { placeholder = "Название" } })
-
-        <h3>
-            ErrorCost
-        </h3>
-        @Html.EditorFor(model => model.ErrorCost, new { htmlAttributes = new { placeholder = "Цена ошибки" } })
-
-        <input type="submit" value="Добавить критерий" />
-    </div>
-
-    <div class="criterion-add-edit">
-        <h3>
-            WaterCriterionFactor
-        </h3>
-        @Html.EditorFor(model => model.WaterCriterionFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-
-        <div class="criterion-add-bounds">
-            @Html.EditorFor(model => model.WaterCriterionLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
-            @Html.EditorFor(model => model.WaterCriterionUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
+<div class="inline-flex-class">
+    <form asp-action="TeacherAddCriterion" asp-controller="StudentTeacher" style="width: 100%">
+        <h2>Добавление нового набора критериев</h2>
+        <div class="criterion-add-submit">
+            <div>
+                <h3>
+                    Название
+                </h3>
+                <input type="text" asp-for="Name" />
+            </div>
+            <div>
+                <h3>
+                    Краткое описание
+                </h3>
+                <input type="text" asp-for="Summary" />
+            </div>
+            <div>
+                <h3>
+                    Максимальная оценка за статью
+                </h3>
+                <input type="text" asp-for="MaxScore" />
+            </div>
         </div>
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            KeyWordsCriterionFactor
-        </h3>
-        @Html.EditorFor(model => model.KeyWordsCriterionFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
+        <div class="criterion-add-edit">
+            <h3>
+                Уровень водности
+            </h3>
+            <h5>
+                Вес критерия
+            </h5>
+            <input type="text" asp-for="WaterCriterionFactor" />
 
-        <div class="criterion-add-bounds">
-            @Html.EditorFor(model => model.KeyWordsCriterionLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
-            @Html.EditorFor(model => model.KeyWordsCriterionUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
+            <div class="criterion-add-bounds">
+                <div>
+                    <h5>
+                        Нижняя граница
+                    </h5>
+                    <input type="text" asp-for="WaterCriterionLowerBound" />
+                </div>
+                <div>
+                    <h5>
+                        Верхняя граница
+                    </h5>
+                    <input type="text" asp-for="WaterCriterionUpperBound" />
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            ZipfFactor
-        </h3>
-        @Html.EditorFor(model => model.ZipfFactor, new { htmlAttributes = new { placeholder = "Вес критерия" } })
-        <div class="criterion-add-bounds">
-            @Html.EditorFor(model => model.ZipfFactorLowerBound, new { htmlAttributes = new { placeholder = "Минимум" } })
-            @Html.EditorFor(model => model.ZipfFactorUpperBound, new { htmlAttributes = new { placeholder = "Максимум" } })
-        </div>
-    </div>
-    <!--
-    Html.EditorFor(model => model.ForbiddenWordDictionary)
-    foreach (var item in ViewBag.Dicts)
-    {
-        <div class="checkbox">
-            <label><input type="checkbox" name="SelectedSource" value=item/>item</label>
-            <!--<label><input type="checkbox" name="item" /></label>
-            <label for="item">item</label>
-        </div>
-    }-->
-    
-    @for (int i = 0; i < Model.Dictionaries.Count; i++)
-    {
-        <li>
-        @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
-        @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
-        @Html.HiddenFor(m => m.Dictionaries[i].Name)
-        </li>
-    }
-</fieldset>
-}
+        <div class="criterion-add-edit">
+            <h3>
+                Тошнота
+            </h3>
+            <h5>
+                Вес критерия
+            </h5>
+            <input type="text" asp-for="KeyWordsCriterionFactor" />
 
-<h2>Существующие критерии</h2>
-<input type="button" class="upload-form2" value="Показать критерии добавленные мной" onclick="window.location.href='@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = true})';" />
-@foreach (var criterion in (IEnumerable<ResultCriterion>)ViewBag.Criteria)
-{
-    <button type="submit" class="upload-form" , onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
-        Критерий @criterion.Name, Создатель @criterion.TeacherLogin,
-        Цена ошибки: @criterion.ErrorCost, Критерий водности: @criterion.WaterCriterionFactor,
-        Тошнота: @criterion.KeyWordsCriterionFactor, Zipf: @criterion.ZipfFactor
-    </button>
-}
+            <div class="criterion-add-bounds">
+                <div>
+                    <h5>
+                        Нижняя граница
+                    </h5>
+                    <input type="text" asp-for="KeyWordsCriterionLowerBound" />
+                </div>
+                <div>
+                    <h5>
+                        Верхняя граница
+                    </h5>
+                    <input type="text" asp-for="KeyWordsCriterionUpperBound" />
+                </div>
+            </div>
+        </div>
+        <div class="criterion-add-edit">
+            <h3>
+                Ципф
+            </h3>
+            <h5>
+                Вес критерия
+            </h5>
+            <input type="text" asp-for="ZipfFactor" />
+
+            <div class="criterion-add-bounds">
+                <div>
+                    <h5>
+                        Нижняя граница
+                    </h5>
+                    <input type="text" asp-for="ZipfFactorLowerBound" />
+                </div>
+                <div>
+                    <h5>
+                        Верхняя граница
+                    </h5>
+                    <input type="text" asp-for="ZipfFactorUpperBound" />
+                </div>
+            </div>
+        </div>
+        <div class="criterion-add-submit">
+            <div>
+                <h3>
+                    Использование личных местоимений
+                </h3>
+                <h5>
+                    Вес критерия
+                </h5>
+                <input type="text" asp-for="UseOfPersonalPronounsCost" />
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
+            </div>
+        </div>
+        <div class="criterion-add-submit">
+            <div>
+                <h3>
+                    Нет ссылки на источник
+                </h3>
+                <h5>
+                    Вес критерия
+                </h5>
+                <input type="text" asp-for="SourceNotReferencedCost" />
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="SourceNotReferencedErrorCost" />
+            </div>
+        </div>
+        <div class="criterion-add-submit">
+            <div>
+                <h3>
+                    Короткий раздел
+                </h3>
+                <h5>
+                    Вес критерия
+                </h5>
+                <input type="text" asp-for="ShortSectionCost" />
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="ShortSectionErrorCost" />
+            </div>
+        </div>
+        <div class="criterion-add-submit">
+            <div>
+                <h3>
+                    Нет ссылки на рисунок
+                </h3>
+                <h5>
+                    Вес критерия
+                </h5>
+                <input type="text" asp-for="PictureNotReferencedCost" />
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="PictureNotReferencedErrorCost" />
+            </div>
+        </div>
+        <div class="criterion-add-submit" style="margin-bottom: 3%">
+            <div>
+                <h3>
+                    Нет ссылки на таблицу
+                </h3>
+                <h5>
+                    Вес критерия
+                </h5>
+                <input type="text" asp-for="TableNotReferencedCost" />
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="TableNotReferencedErrorCost" />
+            </div>
+        </div>
+        <div class="criterion-add-submit" style="margin-bottom: 3%">
+            <div>
+                <h3>
+                    Запрещенные словари
+                </h3>
+                <h5>
+                    Вес критерия
+                </h5>
+                <input type="text" asp-for="ForbiddenWordsCost" />
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="ForbiddenWordsErrorCost" />
+            </div>
+        </div>
+        @for (int i = 0; i < @Model.Dictionaries.Count; i++)
+        {
+          <li>
+            @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
+            @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
+            @Html.HiddenFor(m => m.Dictionaries[i].Name)
+          </li>
+        }
+        <div class="criterion-add-submit">
+            <input type="submit" value="Добавить критерий" class="add-button"/>
+        </div>
+    </form>
+
+    <div style="width: 100%">
+        <h2>Существующие наборы критериев</h2>
+        <input type="button" class="upload-form2" value="Показать критерии добавленные мной" style="width: 30%" onclick="window.location.href='@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = true})';" />
+        @foreach (var criterion in (IEnumerable<ResultCriterion>)ViewBag.Criteria)
+        {
+            <button type="submit" class="upload-form" , onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
+                Критерий: @criterion.Name, Создатель: @criterion.TeacherLogin,
+                Описание: @criterion.Summary
+            </button>
+        }
+    </div>
+</div>

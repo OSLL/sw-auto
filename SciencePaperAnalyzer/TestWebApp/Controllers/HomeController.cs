@@ -67,7 +67,7 @@ namespace WebPaperAnalyzer.Controllers
             try
             {
                 var criteria = await _context.GetCriteria();
-                criterion = criteria.First(c => c.Name == criterionName);
+                criterion = criteria.FirstOrDefault(c => c.Name == criterionName);
             }
             catch (Exception)
             {
@@ -78,29 +78,16 @@ namespace WebPaperAnalyzer.Controllers
 
             if (criterion != null)
             {
-
+                settings = criterion;
                 _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
-                settings = new ResultScoreSettings
-                {
-                    ErrorCost = criterion.ErrorCost,
-                    KeyWordsCriterionFactor = criterion.KeyWordsCriterionFactor,
-                    KeyWordsCriterionLowerBound = criterion.KeyWordsCriterionLowerBound,
-                    KeyWordsCriterionUpperBound = criterion.KeyWordsCriterionUpperBound,
-                    WaterCriterionFactor = criterion.WaterCriterionFactor,
-                    WaterCriterionLowerBound = criterion.WaterCriterionLowerBound,
-                    WaterCriterionUpperBound = criterion.WaterCriterionUpperBound,
-                    ZipfFactor = criterion.ZipfFactor,
-                    ZipfFactorLowerBound = criterion.ZipfFactorLowerBound,
-                    ZipfFactorUpperBound = criterion.ZipfFactorUpperBound,
-                    ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary),
-                };
+                settings.ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary);
+                _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
             }
             else
             {
                 //Возможно только во время выполнения теста
                 settings = new ResultScoreSettings()
                 {
-                    ErrorCost = 2,
                     KeyWordsCriterionFactor = 35,
                     KeyWordsCriterionUpperBound = 6,
                     KeyWordsCriterionLowerBound = 14,
@@ -110,7 +97,17 @@ namespace WebPaperAnalyzer.Controllers
                     ZipfFactor = 30,
                     ZipfFactorLowerBound = 5.5,
                     ZipfFactorUpperBound = 9.5,
-                    ForbiddenWords = new List<ForbiddenWords>(),
+                    UseOfPersonalPronounsCost = 0,
+                    UseOfPersonalPronounsErrorCost = 0,
+                    SourceNotReferencedCost = 0,
+                    SourceNotReferencedErrorCost = 0,
+                    ShortSectionCost = 0,
+                    ShortSectionErrorCost = 0,
+                    PictureNotReferencedCost = 0,
+                    PictureNotReferencedErrorCost = 0,
+                    TableNotReferencedCost = 0,
+                    TableNotReferencedErrorCost = 0,
+                    ForbiddenWords = new List<ForbiddenWords>()
                 };
             }
 
@@ -122,10 +119,12 @@ namespace WebPaperAnalyzer.Controllers
             }
             catch (Exception ex)
             {
+                result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
+                    new List<AnalyzeResults.Errors.Error>(), 0) {Error = ex.Message};
                 return Error(ex.Message);
             }
 
-            AnalysisResult analysisResult = null;
+            AnalysisResult analysisResult;
             if (criterion != null)
             {
                 analysisResult = new AnalysisResult

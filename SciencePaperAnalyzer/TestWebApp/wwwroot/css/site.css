@@ -752,25 +752,17 @@ input[type="file"] {
 }
 
 .criterion-add-submit, .criterion-add-edit {
-    width: 15%;
-    height: 300px;
-    display: -webkit-inline-flex;
-    display: -moz-inline-flex;
-    display: inline-flex;
+    width: 100%;
     -webkit-flex-direction: column;
     -moz-flex-direction: column;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    text-align: center;
 }
 
 .criterion-add-submit input {
     text-align: center;
-}
-
-.criterion-add-edit {
-    width: 20%;
-    margin: 0 2%;
 }
 
 .criterion-add-edit input {
@@ -779,10 +771,37 @@ input[type="file"] {
 }
 
 .criterion-add-bounds {
-    width: 80%;
     display: -webkit-flex;
     display: -moz-flex;
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 100px;
+    margin: 0 30%
 }
+
+.criterion-add-submit {
+    text-align: center;
+}
+
+.inline-flex-class {
+    display: -webkit-inline-flex;
+    display: -moz-inline-flex;
+    display: inline-flex;
+    text-align: center;
+    width: 100%;
+}
+
+.add-button, .delete-button {
+    color: #fff;
+    text-decoration: none;
+    user-select: none;
+    padding: .7em 1.5em;
+    outline: none;
+}
+.delete-button {
+    background: rgb(212,75,56);
+}
+.delete-button:hover { background: rgb(232,95,76); }
+.delete-button:active { background: rgb(152,15,0); }
+
+.add-button { background: rgb(32, 183, 123);}
+.add-button:hover {background: rgb(32, 243, 153)}
+.add-button:active {background: rgb(32, 123, 93)}

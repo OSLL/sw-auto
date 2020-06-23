@@ -2,21 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AnalyzeResults.Settings;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using WebPaperAnalyzer.DAL;
 using WebPaperAnalyzer.Models;
 using WebPaperAnalyzer.ViewModels;
@@ -179,5 +171,37 @@ namespace TestWebApp.Controllers
             await _context.DeleteCriterion(id);
             return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});
         }
+
+        [HttpGet]
+        [Authorize(Roles = "teacher")]
+        public async Task<FileResult> DownloadDictionary(string name)
+		{
+            var dictionary = await _context.GetDictionary(name);
+            var fileBytes = ConvertToByteArray(dictionary);
+            var fileName = $"{dictionary.Name}.txt";
+
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+		}
+
+        [HttpPost]
+        [Authorize(Roles = "teacher")]
+        public async Task<IActionResult> DeleteDictionary(string name)
+		{
+            await _context.DeleteDictionary(name);
+            return RedirectToAction("TeacherMainPage");
+        }
+
+        private byte[] ConvertToByteArray(ForbiddenWords dictionary)
+		{
+            var stringBuilder = new StringBuilder();
+            foreach (var word in dictionary.Words)
+			{
+                stringBuilder.Append(word);
+                stringBuilder.AppendLine();
+			}
+            var encoder = new UTF8Encoding();
+            var result = encoder.GetBytes(stringBuilder.ToString());
+            return result;
+		}
     }
 }

@@ -43,7 +43,21 @@ namespace TestWebApp.Controllers
         public IActionResult AddDictionary()
         {
             _logger.LogDebug("Received Get request AddDictionary");
+            
             return View();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "teacher")]
+        public async Task<IActionResult> GetDictionaries()
+        {
+            _logger.LogDebug("Received Get request GetDictionaries");
+            var dict = await _context.GetForbiddenWordDictionary();
+            var model = new DictionariesModel()
+            {
+                Dictionaries = dict.ToList(),
+            };
+            return View(model);
         }
 
         [HttpPost]
@@ -176,6 +190,7 @@ namespace TestWebApp.Controllers
         [Authorize(Roles = "teacher")]
         public async Task<FileResult> DownloadDictionary(string name)
 		{
+            _logger.LogDebug($"Receive request DownloadDictionary {name}");
             var dictionary = await _context.GetDictionary(name);
             var fileBytes = ConvertToByteArray(dictionary);
             var fileName = $"{dictionary.Name}.txt";
@@ -187,6 +202,7 @@ namespace TestWebApp.Controllers
         [Authorize(Roles = "teacher")]
         public async Task<IActionResult> DeleteDictionary(string name)
 		{
+            _logger.LogDebug($"Receive request DeleteDictionary {name}");
             await _context.DeleteDictionary(name);
             return RedirectToAction("TeacherMainPage");
         }

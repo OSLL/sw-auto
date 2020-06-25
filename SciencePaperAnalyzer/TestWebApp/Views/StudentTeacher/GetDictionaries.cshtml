@@ -1,0 +1,40 @@
+﻿@model WebPaperAnalyzer.ViewModels.DictionariesModel
+
+<h2>Словари запрещенных слов</h2>
+<p>
+    <a asp-controller="StudentTeacher" asp-action="AddDictionary">Загрузить словарь</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Название словаря")
+            </th>
+            <th>
+                @Html.DisplayName("Количество слов")
+            </th>
+            <th>
+                Команды
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Dictionaries)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Words.Count())
+                </td>
+                <td>
+                    <a asp-action="DownloadDictionary" asp-route-name="@item.Name">Скачать</a>
+                    <a asp-action="DeleteDictionary" asp-route-name="@item.Name">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

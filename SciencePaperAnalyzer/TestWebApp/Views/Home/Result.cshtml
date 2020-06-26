@@ -1,5 +1,6 @@
 ﻿@using AnalyzeResults.Errors
 @using AnalyzeResults.Presentation
+@using Microsoft.EntityFrameworkCore.Infrastructure
 @model AnalyzeResults.Presentation.PaperAnalysisResult
 
 @{
@@ -58,6 +59,31 @@
                 <div class="criteria-title">
                     Критерии:
                 </div>
+                <div class="criteria-container">
+                    <div class="criteria-header">
+                        <div class="criteria-name">Проведенные проверки:</div>
+                    </div>
+                    <div class="criteria-data">
+                        @foreach (NumericalCriterion crit in Model.Criteria.Where(x => (x as NumericalCriterion)?.Factor > 0))
+                        {
+                            var @res = @crit.IsMet() ? @Math.Round(@crit.Factor, 2) : 0;
+                            <div class="criteria-data-row criterion-value">
+                                @crit.Name : Набрано @res из @Math.Round(@crit.Factor, 2) баллов
+                            </div>
+                        }
+                        @foreach (var error in Enum.GetValues(typeof(ErrorType)))
+                        {
+                            var specialError = @Model.Errors.FirstOrDefault(e => e.ErrorType == (ErrorType)error);
+                            if (@specialError != null && @specialError.Weight > 0)
+                            {
+                                var @res = @Math.Round(@Math.Max(@specialError.Weight - @Model.Errors.Count(e => e.ErrorType == (ErrorType) error) * @specialError.ErrorCost, 0), 2);
+                                <div class="criteria-data-row criterion-value">
+                                    @specialError.Name : Набрано @res из @Math.Round(@specialError.Weight, 2) баллов
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
                 @foreach (NumericalCriterion crit in Model.Criteria.Where(x => (x as NumericalCriterion)?.Factor > 0))
                 {
                     <div class="criteria-container">
@@ -91,7 +117,7 @@
                             @if (crit.IsMet())
                             {
                                 <div class="criteria-data-row criterion-value">
-                                    <span class="data-label">Набрано @crit.Factor баллов </span>
+                                    <span class="data-label">Набрано @Math.Round(@crit.Factor, 2) баллов </span>
                                 </div>
                             }
                             else
@@ -124,7 +150,7 @@
                             break;
                         case AnalyzeResults.Presentation.SectionType.SectionTitle:
                             <div>
-                                <div class="section-title @(sect.HasErrors ? "section-error" : "")" sectId="@sect.Id" id="err_@sect.Id" errors="@((int)AnalyzeResults.Errors.ErrorType.ShortSection)">
+                                <div class="section-title @(sect.HasErrors && Model.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.ShortSection)?.Weight > 0 ? "section-error" : "")" sectId="@sect.Id" id="err_@sect.Id" errors="@((int)AnalyzeResults.Errors.ErrorType.ShortSection)">
                                     @Html.Raw(sect.ToStringVersion())
                                 </div>
                             </div>
@@ -133,19 +159,22 @@
                             <div class="reference-list">
                                 @foreach (var reference in sect.References)
                                 {
-                                    <span class="reference @(reference.ReferedTo ? "" : "ref-error")" number="@reference.Number" id="ref_@reference.Number" errors="@((int)AnalyzeResults.Errors.ErrorType.SourceNotReferenced)">
+                                    <span class="reference @(reference.ReferedTo || Model.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.SourceNotReferenced)?.Weight <= 0 ? "" : "ref-error")" number="@reference.Number" id="ref_@reference.Number" errors="@((int)AnalyzeResults.Errors.ErrorType.SourceNotReferenced)">
                                         @reference.Original.Original
-                                        @if (reference.ReferedTo)
+                                        @if (@Model.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.SourceNotReferenced)?.Weight > 0)
                                         {
-                                            <span class="referenced">Есть ссылка в статье</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="not-referenced">Нет ссылки в статье</span>
-                                        }
-                                        @if (reference.Year != 0 && reference.Year < 1990)
-                                        {
-                                            <span class="old-source">Устаревший источник</span>
+                                            @if (reference.ReferedTo)
+                                            {
+                                                <span class="referenced">Есть ссылка в статье</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="not-referenced">Нет ссылки в статье</span>
+                                            }
+                                            @if (reference.Year != 0 && reference.Year < 1990)
+                                            {
+                                                <span class="old-source">Устаревший источник</span>
+                                            }
                                         }
                                     </span>
                                 }

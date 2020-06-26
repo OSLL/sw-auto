@@ -46,6 +46,6 @@ namespace WebPaperAnalyzer.ViewModels
 
     public class DictionariesModel
     {
-        public List<ForbiddenWords> Dictionaries { get; set; }
+        public List<ForbiddenWordsList> Dictionaries { get; set; }
     }
 }

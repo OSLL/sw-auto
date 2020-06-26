@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AnalyzeResults.Settings;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NLog.Fluent;
 using WebPaperAnalyzer.DAL;
 using WebPaperAnalyzer.Models;
 using WebPaperAnalyzer.ViewModels;
@@ -53,9 +55,28 @@ namespace TestWebApp.Controllers
         {
             _logger.LogDebug("Received Get request GetDictionaries");
             var dict = await _context.GetForbiddenWordDictionary();
+            var forbiddenWordsDict = new List<ForbiddenWordsList>();
+            if (dict != null)
+			{
+                dict.ToList().ForEach(current =>
+                {
+                    foreach (var word in current.Words.Take(10))
+					{
+                        _logger.LogDebug($"Word from dictionary {current.Name}: {word}");
+					}
+
+                    var forbDict = new ForbiddenWordsList
+                    {
+                        Name = current.Name,
+                        PreviewString = string.Join(", ", current.Words.Take(10)),
+                        WordCount = current.Words.Count(),
+                    };
+                    forbiddenWordsDict.Add(forbDict);
+                });
+			}
             var model = new DictionariesModel()
             {
-                Dictionaries = dict.ToList(),
+                Dictionaries = forbiddenWordsDict,
             };
             return View(model);
         }
@@ -198,13 +219,13 @@ namespace TestWebApp.Controllers
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
 		}
 
-        [HttpPost]
+        [HttpGet]
         [Authorize(Roles = "teacher")]
         public async Task<IActionResult> DeleteDictionary(string name)
 		{
             _logger.LogDebug($"Receive request DeleteDictionary {name}");
             await _context.DeleteDictionary(name);
-            return RedirectToAction("TeacherMainPage");
+            return RedirectToAction("GetDictionaries");
         }
 
         private byte[] ConvertToByteArray(ForbiddenWords dictionary)

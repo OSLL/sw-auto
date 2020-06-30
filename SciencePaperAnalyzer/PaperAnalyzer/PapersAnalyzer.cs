@@ -340,7 +340,8 @@ namespace PaperAnalyzer
                         {
                             if (personalPronouns.Contains(word.morphology.NormalForm))
                                 errors.Add(new UseOfPersonalPronounsError(new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex),
-                                    settings.UseOfPersonalPronounsErrorCost, settings.UseOfPersonalPronounsCost));
+                                    settings.UseOfPersonalPronounsErrorCost, settings.UseOfPersonalPronounsCost, settings.UseOfPersonalPronounsGrading,
+                                    settings.UseOfPersonalPronounsGradingType));
                         }
 
                         if (stopPartsOfSpeech.Contains(word.morphology.PartOfSpeech))
@@ -362,7 +363,9 @@ namespace PaperAnalyzer
                         {
                             if (dict.Words.Contains(word.morphology.NormalForm))
                             {
-                                errors.Add(new UseOfForbiddenWordsError(dict.Name, new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex), settings.ForbiddenWordsErrorCost, settings.ForbiddenWordsCost));
+                                errors.Add(new UseOfForbiddenWordsError(dict.Name, new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex),
+                                    settings.ForbiddenWordsErrorCost, settings.ForbiddenWordsCost,
+                                    settings.ForbiddenWordsGrading, settings.ForbiddenWordsGradingType));
                             }
                         }
                     }
@@ -450,7 +453,9 @@ namespace PaperAnalyzer
                 {
                     if (!reference.ReferedTo)
                     {
-                        errors.Add(new SourceNotReferencedError(reference.Number, settings.SourceNotReferencedErrorCost, settings.SourceNotReferencedCost));
+                        errors.Add(new SourceNotReferencedError(reference.Number,
+                            settings.SourceNotReferencedErrorCost, settings.SourceNotReferencedCost,
+                            settings.SourceNotReferencedGrading, settings.SourceNotReferencedGradingType));
                     }
                 }
 
@@ -463,7 +468,9 @@ namespace PaperAnalyzer
                     {
                         sections[i].HasErrors = true;
                         var error = new ShortSectionError(sections[i].Id, sections[i].ToStringVersion(),
-                            sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count, settings.ShortSectionErrorCost, settings.ShortSectionCost);
+                            sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count,
+                            settings.ShortSectionErrorCost, settings.ShortSectionCost,
+                            settings.ShortSectionGrading, settings.ShortSectionGradingType);
                         errors.Add(error);
                     }
                 }
@@ -482,10 +489,14 @@ namespace PaperAnalyzer
                 var tablesNotRefd = tableMatches.Except(tableRefMatches).ToList();
 
                 foreach (var notRefdPic in picsNotRefd)
-                    errors.Add(new PictureNotReferencedError(notRefdPic, settings.PictureNotReferencedErrorCost, settings.PictureNotReferencedCost));
+                    errors.Add(new PictureNotReferencedError(notRefdPic,
+                        settings.PictureNotReferencedErrorCost, settings.PictureNotReferencedCost,
+                        settings.PictureNotReferencedGrading, settings.PictureNotReferencedGradingType));
 
                 foreach (var notRefdTable in tablesNotRefd)
-                    errors.Add(new TableNotReferencedError(notRefdTable, settings.TableNotReferencedErrorCost, settings.TableNotReferencedCost));
+                    errors.Add(new TableNotReferencedError(notRefdTable,
+                        settings.TableNotReferencedErrorCost, settings.TableNotReferencedCost,
+                        settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
 
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.MaxScore);
 

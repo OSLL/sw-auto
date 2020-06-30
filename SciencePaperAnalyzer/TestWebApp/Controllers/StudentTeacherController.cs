@@ -142,6 +142,13 @@ namespace TestWebApp.Controllers
                     criterion.ForbiddenWordDictionary = null;
                 }
 
+                criterion.ForbiddenWordsGradingType = GradingType.ErrorCostSubtraction;
+                criterion.TableNotReferencedGradingType = GradingType.ErrorCostSubtraction;
+                criterion.UseOfPersonalPronounsGradingType = GradingType.ErrorCostSubtraction;
+                criterion.PictureNotReferencedGradingType = GradingType.ErrorCostSubtraction;
+                criterion.ShortSectionGradingType = GradingType.ErrorCostSubtraction;
+                criterion.SourceNotReferencedGradingType = GradingType.ErrorCostSubtraction;
+
                 criterion.Recalculate();
                 await _context.AddCriterion(criterion);
             }

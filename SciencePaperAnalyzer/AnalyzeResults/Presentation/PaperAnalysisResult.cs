@@ -69,7 +69,13 @@ namespace AnalyzeResults.Presentation
                         resultScore += Math.Max(weight - errorCount * errorCost, 0);
                         break;
                     case GradingType.GradingTable:
-                        resultScore += specialError.Grading.OrderBy(g => g.Key).First(g => g.Key <= errorCount).Value;
+                        var result = specialError.Grading.OrderBy(g => g.Key)
+                            .Select(g => (KeyValuePair<int, double>?) g)
+                            .FirstOrDefault(g => g.Value.Key <= errorCount);
+                        if (result == null)
+                            resultScore += 0;
+                        else
+                            resultScore += result.Value.Value;
                         break;
                 }
             }

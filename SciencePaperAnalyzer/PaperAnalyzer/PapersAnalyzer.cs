@@ -431,13 +431,13 @@ namespace PaperAnalyzer
                     {
                         foreach (var word in sent.Words)
                         {
-                            if (personalPronErrorsWordIds.Contains(word.StartIndex))
+                            if (personalPronErrorsWordIds.Contains(word.StartIndex) && settings.UseOfPersonalPronounsCost > 0)
                             {
                                 word.HasErrors = true;
                                 word.ErrorCodes = $"{word.ErrorCodes}{(int)ErrorType.UseOfPersonalPronouns}";
                             }
 
-                            if (forbiddenWordErorrsWordIds.Contains(word.StartIndex))
+                            if (forbiddenWordErorrsWordIds.Contains(word.StartIndex) && settings.ForbiddenWordsCost > 0)
                             {
                                 word.HasErrors = true;
                                 word.ErrorCodes = $"{word.ErrorCodes}{(int)ErrorType.UseOfForbiddenWord}";

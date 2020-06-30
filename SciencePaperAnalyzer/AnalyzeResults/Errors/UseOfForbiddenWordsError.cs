@@ -14,9 +14,13 @@ namespace AnalyzeResults.Errors
                   $"Данное слово включено в список запрещенных слов.",errorCost, weight)
         {
             ErrorWord = errorWord;
+            DictionaryName = dictionaryName;
         }
 
         [BsonElement("errorword")]
         public Word ErrorWord { get; }
+
+        [BsonElement("dictionaryname")]
+        public string DictionaryName { get; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using WebPaperAnalyzer.Models;
 
 namespace WebPaperAnalyzer.ViewModels
 {
@@ -41,5 +42,10 @@ namespace WebPaperAnalyzer.ViewModels
     {
         public string Name { get; set; }
         public bool IsSelected { get; set; }
+    }
+
+    public class DictionariesModel
+    {
+        public List<ForbiddenWordsList> Dictionaries { get; set; }
     }
 }

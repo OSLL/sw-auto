@@ -1,0 +1,52 @@
+﻿@model WebPaperAnalyzer.ViewModels.DictionariesModel
+
+@{
+    ViewData["Title"] = "GetDictionaries";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Словари запрещенных слов</h2>
+<p>
+    <a asp-controller="StudentTeacher" asp-action="AddDictionary">Загрузить словарь</a>
+    <a asp-controller="StudentTeacher" asp-action="TeacherMainPage">На главную</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Название словаря")
+            </th>
+            <th>
+                @Html.DisplayName("Составляющие слова (превью)")
+            </th>
+            <th>
+                @Html.DisplayName("Количество слов")
+            </th>
+            <th>
+                @Html.DisplayName("Доступные команды")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Dictionaries)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PreviewString)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WordCount)
+                </td>
+                <td>
+                    <a asp-action="DownloadDictionary" asp-route-name="@item.Name">Скачать</a>
+                    <a asp-action="DeleteDictionary" asp-route-name="@item.Name">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
-using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -78,7 +77,7 @@ namespace WebPaperAnalyzer.Controllers
 
             if (criterion != null)
             {
-                settings = criterion;
+                settings = CriteriaMapper.GetAnalyzeCriteria(criterion);
                 _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
                 settings.ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary);
                 _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
@@ -88,15 +87,24 @@ namespace WebPaperAnalyzer.Controllers
                 //Возможно только во время выполнения теста
                 settings = new ResultScoreSettings()
                 {
-                    KeyWordsCriterionFactor = 35,
-                    KeyWordsCriterionUpperBound = 6,
-                    KeyWordsCriterionLowerBound = 14,
-                    WaterCriterionFactor = 35,
-                    WaterCriterionLowerBound = 14,
-                    WaterCriterionUpperBound = 20,
-                    ZipfFactor = 30,
-                    ZipfFactorLowerBound = 5.5,
-                    ZipfFactorUpperBound = 9.5,
+                    WaterCriteria = new BoundedCriteria
+					{
+                        Weight = 35,
+                        LowerBound = 14,
+                        UpperBound = 20
+					},
+                    KeyWordsCriteria = new BoundedCriteria
+					{
+                        Weight = 35,
+                        LowerBound = 6,
+                        UpperBound = 14,
+					},
+                    Zipf = new BoundedCriteria
+					{
+                        Weight = 30,
+                        LowerBound = 5.5,
+                        UpperBound = 9.5,
+					},
                     UseOfPersonalPronounsCost = 0,
                     UseOfPersonalPronounsErrorCost = 0,
                     SourceNotReferencedCost = 0,

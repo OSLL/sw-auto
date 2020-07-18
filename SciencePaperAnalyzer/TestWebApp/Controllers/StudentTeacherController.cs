@@ -98,14 +98,16 @@ namespace TestWebApp.Controllers
             _logger.LogDebug("Received Get request AddCriterion");
             Console.WriteLine("Received Get request AddCriterion");
             _criteria = await _context.GetCriteria();
-            ViewBag.Criteria = mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
+            ViewBag.Criteria =
+                mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
             var dict = await _context.GetForbiddenWordDictionary();
             _logger.LogError($"Finded {dict.ToList().Count} dictionary");
             //ViewBag.Dicts = dict.Select(d => d.Name).ToList();
             _logger.LogDebug(string.Join(",", dict.Select(d => d.Name).ToList()));
             var model = new AddCriterion()
             {
-                Dictionaries = dict.Select(x => new DictionaryCheckBoxModel() { Name = x.Name, IsSelected = false }).ToList(),
+                Dictionaries = dict.Select(x => new DictionaryCheckBoxModel() {Name = x.Name, IsSelected = false})
+                    .ToList(),
             };
             return View(model);
         }
@@ -130,8 +132,30 @@ namespace TestWebApp.Controllers
             ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
             if (criterion == null)
             {
-                criterion = model;
+                criterion = new ResultCriterion();
+                criterion.Name = model.Name;
+                criterion.Summary = model.Summary;
                 criterion.TeacherLogin = User.Identity.Name;
+                criterion.MaxScore = model.MaxScore;
+                criterion.WaterCriterionFactor = model.WaterCriterionFactor;
+                criterion.WaterCriterionLowerBound = model.WaterCriterionLowerBound;
+                criterion.WaterCriterionUpperBound = model.WaterCriterionUpperBound;
+                criterion.KeyWordsCriterionFactor = model.KeyWordsCriterionFactor;
+                criterion.KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound;
+                criterion.KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound;
+                criterion.ZipfFactor = model.ZipfFactor;
+                criterion.ZipfFactorLowerBound = model.ZipfFactorLowerBound;
+                criterion.ZipfFactorUpperBound = model.ZipfFactorUpperBound;
+                criterion.UseOfPersonalPronounsCost = model.UseOfPersonalPronounsCost;
+                criterion.UseOfPersonalPronounsErrorCost = model.UseOfPersonalPronounsErrorCost;
+                criterion.SourceNotReferencedCost = model.SourceNotReferencedCost;
+                criterion.SourceNotReferencedErrorCost = model.SourceNotReferencedErrorCost;
+                criterion.ShortSectionCost = model.ShortSectionCost;
+                criterion.ShortSectionErrorCost = model.ShortSectionErrorCost;
+                criterion.PictureNotReferencedCost = model.PictureNotReferencedCost;
+                criterion.PictureNotReferencedErrorCost = model.PictureNotReferencedErrorCost;
+                criterion.TableNotReferencedCost = model.TableNotReferencedCost;
+                criterion.TableNotReferencedErrorCost = model.TableNotReferencedErrorCost;
                 try
                 {
                     criterion.ForbiddenWordDictionary =

@@ -1,23 +1,27 @@
 using System;
-using AnalyzeResults.Errors;
-using AnalyzeResults.Helpers;
 using System.Collections.Generic;
 using WebPaperAnalyzer.Models;
 
 namespace AnalyzeResults.Settings
 {
+    /// <summary>
+    /// Критерии для оценивания работы
+    /// </summary>
     [Serializable]
     public class ResultScoreSettings
     {
-        public double WaterCriterionFactor { get; set; }
-        public double WaterCriterionLowerBound { get; set; }
-        public double WaterCriterionUpperBound { get; set; }
-        public double KeyWordsCriterionFactor { get; set; }
-        public double KeyWordsCriterionLowerBound { get; set; }
-        public double KeyWordsCriterionUpperBound { get; set; }
-        public double ZipfFactor { get; set; }
-        public double ZipfFactorLowerBound { get; set; }
-        public double ZipfFactorUpperBound { get; set; }
+        /// <summary>
+        /// Критерий водности
+        /// </summary>
+        public BoundedCriteria WaterCriteria { get; set; }
+        /// <summary>
+        /// Критерий использования ключевых слов
+        /// </summary>
+        public BoundedCriteria KeyWordsCriteria { get; set; }
+        /// <summary>
+        /// Фактор Ципф
+        /// </summary>
+        public BoundedCriteria Zipf { get; set; }
         public double UseOfPersonalPronounsCost { get; set; }
         public double UseOfPersonalPronounsErrorCost { get; set; }
         public Dictionary<int, double> UseOfPersonalPronounsGrading = new Dictionary<int, double>();

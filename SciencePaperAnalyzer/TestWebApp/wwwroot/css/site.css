@@ -758,27 +758,23 @@ input[type="file"] {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    text-align: center;
+    text-align: left;
+    margin-left: 20%;
 }
 
 .criterion-add-submit input {
-    text-align: center;
+    text-align: left;
 }
 
 .criterion-add-edit input {
     width: 30%;
-    text-align: center;
+    text-align: left;
 }
 
 .criterion-add-bounds {
     display: -webkit-flex;
     display: -moz-flex;
     display: flex;
-    margin: 0 30%
-}
-
-.criterion-add-submit {
-    text-align: center;
 }
 
 .inline-flex-class {

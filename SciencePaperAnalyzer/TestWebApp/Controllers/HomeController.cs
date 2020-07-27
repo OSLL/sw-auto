@@ -78,9 +78,17 @@ namespace WebPaperAnalyzer.Controllers
             if (criterion != null)
             {
                 settings = CriteriaMapper.GetAnalyzeCriteria(criterion);
-                _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
-                settings.ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary);
-                _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
+                if (criterion.ForbiddenWordDictionary != null)
+                {
+                    _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
+                    settings.ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary);
+                    _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
+                }
+                else
+                {
+                    _logger.LogInformation("No dictionaries uploaded");
+                    settings.ForbiddenWords = new List<ForbiddenWords>();
+                }
             }
             else
             {

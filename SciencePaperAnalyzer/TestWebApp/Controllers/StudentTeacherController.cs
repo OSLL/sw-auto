@@ -101,7 +101,7 @@ namespace TestWebApp.Controllers
             ViewBag.Criteria =
                 mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
             var dict = await _context.GetForbiddenWordDictionary();
-            _logger.LogError($"Finded {dict.ToList().Count} dictionary");
+            _logger.LogError($"Found {dict.ToList().Count} dictionary");
             //ViewBag.Dicts = dict.Select(d => d.Name).ToList();
             _logger.LogDebug(string.Join(",", dict.Select(d => d.Name).ToList()));
             var model = new AddCriterion()
@@ -132,48 +132,7 @@ namespace TestWebApp.Controllers
             ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
             if (criterion == null)
             {
-                criterion = new ResultCriterion();
-                criterion.Name = model.Name;
-                criterion.Summary = model.Summary;
-                criterion.TeacherLogin = User.Identity.Name;
-                criterion.MaxScore = model.MaxScore;
-                criterion.WaterCriterionFactor = model.WaterCriterionFactor;
-                criterion.WaterCriterionLowerBound = model.WaterCriterionLowerBound;
-                criterion.WaterCriterionUpperBound = model.WaterCriterionUpperBound;
-                criterion.KeyWordsCriterionFactor = model.KeyWordsCriterionFactor;
-                criterion.KeyWordsCriterionLowerBound = model.KeyWordsCriterionLowerBound;
-                criterion.KeyWordsCriterionUpperBound = model.KeyWordsCriterionUpperBound;
-                criterion.ZipfFactor = model.ZipfFactor;
-                criterion.ZipfFactorLowerBound = model.ZipfFactorLowerBound;
-                criterion.ZipfFactorUpperBound = model.ZipfFactorUpperBound;
-                criterion.UseOfPersonalPronounsCost = model.UseOfPersonalPronounsCost;
-                criterion.UseOfPersonalPronounsErrorCost = model.UseOfPersonalPronounsErrorCost;
-                criterion.SourceNotReferencedCost = model.SourceNotReferencedCost;
-                criterion.SourceNotReferencedErrorCost = model.SourceNotReferencedErrorCost;
-                criterion.ShortSectionCost = model.ShortSectionCost;
-                criterion.ShortSectionErrorCost = model.ShortSectionErrorCost;
-                criterion.PictureNotReferencedCost = model.PictureNotReferencedCost;
-                criterion.PictureNotReferencedErrorCost = model.PictureNotReferencedErrorCost;
-                criterion.TableNotReferencedCost = model.TableNotReferencedCost;
-                criterion.TableNotReferencedErrorCost = model.TableNotReferencedErrorCost;
-                try
-                {
-                    criterion.ForbiddenWordDictionary =
-                        model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name);
-                }
-                catch (Exception)
-                {
-                    criterion.ForbiddenWordDictionary = null;
-                }
-
-                criterion.ForbiddenWordsGradingType = GradingType.ErrorCostSubtraction;
-                criterion.TableNotReferencedGradingType = GradingType.ErrorCostSubtraction;
-                criterion.UseOfPersonalPronounsGradingType = GradingType.ErrorCostSubtraction;
-                criterion.PictureNotReferencedGradingType = GradingType.ErrorCostSubtraction;
-                criterion.ShortSectionGradingType = GradingType.ErrorCostSubtraction;
-                criterion.SourceNotReferencedGradingType = GradingType.ErrorCostSubtraction;
-
-                criterion.Recalculate();
+                criterion = ResultCriterion.FromViewModelToResultCriterion(model, User.Identity.Name);
                 await _context.AddCriterion(criterion);
             }
             return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});
@@ -188,19 +147,24 @@ namespace TestWebApp.Controllers
 
         [HttpGet]
         [Authorize(Roles = "teacher")]
-        public IActionResult EditDeleteCriterion(string name)
+        public async Task<IActionResult> EditDeleteCriterion(string name)
         {
             var criterion = _context.GetCriteriaByName(name);
-            return View(criterion);
+            var dict = await _context.GetForbiddenWordDictionary();
+            var editingCriterion = AddCriterion.FromResultCriterionToForm(criterion, dict);
+
+            return View(editingCriterion);
         }
 
         [HttpPost]
         [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> EditCriterion(ResultCriterion editCriterion)
+        public async Task<IActionResult> EditCriterion(AddCriterion editCriterion)
         {
-            editCriterion.Recalculate();
-            await _context.EditCriterion(editCriterion);
-            return RedirectToAction("EditDeleteCriterion", "StudentTeacher",new {name = editCriterion.Name});
+            var result =
+                ResultCriterion.FromViewModelToResultCriterion(editCriterion, editCriterion.TeacherLogin,
+                    editCriterion.Id);
+            await _context.EditCriterion(result);
+            return RedirectToAction("EditDeleteCriterion", "StudentTeacher",new {name = result.Name});
         }
 
         [HttpGet]

@@ -27,8 +27,6 @@ namespace TestWebApp.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            SelectList roles = new SelectList(new List<string>{"student", "teacher"});
-            ViewBag.Roles = roles;
             return View();
         }
 
@@ -36,8 +34,9 @@ namespace TestWebApp.Controllers
         public async Task<IActionResult> Register(RegisterModel model)
         {
             if (model.Login != null && model.Password == model.ConfirmPassword &&
-                model.Password != null && model.Role != null)
+                model.Password != null)
             {
+                model.Role = "student";
                 _users = await _context.GetUsers();
                 User user = _users.FirstOrDefault(u => u.Login == model.Login);
                 if (user == null)
@@ -50,8 +49,6 @@ namespace TestWebApp.Controllers
                     await _context.AddUser(user);
                     await Authenticate(user);
 
-                    if (user.Role == "teacher")
-                        return RedirectToAction("TeacherMainPage", "StudentTeacher");
                     return RedirectToAction("Index", "Home");
                 }
             }

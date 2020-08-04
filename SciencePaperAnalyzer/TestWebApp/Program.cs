@@ -3,8 +3,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using NLog.Web;
-
+using WebPaperAnalyzer.Models;
 namespace TestWebApp
 {
     public class Program
@@ -14,7 +15,13 @@ namespace TestWebApp
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
             try
             {
-                CreateWebHostBuilder(args).Build().Run();
+                var host = CreateWebHostBuilder(args).Build();
+                using (var scoped = host.Services.CreateScope())
+                {
+                    var dbInitializer = host.Services.GetService<DbInitializer>();
+                    dbInitializer.InitAdmin().Wait();
+                }
+                host.Run();
                 logger.Debug("init main");
             }
             catch (Exception ex)

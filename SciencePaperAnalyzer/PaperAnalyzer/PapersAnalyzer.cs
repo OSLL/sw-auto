@@ -394,15 +394,28 @@ namespace PaperAnalyzer
                     paperNameTemp = paperNameTemp.Trim();
                     var r = newResult[0];
                     var sentence = new SentenceHtml(SentenceType.Basic, r.Select(x => new WordHtml(x.valueOriginal, x.posTaggerOutputType, x.startIndex)));
-                    if (paperNameTemp.StartsWith(sentence.ToStringVersion()))
+                    // compare word by word to avoid mismatch when restore string form of sentencehtml, 
+                    // for example, when 3D-сканирования is mistakenly detected as Numerical, there won't be space before it in the string representation
+                    bool match = true;
+                    foreach(var w in sentence.Words)
+                    {
+                        if (paperNameTemp.StartsWith(w.Original))
+                        {
+                            paperNameTemp = paperNameTemp.Substring(w.Original.Length).Trim();
+                        }
+                        else
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match)
                     {
                         newResult.RemoveAt(0);
                         paperNameWords.AddRange(sentence.Words);
-                        paperNameTemp = paperNameTemp.Substring(sentence.ToStringVersion().Length).Trim();
-                    }
-                    else
+                    }else
                     {
-                        break;
+                        paperNameTemp = string.Empty;
                     }
                 }
                 // if paper name is found -> add to sections
@@ -654,7 +667,6 @@ namespace PaperAnalyzer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.StackTrace);
                 throw ex;
             }
 

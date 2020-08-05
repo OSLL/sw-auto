@@ -81,6 +81,14 @@ body {
     border-radius: 4px;
 }
 
+.papername-word {
+    margin: 0px 2px 0px 0px;
+    word-spacing: -2px;
+    border-radius: 4px;
+    text-decoration:none;
+    color:var(--darkText);
+}
+
 .results-container {
     width: 25%;
     padding: 20px;
@@ -174,7 +182,7 @@ body {
     width: 25%;
 }
 
-.error-type-container {
+.keywords-container, .error-type-container {
     width: 100%;
     padding: 20px;
     height: 180px;
@@ -282,12 +290,12 @@ body {
 
 .not-referenced {
     margin-left: 5px;
-    color: var(--red);;
+    color: var(--red);
 }
 
 .old-source {
     margin-left: 5px;
-    color: var(--red);;
+    color: var(--red);
 }
 
 .reference-list {
@@ -295,7 +303,7 @@ body {
     flex-flow: column;
 }
 
-.errors-collapsible {
+.keywords-collapsible, .errors-collapsible {
     background-color: var(--basic);
     color: var(--darkText);
     cursor: pointer;
@@ -321,7 +329,7 @@ body {
     background-color: var(--basic_hover);
 }
 
-.errors-content {
+.keywords-content,.errors-content {
     display: flex;
     transform: scaleY(0);
     transform-origin: top;
@@ -330,22 +338,22 @@ body {
     border-radius: 0px 0px 20px 20px;
 }
 
-.errors-content-collapsible {
+.keywords-content-collapsible, .errors-content-collapsible {
     width: 100%;
     border-radius: 0px 0px 20px 20px;
 }
 
-.errors-collapsible.active ~ .errors-content {
+.keywords-collapsible.active ~ .keywords-content, .errors-collapsible.active ~ .errors-content {
     transform: scaleY(1);
 }
 
-.error-button-container {
+.keyword-button-container, .error-button-container {
     display: flex;
     flex-flow: column;
     text-align: left;
 }
 
-.error-button-name {
+.keyword-button-name, .error-button-name {
     width: 100%;
     font-size: 16px;
     font-weight: 600;
@@ -364,7 +372,7 @@ body {
     margin-bottom: 4px;
 }
 
-.error-container {
+.keyword-container,.error-container {
     padding: 10px;
     display: flex;
     flex-flow: column;
@@ -373,13 +381,13 @@ body {
     color: var(--darkText);
 }
 
-.error-container:hover {
+.keyword-container:hover, .error-container:hover {
     background: var(--basic_hover);
     color: var(--darkText);
     text-decoration: unset;
 }
 
-.error-container:last-child {
+.keyword-container:last-child,.error-container:last-child {
     border-radius: 0px 0px 20px 20px;
 }
 

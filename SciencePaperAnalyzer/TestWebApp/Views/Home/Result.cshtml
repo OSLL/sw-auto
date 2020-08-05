@@ -18,7 +18,7 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Результаты проверки</title>
-    
+
 </head>
 <body>
     <div class="main-container">
@@ -104,7 +104,14 @@
                         case AnalyzeResults.Presentation.SectionType.PaperTitle:
                             <div>
                                 <div class="paper-title">
-                                    @Html.Raw(sect.ToStringVersion())
+
+                                    @foreach (string word in Model.PaperTitle.Split(' '))
+                                    {
+                                        <a class="papername-word" wordIds="@(Model.PaperTitleRefs.ContainsKey(word.Trim().ToLower())?String.Join(',',Model.PaperTitleRefs[word.Trim().ToLower()]):"")" href="#">
+                                            @word
+                                        </a>
+                                    }
+                                    @*@Html.Raw(sect.ToStringVersion())*@
                                 </div>
                             </div>
                             break;
@@ -156,6 +163,31 @@
                 }
             </div>
             <div class="errors-container">
+                @if (Model.Keywords.Count > 0)
+                {
+                    <div class="keywords-container">
+                        <button class="keywords-collapsible">
+                            <div class="keyword-button-container">
+                                <div class="keyword-button-name">
+                                    Ключевые слова
+                                </div>
+                            </div>
+                        </button>
+                        <div class="keywords-content">
+                            <div class="keywords-content-collapsible">
+                                @foreach (KeyValuePair<string, List<int>> keyword in Model.Keywords)
+                                {
+                                    <a class="keyword-container" wordIds="@String.Join(',', keyword.Value)" href="#">
+                                        <div class="criteria-data-row italic">
+                                            @keyword.Key
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                }
                 <div class="error-type-container">
                     @if (Model.Errors.Any(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfPersonalPronouns))
                     {
@@ -372,10 +404,10 @@
         }
         else
         {
-        <div>
-            No model...
-            @Model.Error
-        </div>
+            <div>
+                No model...
+                @Model.Error
+            </div>
         }
     </div>
 </body>

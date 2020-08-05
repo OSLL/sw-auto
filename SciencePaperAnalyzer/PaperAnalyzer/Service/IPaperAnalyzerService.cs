@@ -8,7 +8,7 @@ namespace PaperAnalyzer.Service
     {
         ITextExtractor GetTextExtractor(string path);
 
-        PaperAnalysisResult GetAnalyze(UploadFile file, string titles, string paperName, string refsName,
+        PaperAnalysisResult GetAnalyze(UploadFile file, string titles, string paperName, string refsName, string keywords,
             ResultScoreSettings settings);
     }
 }

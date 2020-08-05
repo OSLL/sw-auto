@@ -7,7 +7,7 @@ function LoadResults() {
 
     //$(".active").parents('.error-type-container').css("height", "-webkit-fill-available");
 
-    $('.errors-collapsible').click(function () {
+    $('.keywords-collapsible, .errors-collapsible').click(function () {
         var parent = $(this).parent()[0];
         if ($(this).hasClass('active')) {
             $(this).removeClass('active');
@@ -131,4 +131,21 @@ function LoadResults() {
             $(selector).removeClass('error-highlighted');
         }
     })
+
+    // NOTE: code ABOVE can be shorten by half, at least
+    $('.keyword-container, .papername-word').hover(function () {
+        highlightKeyword.bind(this)(true) // on hover in
+    }, function () {
+        highlightKeyword.bind(this)(false) // on hover out
+    })
+
+    function highlightKeyword(state) {
+        var ids = $(this).attr('wordIds');
+        if (ids !== undefined) {
+            var ids = ids.split(',')
+            var selector = ids.map(id => `[wordId='${id}']`).join(',')
+            console.log(selector)
+            $(selector).toggleClass('word-selected', state);
+        }
+    }
 }

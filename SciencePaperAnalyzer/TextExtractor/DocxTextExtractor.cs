@@ -31,7 +31,7 @@ namespace TextExtractor
                     XmlNodeList textNodes = paragraphNode.SelectNodes(".//w:t", nsManager);
                     foreach (XmlNode textNode in textNodes)
                     {
-                        textBuilder.Append(textNode.InnerText);
+                        textBuilder.Append(textNode.InnerText+" ");
                     }
                     textBuilder.Append(Environment.NewLine);
                 }

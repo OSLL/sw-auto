@@ -119,14 +119,14 @@ namespace PaperAnalyzer
             else
             {
                 // if provided, take until first section's title
-                lookForward = $@"{string.Join('|', section_titles.Split(new Char[] { ',', '\n' }).Select(x => x.Trim()))}";
+                lookForward = $@"#|{string.Join('|', section_titles.Split(new Char[] { ',', '\n' }).Select(x => x.Trim()))}";
 
             }
             Match m = Regex.Match(text, $@"(?<={lookBehind})[\S\s]*?(?=({lookForward}))");
             if (m.Success)
             {
-                text = text.Replace(Regex.Match(text, $@"({lookBehind})[\S\s]*?(?=({lookForward}))").Value, "");
-                return m.Value.Replace("\n", string.Empty);
+                text = text.Replace(Regex.Match(text, $@"({lookBehind})[\S\s]*?(?=({lookForward}))").Value, " \n");
+                return Regex.Replace(m.Value.Replace('\n', ' ').Replace('\r', ' '), @"\s+", " "); 
             }
             return "";
         }

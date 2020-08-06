@@ -38,7 +38,7 @@ namespace PaperAnalyzer
             foreach (string keyword in keywords.Split(new Char[] { ',', '\n' }))
             {
                 string key = keyword.Trim().ToLower();
-                if (!string.IsNullOrEmpty(key) && !result.ContainsKey(key))
+                if (!string.IsNullOrEmpty(key) && !result.ContainsKey(key) && key.Length>2)
                 {
                     result.Add(key, _environment.Processor.RunFullAnalysis(key, true, true, true, true)[0]);
                 }
@@ -49,6 +49,9 @@ namespace PaperAnalyzer
         private Dictionary<string, List<int>> MarkKeywordInSentence(Dictionary<string, Word[]> keywords, Word[] sentence)
         {
             Dictionary<string, List<int>> result = new Dictionary<string, List<int>>();
+            foreach(KeyValuePair<string, Word[]> keyword in keywords){
+                result[keyword.Key] = new List<int>();
+            }
             for (var i = 0; i < sentence.Length; i++)
             {
                 foreach (KeyValuePair<string, Word[]> keyword in keywords)
@@ -87,13 +90,25 @@ namespace PaperAnalyzer
             }
             return result;
         }
-        private string TryGetKeywordFromText(ref string text)
+        private string TryGetKeywordFromText(ref string text, string section_titles = null)
         {
-            Match m = Regex.Match(text, @"(?<=Ключевые слова: ).*");
+            string lookBehind = @"Ключевые слова: ";
+            string lookForward = String.Empty;
+            if (string.IsNullOrEmpty(section_titles)) {
+                // if section titles is not provided, take from keyword until end of line
+                lookForward = @"\n";
+            }
+            else
+            {
+                // if provided, take until first section's title
+                lookForward = $@"{string.Join('|', section_titles.Split(new Char[] { ',', '\n' }).Select(x=>x.Trim()))}";
+
+            }
+            Match m = Regex.Match(text, $@"(?<={lookBehind})[\S\s]*?(?=({lookForward}))");
             if (m.Success)
             {
-                text = text.Replace(Regex.Match(text, @"(Ключевые слова: ).*").Value, "");
-                return m.Value;
+                text = text.Replace(Regex.Match(text, $@"({lookBehind})[\S\s]*?(?=({lookForward}))").Value, "");
+                return m.Value.Replace("\n",string.Empty);
             }
             return "";
         }
@@ -114,7 +129,7 @@ namespace PaperAnalyzer
                 if (string.IsNullOrEmpty(titlesString))
                     titlesString = "";
 
-                var kwInText = TryGetKeywordFromText(ref text);
+                var kwInText = TryGetKeywordFromText(ref text, titlesString);
                 // prepare the keyword dictionary and result dictionary for keyword marks
                 var keywordDict = PrepareKeywordsDict(kwInText + "," + keywords);
                 // same for paper name

@@ -38,9 +38,15 @@ namespace PaperAnalyzer
             foreach (string keyword in keywords.Split(new Char[] { ',', '\n' }))
             {
                 string key = keyword.Trim().ToLower();
-                if (!string.IsNullOrEmpty(key) && !result.ContainsKey(key) && key.Length>2)
+                if (!string.IsNullOrEmpty(key) && !result.ContainsKey(key) && key.Length > 2)
                 {
-                    result.Add(key, _environment.Processor.RunFullAnalysis(key, true, true, true, true)[0]);
+                    List<Word[]> analysisResult = _environment.Processor.RunFullAnalysis(key, true, true, true, true);
+                    List<Word> keywordWords = new List<Word>();
+                    foreach (var r in analysisResult)
+                    {
+                        keywordWords.AddRange(r);
+                    }
+                    result.Add(key, keywordWords.ToArray());
                 }
             }
             return result;
@@ -49,7 +55,8 @@ namespace PaperAnalyzer
         private Dictionary<string, List<int>> MarkKeywordInSentence(Dictionary<string, Word[]> keywords, Word[] sentence)
         {
             Dictionary<string, List<int>> result = new Dictionary<string, List<int>>();
-            foreach(KeyValuePair<string, Word[]> keyword in keywords){
+            foreach (KeyValuePair<string, Word[]> keyword in keywords)
+            {
                 result[keyword.Key] = new List<int>();
             }
             for (var i = 0; i < sentence.Length; i++)
@@ -64,11 +71,21 @@ namespace PaperAnalyzer
                         if (i + offset < sentence.Length)
                         {
                             siTemp.Add(sentence[i + offset].startIndex);
-                            if (sentence[i + offset].morphology.IsEmptyNormalForm() || w.morphology.IsEmptyNormalForm() ||
-                                (sentence[i + offset].morphology.NormalForm != w.morphology.NormalForm &&
-                                sentence[i + offset].valueOriginal.ToLower() != w.valueOriginal.ToLower()))
+                            if (sentence[i + offset].morphology.IsEmptyNormalForm() || w.morphology.IsEmptyNormalForm())
                             {
-                                break;
+                                // compare original value if normal form not available
+                                if (sentence[i + offset].valueOriginal.ToLower() != w.valueOriginal.ToLower())
+                                {
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                // if both normal form are available then try compare them
+                                if (sentence[i + offset].morphology.NormalForm.ToLower() != w.morphology.NormalForm.ToLower())
+                                {
+                                    break;
+                                }
                             }
                             offset += 1;
                         }
@@ -94,21 +111,22 @@ namespace PaperAnalyzer
         {
             string lookBehind = @"Ключевые слова: ";
             string lookForward = String.Empty;
-            if (string.IsNullOrEmpty(section_titles)) {
+            if (string.IsNullOrEmpty(section_titles))
+            {
                 // if section titles is not provided, take from keyword until end of line
                 lookForward = @"\n";
             }
             else
             {
                 // if provided, take until first section's title
-                lookForward = $@"{string.Join('|', section_titles.Split(new Char[] { ',', '\n' }).Select(x=>x.Trim()))}";
+                lookForward = $@"{string.Join('|', section_titles.Split(new Char[] { ',', '\n' }).Select(x => x.Trim()))}";
 
             }
             Match m = Regex.Match(text, $@"(?<={lookBehind})[\S\s]*?(?=({lookForward}))");
             if (m.Success)
             {
                 text = text.Replace(Regex.Match(text, $@"({lookBehind})[\S\s]*?(?=({lookForward}))").Value, "");
-                return m.Value.Replace("\n",string.Empty);
+                return m.Value.Replace("\n", string.Empty);
             }
             return "";
         }
@@ -412,7 +430,7 @@ namespace PaperAnalyzer
                     // compare word by word to avoid mismatch when restore string form of sentencehtml, 
                     // for example, when 3D-сканирования is mistakenly detected as Numerical, there won't be space before it in the string representation
                     bool match = true;
-                    foreach(var w in sentence.Words)
+                    foreach (var w in sentence.Words)
                     {
                         if (paperNameTemp.StartsWith(w.Original))
                         {
@@ -428,7 +446,8 @@ namespace PaperAnalyzer
                     {
                         newResult.RemoveAt(0);
                         paperNameWords.AddRange(sentence.Words);
-                    }else
+                    }
+                    else
                     {
                         paperNameTemp = string.Empty;
                     }

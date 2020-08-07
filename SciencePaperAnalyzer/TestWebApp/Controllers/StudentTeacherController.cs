@@ -125,14 +125,16 @@ namespace TestWebApp.Controllers
             _logger.LogDebug("Received Get request AddCriterion");
             Console.WriteLine("Received Get request AddCriterion");
             _criteria = await _context.GetCriteria();
-            ViewBag.Criteria = mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
+            ViewBag.Criteria =
+                mine ? _criteria.Where(c => c.TeacherLogin == User.Identity.Name).ToList() : _criteria.ToList();
             var dict = await _context.GetForbiddenWordDictionary();
-            _logger.LogError($"Finded {dict.ToList().Count} dictionary");
+            _logger.LogError($"Found {dict.ToList().Count} dictionary");
             //ViewBag.Dicts = dict.Select(d => d.Name).ToList();
             _logger.LogDebug(string.Join(",", dict.Select(d => d.Name).ToList()));
             var model = new AddCriterion()
             {
-                Dictionaries = dict.Select(x => new DictionaryCheckBoxModel() { Name = x.Name, IsSelected = false }).ToList(),
+                Dictionaries = dict.Select(x => new DictionaryCheckBoxModel() {Name = x.Name, IsSelected = false})
+                    .ToList(),
             };
             return View(model);
         }
@@ -157,19 +159,7 @@ namespace TestWebApp.Controllers
             ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
             if (criterion == null)
             {
-                criterion = model;
-                criterion.TeacherLogin = User.Identity.Name;
-                try
-                {
-                    criterion.ForbiddenWordDictionary =
-                        model.Dictionaries.Where(x => x.IsSelected).Select(x => x.Name);
-                }
-                catch (Exception)
-                {
-                    criterion.ForbiddenWordDictionary = null;
-                }
-
-                criterion.Recalculate();
+                criterion = ResultCriterion.FromViewModelToResultCriterion(model, User.Identity.Name);
                 await _context.AddCriterion(criterion);
             }
             return RedirectToAction("TeacherAddCriterion", "StudentTeacher", new {mine = false});
@@ -184,19 +174,24 @@ namespace TestWebApp.Controllers
 
         [HttpGet]
         [Authorize(Roles = "teacher")]
-        public IActionResult EditDeleteCriterion(string name)
+        public async Task<IActionResult> EditDeleteCriterion(string name)
         {
             var criterion = _context.GetCriteriaByName(name);
-            return View(criterion);
+            var dict = await _context.GetForbiddenWordDictionary();
+            var editingCriterion = AddCriterion.FromResultCriterionToForm(criterion, dict);
+
+            return View(editingCriterion);
         }
 
         [HttpPost]
         [Authorize(Roles = "teacher")]
-        public async Task<IActionResult> EditCriterion(ResultCriterion editCriterion)
+        public async Task<IActionResult> EditCriterion(AddCriterion editCriterion)
         {
-            editCriterion.Recalculate();
-            await _context.EditCriterion(editCriterion);
-            return RedirectToAction("EditDeleteCriterion", "StudentTeacher",new {name = editCriterion.Name});
+            var result =
+                ResultCriterion.FromViewModelToResultCriterion(editCriterion, editCriterion.TeacherLogin,
+                    editCriterion.Id);
+            await _context.EditCriterion(result);
+            return RedirectToAction("EditDeleteCriterion", "StudentTeacher",new {name = result.Name});
         }
 
         [HttpGet]

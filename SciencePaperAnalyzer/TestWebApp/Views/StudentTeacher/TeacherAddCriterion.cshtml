@@ -20,7 +20,7 @@
                 <h3>
                     Краткое описание
                 </h3>
-                <input type="text" asp-for="Summary" />
+                <textarea type="text" asp-for="Summary"></textarea>
             </div>
             <div>
                 <h3>
@@ -193,7 +193,7 @@
         </div>
         @for (int i = 0; i < @Model.Dictionaries.Count; i++)
         {
-          <li>
+          <li style="text-align: left; margin-left: 20%">
             @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
             @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
             @Html.HiddenFor(m => m.Dictionaries[i].Name)

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
-using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -78,25 +77,42 @@ namespace WebPaperAnalyzer.Controllers
 
             if (criterion != null)
             {
-                settings = criterion;
-                //_logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
-                settings.ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary==null?new string[] { } :criterion.ForbiddenWordDictionary);
-                //_logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
+                settings = CriteriaMapper.GetAnalyzeCriteria(criterion);
+                if (criterion.ForbiddenWordDictionary != null)
+                {
+                    _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
+                    settings.ForbiddenWords = await GetForbiddenWords(criterion.ForbiddenWordDictionary);
+                    _logger.LogInformation($"Upload forbiddenwords dictionary: {string.Join(",", criterion.ForbiddenWordDictionary)}");
+                }
+                else
+                {
+                    _logger.LogInformation("No dictionaries uploaded");
+                    settings.ForbiddenWords = new List<ForbiddenWords>();
+                }
             }
             else
             {
                 //Возможно только во время выполнения теста
                 settings = new ResultScoreSettings()
                 {
-                    KeyWordsCriterionFactor = 35,
-                    KeyWordsCriterionUpperBound = 6,
-                    KeyWordsCriterionLowerBound = 14,
-                    WaterCriterionFactor = 35,
-                    WaterCriterionLowerBound = 14,
-                    WaterCriterionUpperBound = 20,
-                    ZipfFactor = 30,
-                    ZipfFactorLowerBound = 5.5,
-                    ZipfFactorUpperBound = 9.5,
+                    WaterCriteria = new BoundedCriteria
+					{
+                        Weight = 35,
+                        LowerBound = 14,
+                        UpperBound = 20
+					},
+                    KeyWordsCriteria = new BoundedCriteria
+					{
+                        Weight = 35,
+                        LowerBound = 6,
+                        UpperBound = 14,
+					},
+                    Zipf = new BoundedCriteria
+					{
+                        Weight = 30,
+                        LowerBound = 5.5,
+                        UpperBound = 9.5,
+					},
                     UseOfPersonalPronounsCost = 0,
                     UseOfPersonalPronounsErrorCost = 0,
                     SourceNotReferencedCost = 0,

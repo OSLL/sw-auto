@@ -69,7 +69,22 @@ namespace AnalyzeResults.Presentation
                 var weight = specialError.Weight;
                 weightTmp -= weight;
                 var errorCost = specialError.ErrorCost;
-                resultScore += Math.Max(weight - Errors.Count(e => e.ErrorType == (ErrorType)error)*errorCost, 0);
+                var errorCount = Errors.Count(e => e.ErrorType == (ErrorType) error);
+                switch (specialError.GradingType)
+                {
+                    case GradingType.ErrorCostSubtraction:
+                        resultScore += Math.Max(weight - errorCount * errorCost, 0);
+                        break;
+                    case GradingType.GradingTable:
+                        var result = specialError.Grading.OrderBy(g => g.Key)
+                            .Select(g => (KeyValuePair<int, double>?) g)
+                            .FirstOrDefault(g => g.Value.Key <= errorCount);
+                        if (result == null)
+                            resultScore += 0;
+                        else
+                            resultScore += result.Value.Value;
+                        break;
+                }
             }
 
             return Math.Round(resultScore) + weightTmp;

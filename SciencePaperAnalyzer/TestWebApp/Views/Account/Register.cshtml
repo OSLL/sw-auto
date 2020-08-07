@@ -24,10 +24,6 @@
 			      Подтвердите пароль  <br />
 			      @Html.EditorFor(model => model.ConfirmPassword)
 		    </p>
-		    <p>
-			      Выберите роль <br />
-            @Html.DropDownListFor(model => model.Role, ViewBag.Roles as SelectList)
-        </p>
 
 		    <p>
 			      <input type="submit" value="Подтвердить" />

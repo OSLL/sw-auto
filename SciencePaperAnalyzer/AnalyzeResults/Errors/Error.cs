@@ -1,12 +1,15 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections.Generic;
+using AnalyzeResults.Settings;
 
 namespace AnalyzeResults.Errors
 {
     [Serializable]
     public abstract class Error
     {
-        public Error(ErrorType type, string name, string explanation, string tip, double errorCost, double weight)
+        public Error(ErrorType type, string name, string explanation, string tip, double errorCost, double weight,
+                     Dictionary<int, double> grading, GradingType gType)
         {
             ErrorType = type;
             Name = name;
@@ -14,6 +17,8 @@ namespace AnalyzeResults.Errors
             Tip = tip;
             ErrorCost = errorCost;
             Weight = weight;
+            Grading = grading;
+            GradingType = gType;
         }
 
         [BsonElement("name")]
@@ -33,5 +38,11 @@ namespace AnalyzeResults.Errors
 
         [BsonElement("weight")]
         public double Weight { get; }
+
+        [BsonElement("grading")]
+        public Dictionary<int, double> Grading { get; }
+
+        [BsonElement("gradingtype")]
+        public GradingType GradingType { get; }
     }
 }

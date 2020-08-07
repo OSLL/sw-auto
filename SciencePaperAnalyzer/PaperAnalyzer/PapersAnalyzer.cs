@@ -340,7 +340,8 @@ namespace PaperAnalyzer
                         {
                             if (personalPronouns.Contains(word.morphology.NormalForm))
                                 errors.Add(new UseOfPersonalPronounsError(new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex),
-                                    settings.UseOfPersonalPronounsErrorCost, settings.UseOfPersonalPronounsCost));
+                                    settings.UseOfPersonalPronounsErrorCost, settings.UseOfPersonalPronounsCost, settings.UseOfPersonalPronounsGrading,
+                                    settings.UseOfPersonalPronounsGradingType));
                         }
 
                         if (stopPartsOfSpeech.Contains(word.morphology.PartOfSpeech))
@@ -362,7 +363,9 @@ namespace PaperAnalyzer
                         {
                             if (dict.Words.Contains(word.morphology.NormalForm))
                             {
-                                errors.Add(new UseOfForbiddenWordsError(dict.Name, new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex), settings.ForbiddenWordsErrorCost, settings.ForbiddenWordsCost));
+                                errors.Add(new UseOfForbiddenWordsError(dict.Name, new WordHtml(word.valueOriginal, word.posTaggerOutputType, word.startIndex),
+                                    settings.ForbiddenWordsErrorCost, settings.ForbiddenWordsCost,
+                                    settings.ForbiddenWordsGrading, settings.ForbiddenWordsGradingType));
                             }
                         }
                     }
@@ -401,17 +404,17 @@ namespace PaperAnalyzer
                 var criteria = new List<Criterion>
                 {
                     new NumericalCriterion("Уровень водности", waterLvl, 
-                        settings.WaterCriterionLowerBound, settings.WaterCriterionUpperBound, settings.WaterCriterionFactor,
+                        settings.WaterCriteria.LowerBound, settings.WaterCriteria.UpperBound, settings.WaterCriteria.Weight,
                         "Процентное соотношение стоп-слов и общего количества слов в тексте",
                         $"Постарайтесь снизить количество используемых стоп-слов. Часто употребляемые стоп-слова в статье:\n{stopWordsReport.ToString()}",
                         "Текст слишком \"сухой\". Попробуйте добавить связки между разделами."),
                     new NumericalCriterion("Тошнота", keyWordsLvl, 
-                        settings.KeyWordsCriterionLowerBound, settings.KeyWordsCriterionUpperBound, settings.KeyWordsCriterionFactor,
+                        settings.KeyWordsCriteria.LowerBound, settings.KeyWordsCriteria.UpperBound, settings.KeyWordsCriteria.Weight,
                         "Показатель повторений в текстовом документе ключевых слов и фраз",
                         $"Слишком частое повторение слов, при возможности, старайтесь использовать синонимы. Наиболее употребляемые слова в тексте:\n{keyWordsReport.ToString()}",
                         $"Постарайтесь увеличить частоту употребления ключевых слов текста:\n{keyWordsReport.ToString()}"),
                     new NumericalCriterion("Zipf", zipfLvl, 
-                        settings.ZipfFactorLowerBound, settings.ZipfFactorUpperBound, settings.ZipfFactor,
+                        settings.Zipf.LowerBound, settings.Zipf.UpperBound, settings.Zipf.Weight,
                         "Значение отклонения текста статьи от идеальной кривой по Ципфу",
                         "Постарайтесь разнообразить текст, добавить связки между разделами, возможно, увеличить количество прилагательных.",
                         "Постарайтесь увеличить частоту употребления ключевых слов, возможно, снизить количество прилагательных.")
@@ -431,13 +434,13 @@ namespace PaperAnalyzer
                     {
                         foreach (var word in sent.Words)
                         {
-                            if (personalPronErrorsWordIds.Contains(word.StartIndex))
+                            if (personalPronErrorsWordIds.Contains(word.StartIndex) && settings.UseOfPersonalPronounsCost > 0)
                             {
                                 word.HasErrors = true;
                                 word.ErrorCodes = $"{word.ErrorCodes}{(int)ErrorType.UseOfPersonalPronouns}";
                             }
 
-                            if (forbiddenWordErorrsWordIds.Contains(word.StartIndex))
+                            if (forbiddenWordErorrsWordIds.Contains(word.StartIndex) && settings.ForbiddenWordsCost > 0)
                             {
                                 word.HasErrors = true;
                                 word.ErrorCodes = $"{word.ErrorCodes}{(int)ErrorType.UseOfForbiddenWord}";
@@ -450,7 +453,9 @@ namespace PaperAnalyzer
                 {
                     if (!reference.ReferedTo)
                     {
-                        errors.Add(new SourceNotReferencedError(reference.Number, settings.SourceNotReferencedErrorCost, settings.SourceNotReferencedCost));
+                        errors.Add(new SourceNotReferencedError(reference.Number,
+                            settings.SourceNotReferencedErrorCost, settings.SourceNotReferencedCost,
+                            settings.SourceNotReferencedGrading, settings.SourceNotReferencedGradingType));
                     }
                 }
 
@@ -463,7 +468,9 @@ namespace PaperAnalyzer
                     {
                         sections[i].HasErrors = true;
                         var error = new ShortSectionError(sections[i].Id, sections[i].ToStringVersion(),
-                            sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count, settings.ShortSectionErrorCost, settings.ShortSectionCost);
+                            sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count,
+                            settings.ShortSectionErrorCost, settings.ShortSectionCost,
+                            settings.ShortSectionGrading, settings.ShortSectionGradingType);
                         errors.Add(error);
                     }
                 }
@@ -482,10 +489,14 @@ namespace PaperAnalyzer
                 var tablesNotRefd = tableMatches.Except(tableRefMatches).ToList();
 
                 foreach (var notRefdPic in picsNotRefd)
-                    errors.Add(new PictureNotReferencedError(notRefdPic, settings.PictureNotReferencedErrorCost, settings.PictureNotReferencedCost));
+                    errors.Add(new PictureNotReferencedError(notRefdPic,
+                        settings.PictureNotReferencedErrorCost, settings.PictureNotReferencedCost,
+                        settings.PictureNotReferencedGrading, settings.PictureNotReferencedGradingType));
 
                 foreach (var notRefdTable in tablesNotRefd)
-                    errors.Add(new TableNotReferencedError(notRefdTable, settings.TableNotReferencedErrorCost, settings.TableNotReferencedCost));
+                    errors.Add(new TableNotReferencedError(notRefdTable,
+                        settings.TableNotReferencedErrorCost, settings.TableNotReferencedCost,
+                        settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
 
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.MaxScore);
 

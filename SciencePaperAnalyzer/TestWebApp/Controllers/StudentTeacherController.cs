@@ -34,14 +34,14 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public IActionResult TeacherMainPage()
         {
             return View();
         }
 
         [HttpGet]
-        [Authorize(Roles ="teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public IActionResult AddDictionary()
         {
             _logger.LogDebug("Received Get request AddDictionary");
@@ -50,7 +50,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> GetDictionaries()
         {
             _logger.LogDebug("Received Get request GetDictionaries");
@@ -82,7 +82,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> AddDictionary(DictionaryModel model)
         {
             _logger.LogDebug("Received Post request AddDictionary");
@@ -119,7 +119,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> TeacherAddCriterion(bool mine)
         {
             _logger.LogDebug("Received Get request AddCriterion");
@@ -140,7 +140,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
         {
             _logger.LogDebug("Received Post request AddCriterion");
@@ -166,14 +166,14 @@ namespace TestWebApp.Controllers
         }
         
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public IActionResult TeacherViewResults()
         {
             return View(_results.GetResultsByLogin(User.Identity.Name, true).Where(res => res.StudentLogin != null));
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> EditDeleteCriterion(string name)
         {
             var criterion = _context.GetCriteriaByName(name);
@@ -184,7 +184,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> EditCriterion(AddCriterion editCriterion)
         {
             var result =
@@ -195,7 +195,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> DeleteCriterion(string id)
         {
             await _context.DeleteCriterion(id);
@@ -203,7 +203,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<FileResult> DownloadDictionary(string name)
 		{
             _logger.LogDebug($"Receive request DownloadDictionary {name}");
@@ -215,7 +215,7 @@ namespace TestWebApp.Controllers
 		}
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> DeleteDictionary(string name)
 		{
             _logger.LogDebug($"Receive request DeleteDictionary {name}");

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using WebPaperAnalyzer.Models;
+using WebPaperAnalyzer.ViewModels;
 
 namespace WebPaperAnalyzer.Controllers
 {
@@ -23,35 +24,35 @@ namespace WebPaperAnalyzer.Controllers
         [HttpGet]
         public async Task<IActionResult> AddTeacher()
         {
-            try
-            {
-                var users = await _context.GetUsers();
-                var teachers = users.Where(u => u.Role == "teacher");
+            var users = await _context.GetUsers();
+            var teachers = users.Where(u => u.Role.Equals("teacher"));
 
-                ViewBag.Teachers = teachers;
+            ViewBag.Teachers = teachers;
 
-                return View();
-            }
-            catch (Exception e)
-            {
-                return Content(e.Message);
-            }
+            return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddTeacher(User user)
+        public async Task<IActionResult> AddTeacher(LoginModel model)
         {
-            if (user.Login != null && user.Password != null)
+            if (model.Login != null && model.Password != null)
             {
-                var _users = await _context.GetUsers();
-                if (_users.FirstOrDefault(u => u.Login == user.Login) == null)
+                var users = await _context.GetUsers();
+                var user = users.FirstOrDefault(u => u.Login == model.Login);
+                if (user == null)
                 {
-                    user.Role = "teacher";
+                    user = new User()
+                    {
+                        Login = model.Login,
+                        Password = model.Password,
+                        Role = "teacher"
+                    };
 
                     await _context.AddUser(user);
                 }
             }
-            return View();
+
+            return RedirectToAction("AddTeacher", "Admin");
         }
     }
 }

@@ -1,28 +1,35 @@
 ﻿@using WebPaperAnalyzer.Models
-@model WebPaperAnalyzer.Models.User
-        <div class="inline-flex-class">
-            <form asp-action="AddTeacher" asp-controller="Admin" style="width: 100%">
-                <h2>Создание нового учителя</h2>
-                <div class="form-group">
-                    <label>Введите логин</label>
-                    <input type="text" asp-for="Login"/>
-                </div>
-                <div class="form-group">
-                    <label>Введите пароль</label>
-                    <input type="text" asp-for="Login" />
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Добавить" class="btn btn-outline-dark"/>
-                </div>
-            </form>
-            <div style="width: 100%">
-                <h2>Существующие учителя</h2>
-                <input type="button" class="upload-form2" value="Показать критерии добавленные мной" style="width: 30%" onclick="window.location.href = '@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = true})';"/>
-                @foreach (var user in (IEnumerable<User>) ViewBag.Teachers)
-                {
-                    <button type="submit" class="upload-form">
-                        Логин: @user.Login
-                    </button>
-                }
-            </div>
-        </div>
+@model WebPaperAnalyzer.ViewModels.LoginModel
+<div class="inline-flex-class">
+    <div style="width: 100%">
+        @using (Html.BeginForm())
+        {
+            <fieldset>
+                <legend>Добавить преподавателя</legend>
+
+                <p>
+                    Логин <br/>
+                    @Html.EditorFor(model => model.Login)
+                </p>
+
+                <p>
+                    Пароль <br />
+                    @Html.EditorFor(model => model.Password)
+                </p>
+
+                <p>
+                    <input type="submit" value="Добавить" />
+                </p>
+            </fieldset>
+        }
+    </div>
+    <div style="width: 100%">
+        <h2>Существующие учителя</h2>
+        @foreach (var user in (IEnumerable<User>)ViewBag.Teachers)
+        {
+            <button type="submit" class="upload-form">
+                Логин: @user.Login
+            </button>
+        }
+    </div>
+</div>

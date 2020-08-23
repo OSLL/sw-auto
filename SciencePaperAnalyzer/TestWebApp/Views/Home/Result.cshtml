@@ -30,11 +30,11 @@
             <div class="results-container">
                 <div class="grade-container">
                     @*
-                    90-100 perfect (green)
-                    70-89 good (lightgreen)
-                    55-69 meh (yellow)
-                    40-54 bad (orange)
-                    0-39 awful (red)
+                        90-100 perfect (green)
+                        70-89 good (lightgreen)
+                        55-69 meh (yellow)
+                        40-54 bad (orange)
+                        0-39 awful (red)
                     *@
                     <div class="grade-title">
                         Оценка стиля статьи:
@@ -76,7 +76,7 @@
                             var specialError = @Model.Errors.FirstOrDefault(e => e.ErrorType == (ErrorType)error);
                             if (@specialError != null && @specialError.Weight > 0)
                             {
-                                var @res = @Math.Round(@Math.Max(@specialError.Weight - @Model.Errors.Count(e => e.ErrorType == (ErrorType) error) * @specialError.ErrorCost, 0), 2);
+                                var @res = @Math.Round(@Math.Max(@specialError.Weight - @Model.Errors.Count(e => e.ErrorType == (ErrorType)error) * @specialError.ErrorCost, 0), 2);
                                 <div class="criteria-data-row criterion-value">
                                     @specialError.Name : Набрано @res из @Math.Round(@specialError.Weight, 2) баллов
                                 </div>
@@ -147,9 +147,24 @@
 
                                     @foreach (string word in Model.PaperTitle.Split(' '))
                                     {
-                                        <a class="papername-word" wordIds="@(Model.PaperTitleRefs.ContainsKey(word.Trim().ToLower())?String.Join(',',Model.PaperTitleRefs[word.Trim().ToLower()]):"")" href="#">
-                                            @word
-                                        </a>
+                                        @if (word.Length > 2)
+                                        {
+                                            <a class="papername-word" wordIds="@(Model.PaperTitleRefs.ContainsKey(word.Trim().ToLower()) ? String.Join(',', Model.PaperTitleRefs[word.Trim().ToLower()]) :"")" href="#">
+                                                @word
+                                            </a>
+                                        }
+                                        else if (word.Length > 1 && word.ToUpper() == word)
+                                        {
+                                            <a class="papername-word" wordIds="@(Model.PaperTitleRefs.ContainsKey(word.Trim()) ? String.Join(',', Model.PaperTitleRefs[word.Trim()]) : "")" href="#">
+                                                @word
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="papername-word">
+                                                @word
+                                            </span>
+                                        }
                                     }
                                     @*@Html.Raw(sect.ToStringVersion())*@
                                 </div>

@@ -133,10 +133,22 @@ function LoadResults() {
     })
 
     // NOTE: code ABOVE can be shorten by half, at least
-    $('.keyword-container, .papername-word').hover(function () {
-        highlightKeyword.bind(this)(true) // on hover in
+    $('.keyword-container, a.papername-word').click(function () {
+        var currentStatus = $(this).hasClass('toggled-on')
+        highlightKeyword.bind(this)(!currentStatus)
+        $(this).toggleClass('word-selected toggled-on', !currentStatus)
+    })
+
+    $('.keyword-container, a.papername-word').hover(function () {
+        if (!$(this).hasClass('toggled-on')) {
+            highlightKeyword.bind(this)(true)
+            $(this).toggleClass('word-selected', true)
+        }
     }, function () {
-        highlightKeyword.bind(this)(false) // on hover out
+        if (!$(this).hasClass('toggled-on')) {
+            highlightKeyword.bind(this)(false)
+            $(this).toggleClass('word-selected', false)
+        }
     })
 
     function highlightKeyword(state) {
@@ -144,8 +156,14 @@ function LoadResults() {
         if (ids !== undefined) {
             var ids = ids.split(',')
             var selector = ids.map(id => `[wordId='${id}']`).join(',')
-            console.log(selector)
-            $(selector).toggleClass('word-selected', state);
+            $(selector).each(function () {
+                let dir = state == true ? 1 : -1;
+                let sourceCount = $(this).attr('source-count');
+                sourceCount = sourceCount ? parseInt(sourceCount) : 0;
+                sourceCount += dir;
+                $(this).attr('source-count', sourceCount)
+                $(this).toggleClass('word-selected', (sourceCount > 0))
+            })
         }
     }
 }

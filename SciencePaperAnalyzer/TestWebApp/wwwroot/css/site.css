@@ -29,16 +29,16 @@ body {
     background: white;
     padding: 24px;
     box-shadow:
-        /* The top layer shadow */
-        0 -1px 1px rgba(0,0,0,0.15),
-        /* The second layer */
-        0 -10px 0 -5px #eee,
-        /* The second layer shadow */
-        0 -10px 1px -4px rgba(0,0,0,0.15),
-        /* The third layer */
-        0 -20px 0 -10px #eee,
-        /* The third layer shadow */
-        0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+    /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
     width: 50%;
     margin: 0px 2%;
     height: inherit;
@@ -85,8 +85,8 @@ body {
     margin: 0px 2px 0px 0px;
     word-spacing: -2px;
     border-radius: 4px;
-    text-decoration:none;
-    color:var(--darkText);
+    text-decoration: none !important;
+    color: var(--darkText);
 }
 
 .results-container {
@@ -205,6 +205,7 @@ body {
     color: #8fcf8f;
     transform: rotate(40deg);
 }
+
     .success::before, .success::after {
         content: '';
         background-color: currentColor;
@@ -244,6 +245,7 @@ body {
     height: 50em;
     color: #e27d7a;
 }
+
     .fail::before, .fail::after {
         content: '';
         width: 5em;
@@ -316,20 +318,20 @@ body {
     transition-delay: 0.26s;
 }
 
-.active, .errors-collapsible:hover {
-    background-color: var(--basic_hover);
-}
+    .active, .errors-collapsible:hover {
+        background-color: var(--basic_hover);
+    }
 
 .active {
     border-radius: 20px 20px 0px 0px;
     transition-delay: 0s;
 }
 
-.active:hover {
-    background-color: var(--basic_hover);
-}
+    .active:hover {
+        background-color: var(--basic_hover);
+    }
 
-.keywords-content,.errors-content {
+.keywords-content, .errors-content {
     display: flex;
     transform: scaleY(0);
     transform-origin: top;
@@ -372,7 +374,7 @@ body {
     margin-bottom: 4px;
 }
 
-.keyword-container,.error-container {
+.keyword-container, .error-container {
     padding: 10px;
     display: flex;
     flex-flow: column;
@@ -381,13 +383,21 @@ body {
     color: var(--darkText);
 }
 
-.keyword-container:hover, .error-container:hover {
+a.keyword-container{
+    text-decoration: none !important;
+}
+
+a.keyword-container:hover{
+    text-decoration: none !important;
+}
+
+.error-container:hover {
     background: var(--basic_hover);
     color: var(--darkText);
     text-decoration: unset;
 }
 
-.keyword-container:last-child,.error-container:last-child {
+.keyword-container:last-child, .error-container:last-child {
     border-radius: 0px 0px 20px 20px;
 }
 
@@ -587,14 +597,14 @@ input[type="file"] {
     font-size: 15px;
 }
 
-.custom-file-upload:hover {
-    background: var(--basic_hover);
-}
+    .custom-file-upload:hover {
+        background: var(--basic_hover);
+    }
 
 
-.custom-file-upload.file-selected:hover {
-    background: var(--green_hover);
-}
+    .custom-file-upload.file-selected:hover {
+        background: var(--green_hover);
+    }
 
 .file-label {
     width: 50%;
@@ -629,14 +639,14 @@ input[type="file"] {
     font-size: 24px;
 }
 
-.start-button:disabled {
-    background: var(--disabled);
-    color: var(--disabled-text);
-}
+    .start-button:disabled {
+        background: var(--disabled);
+        color: var(--disabled-text);
+    }
 
-.start-button:hover:not(:disabled) {
-    background: var(--green_hover);
-}
+    .start-button:hover:not(:disabled) {
+        background: var(--green_hover);
+    }
 
 .analysis-settings-container {
     display: flex;
@@ -723,16 +733,16 @@ input[type="file"] {
     text-decoration: unset;
 }
 
-.save-settings-button:hover {
-    background: var(--basic_hover);
-    color: var(--darkText);
-    text-decoration: unset;
-}
+    .save-settings-button:hover {
+        background: var(--basic_hover);
+        color: var(--darkText);
+        text-decoration: unset;
+    }
 
-.save-settings-button:focus {
-    text-decoration: unset;
-    color: var(--darkText);
-}
+    .save-settings-button:focus {
+        text-decoration: unset;
+        color: var(--darkText);
+    }
 
 .load-settings-button {
     height: 60px;
@@ -747,10 +757,10 @@ input[type="file"] {
     cursor: pointer;
 }
 
-.load-settings-button:hover {
-    background: var(--basic_hover);
-    color: var(--darkText);
-}
+    .load-settings-button:hover {
+        background: var(--basic_hover);
+        color: var(--darkText);
+    }
 
 .upload-form2 {
     width: 20%;
@@ -770,14 +780,14 @@ input[type="file"] {
     margin-left: 20%;
 }
 
-.criterion-add-submit input {
-    text-align: left;
-}
+    .criterion-add-submit input {
+        text-align: left;
+    }
 
-.criterion-add-edit input {
-    width: 30%;
-    text-align: left;
-}
+    .criterion-add-edit input {
+        width: 30%;
+        text-align: left;
+    }
 
 .criterion-add-bounds {
     display: -webkit-flex;
@@ -800,12 +810,27 @@ input[type="file"] {
     padding: .7em 1.5em;
     outline: none;
 }
+
 .delete-button {
     background: rgb(212,75,56);
 }
-.delete-button:hover { background: rgb(232,95,76); }
-.delete-button:active { background: rgb(152,15,0); }
 
-.add-button { background: rgb(32, 183, 123);}
-.add-button:hover {background: rgb(32, 243, 153)}
-.add-button:active {background: rgb(32, 123, 93)}
+    .delete-button:hover {
+        background: rgb(232,95,76);
+    }
+
+    .delete-button:active {
+        background: rgb(152,15,0);
+    }
+
+.add-button {
+    background: rgb(32, 183, 123);
+}
+
+    .add-button:hover {
+        background: rgb(32, 243, 153)
+    }
+
+    .add-button:active {
+        background: rgb(32, 123, 93)
+    }

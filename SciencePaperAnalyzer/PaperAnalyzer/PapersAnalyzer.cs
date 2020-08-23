@@ -32,13 +32,13 @@ namespace PaperAnalyzer
             _environment = environment;
         }
 
-        private Dictionary<string, Word[]> PrepareKeywordsDict(string keywords)
+        private Dictionary<string, Word[]> PrepareKeywordsDict(string keywords, char delimiter = ',')
         {
             Dictionary<string, Word[]> result = new Dictionary<string, Word[]>();
-            foreach (string keyword in keywords.Split(new Char[] { ',', '\n' }))
+            foreach (string keyword in keywords.Split(new Char[] { delimiter, '\n' }))
             {
                 string key = keyword.Trim().ToLower();
-                if (!string.IsNullOrEmpty(key) && !result.ContainsKey(key) && key.Length > 2)
+                if (!string.IsNullOrEmpty(key) && !result.ContainsKey(key) && (key.Length > 2 || (key.Length > 1 && keyword.ToUpper() == keyword)))
                 {
                     List<Word[]> analysisResult = _environment.Processor.RunFullAnalysis(key, true, true, true, true);
                     List<Word> keywordWords = new List<Word>();
@@ -46,7 +46,14 @@ namespace PaperAnalyzer
                     {
                         keywordWords.AddRange(r);
                     }
-                    result.Add(key, keywordWords.ToArray());
+                    if (keyword.ToUpper() != keyword)
+                    {
+                        result.Add(key, keywordWords.ToArray());
+                    }
+                    else
+                    {
+                        result.Add(keyword, keywordWords.ToArray());
+                    }
                 }
             }
             return result;
@@ -71,10 +78,25 @@ namespace PaperAnalyzer
                         if (i + offset < sentence.Length)
                         {
                             siTemp.Add(sentence[i + offset].startIndex);
+                            if (keyword.Key.ToUpper()==keyword.Key)
+                            {
+                                if (keyword.Key == sentence[i + offset].valueOriginal)
+                                {
+                                    offset += 1;
+                                    continue;
+                                }
+                                else break;
+                            }else
                             if (sentence[i + offset].morphology.IsEmptyNormalForm() || w.morphology.IsEmptyNormalForm())
                             {
+                                var common_length = Math.Min(sentence[i + offset].valueOriginal.Length, w.valueOriginal.Length);
                                 // compare original value if normal form not available
-                                if (sentence[i + offset].valueOriginal.ToLower() != w.valueOriginal.ToLower())
+                                if (common_length > 5 && sentence[i + offset].valueOriginal.Substring(0, common_length - 2) != w.valueOriginal.Substring(0, common_length - 2))
+                                {
+                                    break;
+                                }
+                                else
+                                if (common_length <= 5 && sentence[i + offset].valueOriginal != w.valueOriginal)
                                 {
                                     break;
                                 }
@@ -126,7 +148,7 @@ namespace PaperAnalyzer
             if (m.Success)
             {
                 text = text.Replace(Regex.Match(text, $@"({lookBehind})[\S\s]*?(?=({lookForward}))").Value, " \n");
-                return Regex.Replace(m.Value.Replace('\n', ' ').Replace('\r', ' '), @"\s+", " "); 
+                return Regex.Replace(m.Value.Replace('\n', ' ').Replace('\r', ' '), @"\s+", " ");
             }
             return "";
         }
@@ -149,9 +171,10 @@ namespace PaperAnalyzer
 
                 var kwInText = TryGetKeywordFromText(ref text, titlesString);
                 // prepare the keyword dictionary and result dictionary for keyword marks
-                var keywordDict = PrepareKeywordsDict(kwInText + "," + keywords);
+                var keywordDict = PrepareKeywordsDict(kwInText + "," + keywords, ',');
                 // same for paper name
-                var paperNameDict = PrepareKeywordsDict(paperName.Replace(' ', ','));
+                paperName = Regex.Replace(paperName.Replace(",", " , "), @"\s+", " ");
+                var paperNameDict = PrepareKeywordsDict(paperName, ' ');
 
                 Dictionary<string, List<int>> keywordMarks = new Dictionary<string, List<int>>();
                 Dictionary<string, List<int>> papernameMarks = new Dictionary<string, List<int>>();
@@ -438,6 +461,11 @@ namespace PaperAnalyzer
                         }
                         else
                         {
+                            if (string.IsNullOrWhiteSpace(paperNameTemp))
+                            {
+                                Word[] leftover = newResult[0].Skip(sentence.Words.IndexOf(w)).ToArray();
+                                newResult[0] = leftover;
+                            }
                             match = false;
                             break;
                         }
@@ -603,17 +631,17 @@ namespace PaperAnalyzer
 
                 var criteria = new List<Criterion>
                 {
-                    new NumericalCriterion("Уровень водности", waterLvl, 
+                    new NumericalCriterion("Уровень водности", waterLvl,
                         settings.WaterCriteria.LowerBound, settings.WaterCriteria.UpperBound, settings.WaterCriteria.Weight,
                         "Процентное соотношение стоп-слов и общего количества слов в тексте",
                         $"Постарайтесь снизить количество используемых стоп-слов. Часто употребляемые стоп-слова в статье:\n{stopWordsReport.ToString()}",
                         "Текст слишком \"сухой\". Попробуйте добавить связки между разделами."),
-                    new NumericalCriterion("Тошнота", keyWordsLvl, 
+                    new NumericalCriterion("Тошнота", keyWordsLvl,
                         settings.KeyWordsCriteria.LowerBound, settings.KeyWordsCriteria.UpperBound, settings.KeyWordsCriteria.Weight,
                         "Показатель повторений в текстовом документе ключевых слов и фраз",
                         $"Слишком частое повторение слов, при возможности, старайтесь использовать синонимы. Наиболее употребляемые слова в тексте:\n{keyWordsReport.ToString()}",
                         $"Постарайтесь увеличить частоту употребления ключевых слов текста:\n{keyWordsReport.ToString()}"),
-                    new NumericalCriterion("Zipf", zipfLvl, 
+                    new NumericalCriterion("Zipf", zipfLvl,
                         settings.Zipf.LowerBound, settings.Zipf.UpperBound, settings.Zipf.Weight,
                         "Значение отклонения текста статьи от идеальной кривой по Ципфу",
                         "Постарайтесь разнообразить текст, добавить связки между разделами, возможно, увеличить количество прилагательных.",

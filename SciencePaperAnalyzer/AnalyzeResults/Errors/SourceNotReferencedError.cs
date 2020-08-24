@@ -8,7 +8,7 @@ namespace AnalyzeResults.Errors
     [Serializable]
     public class SourceNotReferencedError : Error
     {
-        public SourceNotReferencedError(int number, double errorCost, double weight, Dictionary<int, double> grading, GradingType gType)
+        public SourceNotReferencedError(int number, double errorCost, double weight, List<ScopePair> grading, GradingType gType)
             : base(ErrorType.SourceNotReferenced, "Нет ссылки на источник", $"Источник №{number}",
                   "Необходимо хотя бы раз сослаться на каждый из перечисленных источников.", errorCost, weight, grading, gType)
         {

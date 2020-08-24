@@ -111,7 +111,7 @@
             }
         }
 
-        function onReaderLoad(event){
+        function onReaderLoad(event) {
             var obj = JSON.parse(event.target.result);
             if (!$('#titles')[0].value) {
                 $('#titles')[0].value = obj.titles || "";

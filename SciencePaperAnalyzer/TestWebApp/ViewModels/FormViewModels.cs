@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using AnalyzeResults.Settings;
+using Microsoft.AspNetCore.Rewrite.Internal.UrlMatches;
 using WebPaperAnalyzer.Models;
 
 namespace WebPaperAnalyzer.ViewModels
@@ -38,7 +39,12 @@ namespace WebPaperAnalyzer.ViewModels
     public class AddCriterion : WebPaperAnalyzer.Models.ResultCriterion
     {
         public List<DictionaryCheckBoxModel> Dictionaries { get; set; }
-
+        public bool UseOfPersonalPronounsGradingTypeVM { get; set; }
+        public bool SourceNotReferencedGradingTypeVM { get; set; }
+        public bool ShortSectionGradingTypeVM { get; set; }
+        public bool PictureNotReferencedGradingTypeVM { get; set; }
+        public bool TableNotReferencedGradingTypeVM { get; set; }
+        public bool ForbiddenWordsGradingTypeVM { get; set; }
         public static AddCriterion FromResultCriterionToForm(ResultCriterion model,
             IEnumerable<ForbiddenWords> dictionary)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using NLog.Fluent;
 using WebPaperAnalyzer.DAL;
 using WebPaperAnalyzer.Models;
@@ -131,11 +133,42 @@ namespace TestWebApp.Controllers
             _logger.LogError($"Found {dict.ToList().Count} dictionary");
             //ViewBag.Dicts = dict.Select(d => d.Name).ToList();
             _logger.LogDebug(string.Join(",", dict.Select(d => d.Name).ToList()));
-            var model = new AddCriterion()
+            var model = new AddCriterion
             {
                 Dictionaries = dict.Select(x => new DictionaryCheckBoxModel() {Name = x.Name, IsSelected = false})
                     .ToList(),
+                ForbiddenWordsGradingType = GradingType.ErrorCostSubtraction,
+                ForbiddenWordsGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                TableNotReferencedGradingType = GradingType.ErrorCostSubtraction,
+                TableNotReferencedGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                UseOfPersonalPronounsGradingType = GradingType.ErrorCostSubtraction,
+                UseOfPersonalPronounsGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                PictureNotReferencedGradingType = GradingType.ErrorCostSubtraction,
+                PictureNotReferencedGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                ShortSectionGradingType = GradingType.ErrorCostSubtraction,
+                ShortSectionGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                SourceNotReferencedGradingType = GradingType.ErrorCostSubtraction,
+                SourceNotReferencedGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList()
             };
+
             return View(model);
         }
 
@@ -156,7 +189,7 @@ namespace TestWebApp.Controllers
             }
 
             _criteria = await _context.GetCriteria();
-            ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
+            ResultCriterion criterion = _criteria?.FirstOrDefault(u => u.Name == model.Name);
             if (criterion == null)
             {
                 criterion = ResultCriterion.FromViewModelToResultCriterion(model, User.Identity.Name);

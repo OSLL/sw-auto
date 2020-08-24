@@ -19,7 +19,7 @@
             var specialError = @Model.Errors.FirstOrDefault(e => e.ErrorType == (ErrorType)error);
             if (@specialError != null && @specialError.Weight > 0)
             {
-                var @res = @Math.Round(@Math.Max(@specialError.Weight - @Model.Errors.Count(e => e.ErrorType == (ErrorType)error) * @specialError.ErrorCost, 0), 2);
+                var @res = @Model.GetSpecialGrade((ErrorType) error);
                 <div class="criteria-data-row criterion-value">
                     @specialError.Name : Набрано @res из @Math.Round(@specialError.Weight, 2) баллов
                 </div>

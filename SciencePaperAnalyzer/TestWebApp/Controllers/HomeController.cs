@@ -104,7 +104,7 @@ namespace WebPaperAnalyzer.Controllers
 					},
                     KeyWordsCriteria = new BoundedCriteria
 					{
-                        Weight = 35,
+                        Weight = 30,
                         LowerBound = 6,
                         UpperBound = 14,
 					},
@@ -114,6 +114,12 @@ namespace WebPaperAnalyzer.Controllers
                         LowerBound = 5.5,
                         UpperBound = 9.5,
 					},
+                    KeywordsMentioning = new BoundedCriteria
+                    {
+                        Weight = 5,
+                        LowerBound = 0,
+                        UpperBound = 1,
+                    },
                     UseOfPersonalPronounsCost = 0,
                     UseOfPersonalPronounsErrorCost = 0,
                     SourceNotReferencedCost = 0,

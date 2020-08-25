@@ -6,11 +6,12 @@ namespace AnalyzeResults.Presentation
     [Serializable]
     public abstract class Criterion
     {
-        public Criterion(string name, CriterionType type, string description = "")
+        public Criterion(string name, CriterionType type, string description = "", double factor = 0)
         {
             Name = name;
             Type = type;
             Description = description;
+            Factor = factor;
         }
 
         [BsonElement("name")]
@@ -21,6 +22,9 @@ namespace AnalyzeResults.Presentation
 
         [BsonElement("type")]
         public CriterionType Type { get; set; }
+
+        [BsonElement("factor")]
+        public double Factor { get; set; }
 
         public abstract bool IsMet();
 

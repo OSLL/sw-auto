@@ -101,6 +101,15 @@
                 </div>
             </div>
         </div>
+        <div class="criterion-add-edit">
+            <h3>
+                Упоминание ключевых слов
+            </h3>
+            <h5>
+                Вес критерия
+            </h5>
+            <input type="text" asp-for="KeywordsMentioningFactor" />
+        </div>
         <div class="criterion-add-submit">
             <div>
                 <h3>
@@ -193,14 +202,14 @@
         </div>
         @for (int i = 0; i < @Model.Dictionaries.Count; i++)
         {
-          <li style="text-align: left; margin-left: 20%">
-            @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
-            @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
-            @Html.HiddenFor(m => m.Dictionaries[i].Name)
-          </li>
+            <li style="text-align: left; margin-left: 20%">
+                @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
+                @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
+                @Html.HiddenFor(m => m.Dictionaries[i].Name)
+            </li>
         }
         <div class="criterion-add-submit">
-            <input type="submit" value="Добавить критерий" class="add-button"/>
+            <input type="submit" value="Добавить критерий" class="add-button" />
         </div>
     </form>
 

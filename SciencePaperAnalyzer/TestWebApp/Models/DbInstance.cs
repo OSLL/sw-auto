@@ -32,6 +32,7 @@ namespace WebPaperAnalyzer.Models
         public double ZipfFactor { get; set; }
         public double ZipfFactorLowerBound { get; set; }
         public double ZipfFactorUpperBound { get; set; }
+        public double KeywordsMentioningFactor { get; set; }
         public double UseOfPersonalPronounsCost { get; set; }
         public double UseOfPersonalPronounsErrorCost { get; set; }
         public Dictionary<int, double> UseOfPersonalPronounsGrading = new Dictionary<int, double>();
@@ -66,13 +67,14 @@ namespace WebPaperAnalyzer.Models
         
         public void Recalculate()
         {
-            var totalWeight = WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor +
+            var totalWeight = WaterCriterionFactor + KeyWordsCriterionFactor + ZipfFactor + KeywordsMentioningFactor +
                                 UseOfPersonalPronounsCost + SourceNotReferencedCost + ShortSectionCost +
                                 PictureNotReferencedCost + TableNotReferencedCost + ForbiddenWordsCost;
             double stabilizer = Math.Abs(totalWeight) > 0.01 ? MaxScore / totalWeight : 0;
 
             WaterCriterionFactor = Math.Round(stabilizer * WaterCriterionFactor, 2);
             KeyWordsCriterionFactor = Math.Round(stabilizer * KeyWordsCriterionFactor, 2);
+            KeywordsMentioningFactor = Math.Round(stabilizer * KeywordsMentioningFactor, 2);
             ZipfFactor = Math.Round(stabilizer * ZipfFactor, 2);
             UseOfPersonalPronounsCost = Math.Round(stabilizer * UseOfPersonalPronounsCost, 2);
             SourceNotReferencedCost = Math.Round(stabilizer * SourceNotReferencedCost, 2);
@@ -102,6 +104,7 @@ namespace WebPaperAnalyzer.Models
             criterion.ZipfFactor = model.ZipfFactor;
             criterion.ZipfFactorLowerBound = model.ZipfFactorLowerBound;
             criterion.ZipfFactorUpperBound = model.ZipfFactorUpperBound;
+            criterion.KeywordsMentioningFactor = model.KeywordsMentioningFactor;
             criterion.UseOfPersonalPronounsCost = model.UseOfPersonalPronounsCost;
             criterion.UseOfPersonalPronounsErrorCost = model.UseOfPersonalPronounsErrorCost;
             criterion.SourceNotReferencedCost = model.SourceNotReferencedCost;

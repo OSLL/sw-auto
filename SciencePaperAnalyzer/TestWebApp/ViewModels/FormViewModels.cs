@@ -58,6 +58,7 @@ namespace WebPaperAnalyzer.ViewModels
                 ZipfFactor = model.ZipfFactor,
                 ZipfFactorLowerBound = model.ZipfFactorLowerBound,
                 ZipfFactorUpperBound = model.ZipfFactorUpperBound,
+                KeywordsMentioningFactor = model.KeywordsMentioningFactor,
                 UseOfPersonalPronounsCost = model.UseOfPersonalPronounsCost,
                 UseOfPersonalPronounsErrorCost = model.UseOfPersonalPronounsErrorCost,
                 SourceNotReferencedCost = model.SourceNotReferencedCost,

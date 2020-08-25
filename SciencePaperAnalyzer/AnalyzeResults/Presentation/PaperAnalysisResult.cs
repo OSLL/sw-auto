@@ -51,10 +51,10 @@ namespace AnalyzeResults.Presentation
 
         public double GetPaperGrade()
         {
-            var resultScore = Criteria.Where(x => x is NumericalCriterion).Select(crit => (crit as NumericalCriterion).GetGradePart())
+            var resultScore = Criteria.Where(x => x is Criterion).Select(crit => crit.GetGradePart())
                 .Aggregate((result, part) => result + part);
-            var weightTmp = MaxScore - Criteria.Where(x => x is NumericalCriterion)
-                .Sum(crit => (crit as NumericalCriterion).Factor);
+            var weightTmp = MaxScore - Criteria.Where(x => x is Criterion)
+                .Sum(crit => crit.Factor);
 
 
             foreach (var error in Enum.GetValues(typeof(ErrorType)))

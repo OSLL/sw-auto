@@ -7,7 +7,7 @@ function LoadResults() {
 
     //$(".active").parents('.error-type-container').css("height", "-webkit-fill-available");
 
-    $('.errors-collapsible').click(function () {
+    $('.keywords-collapsible, .errors-collapsible').click(function () {
         var parent = $(this).parent()[0];
         if ($(this).hasClass('active')) {
             $(this).removeClass('active');
@@ -131,4 +131,39 @@ function LoadResults() {
             $(selector).removeClass('error-highlighted');
         }
     })
+
+    // NOTE: code ABOVE can be shorten by half, at least
+    $('.keyword-container, a.papername-word').click(function () {
+        var currentStatus = $(this).hasClass('toggled-on')
+        highlightKeyword.bind(this)(!currentStatus)
+        $(this).toggleClass('word-selected toggled-on', !currentStatus)
+    })
+
+    $('.keyword-container, a.papername-word').hover(function () {
+        if (!$(this).hasClass('toggled-on')) {
+            highlightKeyword.bind(this)(true)
+            $(this).toggleClass('word-selected', true)
+        }
+    }, function () {
+        if (!$(this).hasClass('toggled-on')) {
+            highlightKeyword.bind(this)(false)
+            $(this).toggleClass('word-selected', false)
+        }
+    })
+
+    function highlightKeyword(state) {
+        var ids = $(this).attr('wordIds');
+        if (ids !== undefined) {
+            var ids = ids.split(',')
+            var selector = ids.map(id => `[wordId='${id}']`).join(',')
+            $(selector).each(function () {
+                let dir = state == true ? 1 : -1;
+                let sourceCount = $(this).attr('source-count');
+                sourceCount = sourceCount ? parseInt(sourceCount) : 0;
+                sourceCount += dir;
+                $(this).attr('source-count', sourceCount)
+                $(this).toggleClass('word-selected', (sourceCount > 0))
+            })
+        }
+    }
 }

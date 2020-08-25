@@ -45,7 +45,7 @@ namespace WebPaperAnalyzer.Controllers
 
         [HttpPost]
         public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
-                                                    string criterionName = null)
+                                                    string criterionName = null, string keywords = "")
         {
             _logger.LogInformation($"Received request UploadFile with criterionName {criterionName}");
             if (file == null)
@@ -132,7 +132,7 @@ namespace WebPaperAnalyzer.Controllers
             try
             {
                 _logger.LogInformation($"Settings have {settings.ForbiddenWords.Count(x => true)} dictionary");
-                result = _analyzeService.GetAnalyze(uploadFile, titles, paperName, refsName, settings);
+                result = _analyzeService.GetAnalyze(uploadFile, titles, paperName, refsName, keywords, settings);
             }
             catch (Exception ex)
             {

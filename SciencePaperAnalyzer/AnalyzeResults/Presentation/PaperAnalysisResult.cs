@@ -31,6 +31,13 @@ namespace AnalyzeResults.Presentation
         [BsonElement("errors")]
         public List<Error> Errors { get; set; }
 
+        [BsonElement("paperTitle")]
+        public string PaperTitle { get; set; }
+        [BsonElement("paperTitleRefs")]
+        public Dictionary<string, List<int>> PaperTitleRefs { get; set; }
+        [BsonElement("keywords")]
+        public Dictionary<string, List<int>> Keywords { get; set; }
+
         [BsonElement("error")]
         public string Error { get; set; }
 

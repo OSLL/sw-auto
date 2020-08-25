@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using AnalyzeResults.Errors;
 using System.Text;
 using AnalyzeResults.Settings;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace PaperAnalyzer
 {
@@ -31,15 +32,153 @@ namespace PaperAnalyzer
             _environment = environment;
         }
 
+        private Dictionary<string, Word[]> PrepareKeywordsDict(string keywords, char delimiter = ',')
+        {
+            Dictionary<string, Word[]> result = new Dictionary<string, Word[]>();
+            foreach (string keyword in keywords.Split(new Char[] { delimiter, '\n' }))
+            {
+                string key = keyword.Trim().ToLower();
+                if (!string.IsNullOrEmpty(key) && !result.ContainsKey(key) && (key.Length > 2 || (key.Length > 1 && keyword.ToUpper() == keyword)))
+                {
+                    List<Word[]> analysisResult = _environment.Processor.RunFullAnalysis(key, true, true, true, true);
+                    List<Word> keywordWords = new List<Word>();
+                    foreach (var r in analysisResult)
+                    {
+                        keywordWords.AddRange(r);
+                    }
+                    if (keyword.ToUpper() != keyword)
+                    {
+                        result.Add(key, keywordWords.ToArray());
+                    }
+                    else
+                    {
+                        result.Add(keyword, keywordWords.ToArray());
+                    }
+                }
+            }
+            return result;
+        }
+
+        private Dictionary<string, List<int>> MarkKeywordInSentence(Dictionary<string, Word[]> keywords, Word[] sentence)
+        {
+            Dictionary<string, List<int>> result = new Dictionary<string, List<int>>();
+            foreach (KeyValuePair<string, Word[]> keyword in keywords)
+            {
+                result[keyword.Key] = new List<int>();
+            }
+            for (var i = 0; i < sentence.Length; i++)
+            {
+                foreach (KeyValuePair<string, Word[]> keyword in keywords)
+                {
+                    // temporary list of startindex
+                    List<int> siTemp = new List<int>();
+                    int offset = 0;
+                    foreach (Word w in keyword.Value)
+                    {
+                        if (i + offset < sentence.Length)
+                        {
+                            siTemp.Add(sentence[i + offset].startIndex);
+                            if (keyword.Key.ToUpper()==keyword.Key)
+                            {
+                                if (keyword.Key == sentence[i + offset].valueOriginal)
+                                {
+                                    offset += 1;
+                                    continue;
+                                }
+                                else break;
+                            }else
+                            if (sentence[i + offset].morphology.IsEmptyNormalForm() || w.morphology.IsEmptyNormalForm())
+                            {
+                                var common_length = Math.Min(sentence[i + offset].valueOriginal.Length, w.valueOriginal.Length);
+                                // compare original value if normal form not available
+                                if (common_length > 5 && sentence[i + offset].valueOriginal.Substring(0, common_length - 2) != w.valueOriginal.Substring(0, common_length - 2))
+                                {
+                                    break;
+                                }
+                                else
+                                if (common_length <= 5 && sentence[i + offset].valueOriginal != w.valueOriginal)
+                                {
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                // if both normal form are available then try compare them
+                                if (sentence[i + offset].morphology.NormalForm.ToLower() != w.morphology.NormalForm.ToLower())
+                                {
+                                    break;
+                                }
+                            }
+                            offset += 1;
+                        }
+                        else break;
+                    }
+                    // if the keyword fully match in string
+                    if (offset == keyword.Value.Length)
+                    {
+                        if (result.ContainsKey(keyword.Key))
+                        {
+                            result[keyword.Key].AddRange(siTemp);
+                        }
+                        else
+                        {
+                            result[keyword.Key] = siTemp;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        private string TryGetKeywordFromText(ref string text, string section_titles = null)
+        {
+            string lookBehind = @"Ключевые слова: ";
+            string lookForward = String.Empty;
+            if (string.IsNullOrEmpty(section_titles))
+            {
+                // if section titles is not provided, take from keyword until end of line
+                lookForward = @"\n";
+            }
+            else
+            {
+                // if provided, take until first section's title
+                lookForward = $@"#|{string.Join('|', section_titles.Split(new Char[] { ',', '\n' }).Select(x => x.Trim()))}";
+
+            }
+            Match m = Regex.Match(text, $@"(?<={lookBehind})[\S\s]*?(?=({lookForward}))");
+            if (m.Success)
+            {
+                text = text.Replace(Regex.Match(text, $@"({lookBehind})[\S\s]*?(?=({lookForward}))").Value, " \n");
+                return Regex.Replace(m.Value.Replace('\n', ' ').Replace('\r', ' '), @"\s+", " ");
+            }
+            return "";
+        }
         public PaperAnalysisResult ProcessTextWithResult(
-            string text, 
-            string titlesString, 
-            string paperName, 
-            string refsName, 
+            string text,
+            string titlesString,
+            string paperName,
+            string refsName,
+            string keywords,
             ResultScoreSettings settings)
         {
             try
             {
+                if (string.IsNullOrEmpty(refsName))
+                    refsName = "Список литературы";
+                if (string.IsNullOrEmpty(paperName))
+                    paperName = "";
+                if (string.IsNullOrEmpty(titlesString))
+                    titlesString = "";
+
+                var kwInText = TryGetKeywordFromText(ref text, titlesString);
+                // prepare the keyword dictionary and result dictionary for keyword marks
+                var keywordDict = PrepareKeywordsDict(kwInText + "," + keywords, ',');
+                // same for paper name
+                paperName = Regex.Replace(paperName.Replace(",", " , "), @"\s+", " ");
+                var paperNameDict = PrepareKeywordsDict(paperName, ' ');
+
+                Dictionary<string, List<int>> keywordMarks = new Dictionary<string, List<int>>();
+                Dictionary<string, List<int>> papernameMarks = new Dictionary<string, List<int>>();
+
                 var forbiddenDicts = new List<ForbiddenWordHashSet>();
                 // IEnumerable из словарей надо привести к HashSet
                 foreach (var dict in settings.ForbiddenWords)
@@ -53,12 +192,7 @@ namespace PaperAnalyzer
                 }
 
 
-                if (string.IsNullOrEmpty(refsName))
-                    refsName = "Список литературы";
-                if (string.IsNullOrEmpty(paperName))
-                    paperName = "";
-                if (string.IsNullOrEmpty(titlesString))
-                    titlesString = "";
+
                 var referencesIndex = text.IndexOf(refsName, StringComparison.InvariantCultureIgnoreCase);
                 string referencesSection;
                 var refSection = new Section
@@ -193,12 +327,13 @@ namespace PaperAnalyzer
 
                 var titles = titlesString.Split("\n").Select(x => x.Trim()).ToList();
 
-                titles.Add(paperName);
+                //titles.Add(paperName);
 
                 var titleIndex = text.IndexOf(paperName, StringComparison.InvariantCultureIgnoreCase);
                 if (titleIndex != -1)
+                {
                     text = text.Substring(titleIndex);
-
+                }
                 var result = _environment.Processor.RunFullAnalysis(text, true, true, true, true);
 
                 var dictionary = new Dictionary<string, int>();
@@ -305,6 +440,68 @@ namespace PaperAnalyzer
                 var sections = new List<Section>();
 
                 var section = new Section();
+
+                // try to get paper name from the text by comparing with user provided papername.
+                var paperNameTemp = paperName;
+                var paperNameWords = new List<WordHtml>();
+                // if user did not provide paper name, paperName will be null and this will be skipped
+                while (!string.IsNullOrEmpty(paperNameTemp) && newResult.Count > 0)
+                {
+                    paperNameTemp = paperNameTemp.Trim();
+                    var r = newResult[0];
+                    var sentence = new SentenceHtml(SentenceType.Basic, r.Select(x => new WordHtml(x.valueOriginal, x.posTaggerOutputType, x.startIndex)));
+                    // compare word by word to avoid mismatch when restore string form of sentencehtml, 
+                    // for example, when 3D-сканирования is mistakenly detected as Numerical, there won't be space before it in the string representation
+                    bool match = true;
+                    foreach (var w in sentence.Words)
+                    {
+                        if (paperNameTemp.StartsWith(w.Original))
+                        {
+                            paperNameTemp = paperNameTemp.Substring(w.Original.Length).Trim();
+                        }
+                        else
+                        {
+                            if (string.IsNullOrWhiteSpace(paperNameTemp))
+                            {
+                                Word[] leftover = newResult[0].Skip(sentence.Words.IndexOf(w)).ToArray();
+                                newResult[0] = leftover;
+                            }
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match)
+                    {
+                        newResult.RemoveAt(0);
+                        paperNameWords.AddRange(sentence.Words);
+                    }
+                    else
+                    {
+                        paperNameTemp = string.Empty;
+                    }
+                }
+                // if paper name is found -> add to sections
+                if (paperNameWords.Count > 0)
+                {
+                    section.Type = SectionType.PaperTitle;
+                    section.Sentences.Add(new SentenceHtml(SentenceType.Basic, paperNameWords));
+                    sections.Add(section);
+                    section = new Section();
+                }
+                else
+                {
+                    // paper name not provided by user or provided but not found in text 
+                    // NOTE: uncomment code below if we want to assume that first sentence is the paper's name
+                    //if (newResult.Count > 0) 
+                    //{
+                    //    section.Type = SectionType.PaperTitle;
+                    //    var sentence = new SentenceHtml(SentenceType.Basic, newResult[0].Select(x => new WordHtml(x.valueOriginal, x.posTaggerOutputType, x.startIndex)));
+                    //    paperName = sentence.ToStringVersion();
+                    //    section.Sentences.Add(sentence);
+                    //    sections.Add(section);
+                    //    section = new Section();
+                    //}
+                }
                 foreach (var r in newResult)
                 {
                     var sentence = new SentenceHtml(SentenceType.Basic, r.Select(x => new WordHtml(x.valueOriginal, x.posTaggerOutputType, x.startIndex)));
@@ -317,7 +514,7 @@ namespace PaperAnalyzer
                             sections.Add(section);
                             section = new Section();
                         }
-                        section.Type = sections.Count() == 0 ? SectionType.PaperTitle : SectionType.SectionTitle;
+                        section.Type = SectionType.SectionTitle;
                         section.Sentences.Add(sentence);
                         sections.Add(section);
                         section = new Section();
@@ -330,6 +527,37 @@ namespace PaperAnalyzer
                     if (r == newResult.Last())
                         sections.Add(section);
 
+                    // processing keywords
+                    // loop through r and get keyword in sentence
+                    var keywordInSentence = MarkKeywordInSentence(keywordDict, r);
+                    // add sentence's result to text's result
+                    foreach (KeyValuePair<string, List<int>> kv in keywordInSentence)
+                    {
+                        if (keywordMarks.ContainsKey(kv.Key))
+                        {
+                            keywordMarks[kv.Key].AddRange(kv.Value);
+                        }
+                        else
+                        {
+                            keywordMarks[kv.Key] = kv.Value;
+                        }
+                    }
+                    // end processing keywords
+
+                    // processing paper name
+                    var papernameInSentence = MarkKeywordInSentence(paperNameDict, r);
+                    foreach (KeyValuePair<string, List<int>> kv in papernameInSentence)
+                    {
+                        if (papernameMarks.ContainsKey(kv.Key))
+                        {
+                            papernameMarks[kv.Key].AddRange(kv.Value);
+                        }
+                        else
+                        {
+                            papernameMarks[kv.Key] = kv.Value;
+                        }
+                    }
+                    // end processing paper name
 
                     foreach (var word in r)
                     {
@@ -394,26 +622,26 @@ namespace PaperAnalyzer
                 var stopWordsReport = new StringBuilder();
 
                 for (int i = 0; i < 10 && i < top10StopWords.Count; i++)
-                        stopWordsReport.Append($"{top10StopWords[i].Key}:   {top10StopWords[i].Value} раз\n");
+                    stopWordsReport.Append($"{top10StopWords[i].Key}:   {top10StopWords[i].Value} раз\n");
 
 
                 var keyWordsReport = new StringBuilder();
                 for (int i = 0; i < 10 && i < top10.Count; i++)
-                        keyWordsReport.Append($"{top10[i].Key}:   {top10[i].Value} раз\n");
+                    keyWordsReport.Append($"{top10[i].Key}:   {top10[i].Value} раз\n");
 
                 var criteria = new List<Criterion>
                 {
-                    new NumericalCriterion("Уровень водности", waterLvl, 
+                    new NumericalCriterion("Уровень водности", waterLvl,
                         settings.WaterCriteria.LowerBound, settings.WaterCriteria.UpperBound, settings.WaterCriteria.Weight,
                         "Процентное соотношение стоп-слов и общего количества слов в тексте",
                         $"Постарайтесь снизить количество используемых стоп-слов. Часто употребляемые стоп-слова в статье:\n{stopWordsReport.ToString()}",
                         "Текст слишком \"сухой\". Попробуйте добавить связки между разделами."),
-                    new NumericalCriterion("Тошнота", keyWordsLvl, 
+                    new NumericalCriterion("Тошнота", keyWordsLvl,
                         settings.KeyWordsCriteria.LowerBound, settings.KeyWordsCriteria.UpperBound, settings.KeyWordsCriteria.Weight,
                         "Показатель повторений в текстовом документе ключевых слов и фраз",
                         $"Слишком частое повторение слов, при возможности, старайтесь использовать синонимы. Наиболее употребляемые слова в тексте:\n{keyWordsReport.ToString()}",
                         $"Постарайтесь увеличить частоту употребления ключевых слов текста:\n{keyWordsReport.ToString()}"),
-                    new NumericalCriterion("Zipf", zipfLvl, 
+                    new NumericalCriterion("Zipf", zipfLvl,
                         settings.Zipf.LowerBound, settings.Zipf.UpperBound, settings.Zipf.Weight,
                         "Значение отклонения текста статьи от идеальной кривой по Ципфу",
                         "Постарайтесь разнообразить текст, добавить связки между разделами, возможно, увеличить количество прилагательных.",
@@ -428,7 +656,7 @@ namespace PaperAnalyzer
                     .Distinct()
                     .ToList();
 
-                foreach(var sect in sections)
+                foreach (var sect in sections)
                 {
                     foreach (var sent in sect.Sentences)
                     {
@@ -449,7 +677,7 @@ namespace PaperAnalyzer
                     }
                 }
 
-                foreach(var reference in referencesList)
+                foreach (var reference in referencesList)
                 {
                     if (!reference.ReferedTo)
                     {
@@ -461,7 +689,7 @@ namespace PaperAnalyzer
 
                 for (int i = 0; i < sections.Count; i++)
                 {
-                    if (sections[i].Type == SectionType.SectionTitle 
+                    if (sections[i].Type == SectionType.SectionTitle
                         && i + 1 < sections.Count
                         && sections[i + 1].Type == SectionType.Text
                         && sections[i + 1].Sentences.Where(x => x.Words.Last().Original == ".").ToList().Count < 3)
@@ -499,6 +727,10 @@ namespace PaperAnalyzer
                         settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
 
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.MaxScore);
+                // save keyword marks in result set
+                analysisResult.Keywords = keywordMarks;
+                analysisResult.PaperTitle = paperName;
+                analysisResult.PaperTitleRefs = papernameMarks;
 
                 GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
                 GC.WaitForPendingFinalizers();

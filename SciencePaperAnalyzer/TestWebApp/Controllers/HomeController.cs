@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
@@ -167,6 +168,15 @@ namespace WebPaperAnalyzer.Controllers
             _logger.LogDebug($"Result saved by Id {analysisResult.Id}");
             Repository.AddResult(analysisResult);
             return Ok(analysisResult.Id);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CurlUploadFile(IFormFile file, IFormFile paperName, string criteriaName)
+        {
+            Stream stream = paperName.OpenReadStream();
+            byte[] buffer = new byte[stream.Length];
+            stream.Read(buffer, 0, (int)stream.Length);
+            return await UploadFile(file, "", Encoding.UTF8.GetString(buffer), "", criteriaName);
         }
 
         [HttpGet]

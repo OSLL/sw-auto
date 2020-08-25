@@ -24,7 +24,7 @@ namespace PaperAnalyzer
 
         private static readonly List<string> personalPronouns = new List<string>
         {
-            "я", "ты", "он", "она", "оно", "мой", "мое", "моё", "моя", "твой", "твое", "твоё", "твоя", "его", "её"
+            "я", "ты", "мой", "мое", "моё", "моя", "твой", "твое", "твоё", "твоя"
         };
 
         public PapersAnalyzer(IPaperAnalyzerEnvironment environment)

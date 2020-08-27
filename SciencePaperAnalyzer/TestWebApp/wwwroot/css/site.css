@@ -777,7 +777,7 @@ input[type="file"] {
     justify-content: space-between;
     align-items: center;
     text-align: left;
-    margin-left: 20%;
+/*    margin-left: 20%;*/
 }
 
     .criterion-add-submit input {

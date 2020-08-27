@@ -4,224 +4,497 @@
     ViewBag.Title = "Добавление нового набора критериев";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<style>
+    .ui-slider-vertical .ui-slider-handle {
+        left: auto;
+        margin-left: auto;
+        margin-bottom: -.6em;
+        right: -.3em;
+    }
+
+    .weight-sliders {
+        height: calc(100% - 100px);
+        width: 20px;
+        margin: 50px 10px;
+    }
+
+        .weight-sliders .ui-slider-handle {
+            /*            font-size: 1.3em;*/
+            /*            top: -.4em;*/
+        }
+</style>
+
 <input type="button" class="upload-form2" value="Назад" onclick="window.location.href = '@Url.Action("TeacherMainPage", "StudentTeacher")';" />
 
-<div class="inline-flex-class">
-    <form asp-action="TeacherAddCriterion" asp-controller="StudentTeacher" style="width: 100%">
-        <h2>Добавление нового набора критериев</h2>
-        <div class="criterion-add-submit">
-            <div>
-                <h3>
-                    Название
-                </h3>
-                <input type="text" asp-for="Name" />
-            </div>
-            <div>
-                <h3>
-                    Краткое описание
-                </h3>
-                <textarea type="text" asp-for="Summary"></textarea>
-            </div>
-            <div>
-                <h3>
-                    Максимальная оценка за статью
-                </h3>
-                <input type="text" asp-for="MaxScore" />
-            </div>
-        </div>
-        <div class="criterion-add-edit">
-            <h3>
-                Уровень водности
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="WaterCriterionFactor" />
 
-            <div class="criterion-add-bounds">
-                <div>
-                    <h5>
-                        Нижняя граница
-                    </h5>
-                    <input type="text" asp-for="WaterCriterionLowerBound" />
-                </div>
-                <div>
-                    <h5>
-                        Верхняя граница
-                    </h5>
-                    <input type="text" asp-for="WaterCriterionUpperBound" />
-                </div>
-            </div>
-        </div>
-        <div class="criterion-add-edit">
-            <h3>
-                Тошнота
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="KeyWordsCriterionFactor" />
+<div class="container-fluid h-100 mb-5">
+    <div class="row h-100">
+        <div class="col-md-6 offset-md-1">
+            <form id="AddForm" asp-action="TeacherAddCriterion" asp-controller="StudentTeacher">
 
-            <div class="criterion-add-bounds">
-                <div>
-                    <h5>
-                        Нижняя граница
-                    </h5>
-                    <input type="text" asp-for="KeyWordsCriterionLowerBound" />
-                </div>
-                <div>
-                    <h5>
-                        Верхняя граница
-                    </h5>
-                    <input type="text" asp-for="KeyWordsCriterionUpperBound" />
-                </div>
-            </div>
-        </div>
-        <div class="criterion-add-edit">
-            <h3>
-                Ципф
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="ZipfFactor" />
+                <div class="container-fluid h-100">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Добавление нового набора критериев</h2>
+                        </div>
+                    </div>
+                    <div class="row border-top border-dark mt-4 pt-4">
+                        <div class="col">
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    Название
+                                </h3>
+                                <input class="w-100" type="text" asp-for="Name" />
+                                <h3>
+                                    Краткое описание
+                                </h3>
+                                <textarea class="w-100" type="text" asp-for="Summary"></textarea>
+                                <h3>
+                                    Максимальная оценка за статью
+                                </h3>
+                                <input class="w-100" type="text" asp-for="MaxScore" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row h-100 flex-row-reverse border-top border-dark mt-4 pt-4">
+                        <div class="col-10">
 
-            <div class="criterion-add-bounds">
-                <div>
-                    <h5>
-                        Нижняя граница
-                    </h5>
-                    <input type="text" asp-for="ZipfFactorLowerBound" />
+                            <div class="criterion-add-edit">
+                                <h3>
+                                    Уровень водности
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="WaterCriterionFactor" />
+                                </div>
+                                <div class="my-3">
+                                    <h5>
+                                        Границы
+                                    </h5>
+                                    <div class="range-slider" txtLowerBound="WaterCriterionLowerBound" txtUpperBound="WaterCriterionUpperBound" min="0" max="50"></div>
+                                </div>
+                                <div class="criterion-add-bounds bounds-container d-none">
+                                    <div>
+                                        <h5>
+                                            Нижняя граница
+                                        </h5>
+                                        <input type="text" asp-for="WaterCriterionLowerBound" />
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            Верхняя граница
+                                        </h5>
+                                        <input type="text" asp-for="WaterCriterionUpperBound" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-edit">
+                                <h3>
+                                    Тошнота
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="KeyWordsCriterionFactor" />
+                                </div>
+                                <div class="my-3">
+                                    <h5>
+                                        Границы
+                                    </h5>
+                                    <div class="range-slider" txtLowerBound="KeyWordsCriterionLowerBound" txtUpperBound="KeyWordsCriterionUpperBound" min="0" max="50"></div>
+                                </div>
+                                <div class="criterion-add-bounds bounds-container d-none">
+                                    <div>
+                                        <h5>
+                                            Нижняя граница
+                                        </h5>
+                                        <input type="text" asp-for="KeyWordsCriterionLowerBound" />
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            Верхняя граница
+                                        </h5>
+                                        <input type="text" asp-for="KeyWordsCriterionUpperBound" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-edit">
+                                <h3>
+                                    Ципф
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="ZipfFactor" />
+                                </div>
+                                <div class="my-3">
+                                    <h5>
+                                        Границы
+                                    </h5>
+                                    <div class="range-slider" txtLowerBound="ZipfFactorLowerBound" txtUpperBound="ZipfFactorUpperBound" min="0" max="50" step="0.5"></div>
+                                </div>
+                                <div class="criterion-add-bounds bounds-container d-none">
+                                    <div>
+                                        <h5>
+                                            Нижняя граница
+                                        </h5>
+                                        <input type="text" asp-for="ZipfFactorLowerBound" />
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            Верхняя граница
+                                        </h5>
+                                        <input type="text" asp-for="ZipfFactorUpperBound" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-edit weight-container d-none">
+                                <h3>
+                                    Упоминание ключевых слов
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="KeywordsMentioningFactor" />
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    Использование личных местоимений
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="UseOfPersonalPronounsCost" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="cost-slider my-3" txtCost="UseOfPersonalPronounsErrorCost" step="0.1"></div>
+                                    <input class="cost-textbox d-none" type="text" asp-for="UseOfPersonalPronounsErrorCost" />
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    Нет ссылки на источник
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="SourceNotReferencedCost" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="cost-slider my-3" txtCost="SourceNotReferencedErrorCost" step="0.1"></div>
+                                    <input class="cost-textbox d-none" type="text" asp-for="SourceNotReferencedErrorCost" />
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    Короткий раздел
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="ShortSectionCost" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="cost-slider my-3" txtCost="ShortSectionErrorCost" step="0.1"></div>
+                                    <input class="cost-textbox d-none" type="text" asp-for="ShortSectionErrorCost" />
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    Нет ссылки на рисунок
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="PictureNotReferencedCost" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="cost-slider my-3" txtCost="PictureNotReferencedErrorCost" step="0.1"></div>
+                                    <input class="cost-textbox d-none" type="text" asp-for="PictureNotReferencedErrorCost" />
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit" style="margin-bottom: 3%">
+                                <h3>
+                                    Нет ссылки на таблицу
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="TableNotReferencedCost" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="cost-slider my-3" txtCost="TableNotReferencedErrorCost" step="0.1"></div>
+                                    <input class="cost-textbox d-none" type="text" asp-for="TableNotReferencedErrorCost" />
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit" style="margin-bottom: 3%">
+                                <h3>
+                                    Запрещенные словари
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="ForbiddenWordsCost" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="cost-slider my-3" txtCost="ForbiddenWordsErrorCost" step="0.1"></div>
+                                    <input class="cost-textbox d-none" type="text" asp-for="ForbiddenWordsErrorCost" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Словари запрещенных слов
+                                    </h5>
+                                    <ul>
+                                        @for (int i = 0; i < @Model.Dictionaries.Count; i++)
+                                        {
+                                            <li style="text-align: left;">
+                                                @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
+                                                @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
+                                                @Html.HiddenFor(m => m.Dictionaries[i].Name)
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="weight-sliders"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="criterion-add-submit">
+                                <input type="submit" value="Добавить критерий" class="add-button" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <h5>
-                        Верхняя граница
-                    </h5>
-                    <input type="text" asp-for="ZipfFactorUpperBound" />
-                </div>
-            </div>
+            </form>
         </div>
-        <div class="criterion-add-edit">
-            <h3>
-                Упоминание ключевых слов
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="KeywordsMentioningFactor" />
-        </div>
-        <div class="criterion-add-submit">
-            <div>
-                <h3>
-                    Использование личных местоимений
-                </h3>
-                <h5>
-                    Вес критерия
-                </h5>
-                <input type="text" asp-for="UseOfPersonalPronounsCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
-            </div>
-        </div>
-        <div class="criterion-add-submit">
-            <div>
-                <h3>
-                    Нет ссылки на источник
-                </h3>
-                <h5>
-                    Вес критерия
-                </h5>
-                <input type="text" asp-for="SourceNotReferencedCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="SourceNotReferencedErrorCost" />
-            </div>
-        </div>
-        <div class="criterion-add-submit">
-            <div>
-                <h3>
-                    Короткий раздел
-                </h3>
-                <h5>
-                    Вес критерия
-                </h5>
-                <input type="text" asp-for="ShortSectionCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="ShortSectionErrorCost" />
-            </div>
-        </div>
-        <div class="criterion-add-submit">
-            <div>
-                <h3>
-                    Нет ссылки на рисунок
-                </h3>
-                <h5>
-                    Вес критерия
-                </h5>
-                <input type="text" asp-for="PictureNotReferencedCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="PictureNotReferencedErrorCost" />
-            </div>
-        </div>
-        <div class="criterion-add-submit" style="margin-bottom: 3%">
-            <div>
-                <h3>
-                    Нет ссылки на таблицу
-                </h3>
-                <h5>
-                    Вес критерия
-                </h5>
-                <input type="text" asp-for="TableNotReferencedCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="TableNotReferencedErrorCost" />
-            </div>
-        </div>
-        <div class="criterion-add-submit" style="margin-bottom: 3%">
-            <div>
-                <h3>
-                    Запрещенные словари
-                </h3>
-                <h5>
-                    Вес критерия
-                </h5>
-                <input type="text" asp-for="ForbiddenWordsCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="ForbiddenWordsErrorCost" />
-            </div>
-        </div>
-        @for (int i = 0; i < @Model.Dictionaries.Count; i++)
-        {
-            <li style="text-align: left; margin-left: 20%">
-                @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
-                @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
-                @Html.HiddenFor(m => m.Dictionaries[i].Name)
-            </li>
-        }
-        <div class="criterion-add-submit">
-            <input type="submit" value="Добавить критерий" class="add-button" />
-        </div>
-    </form>
 
-    <div style="width: 100%">
-        <h2>Существующие наборы критериев</h2>
-        <input type="button" class="upload-form2" value="Показать критерии добавленные мной" style="width: 30%" onclick="window.location.href='@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = true})';" />
-        @foreach (var criterion in (IEnumerable<ResultCriterion>)ViewBag.Criteria)
-        {
-            <button type="submit" class="upload-form" , onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
-                Критерий: @criterion.Name, Создатель: @criterion.TeacherLogin,
-                Описание: @criterion.Summary
-            </button>
-        }
+        <div class="col-md-4">
+            <h2>Существующие наборы критериев</h2>
+            <input type="button" class="upload-form2" value="Показать критерии добавленные мной" style="width: 100%" onclick="window.location.href='@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = true})';" />
+            @foreach (var criterion in (IEnumerable<ResultCriterion>)ViewBag.Criteria)
+            {
+                <button type="submit" class="upload-form" , onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
+                    Критерий: @criterion.Name, Создатель: @criterion.TeacherLogin,
+                    Описание: @criterion.Summary
+                </button>
+            }
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
+    <script>
+        var criteria = ["Уровень водности", "Тошнота", "Ципф", "Упоминание ключевых слов", "Использование личных местоимений",
+            "Нет ссылки на источник", "Короткий раздел", "Нет ссылки на рисунок", "Нет ссылки на таблицу", "Запрещенные словари"].reverse()
+
+        var criteriaInputs = ["WaterCriterionFactor", "KeyWordsCriterionFactor", "ZipfFactor", "KeywordsMentioningFactor", "UseOfPersonalPronounsCost",
+            "SourceNotReferencedCost", "ShortSectionCost", "PictureNotReferencedCost", "TableNotReferencedCost", "ForbiddenWordsCost"].reverse()
+
+
+        $(function () {
+            // WEIGHT-SLIDERS HANDLE
+            // update weight distribution slider when textbox MaxScore changed 
+            $('#MaxScore').on('change', function (event) {
+                let maxScore = parseFloat(event.target.value);
+                if (isNaN(maxScore) || maxScore <= 0) {
+                    $('.weight-sliders').limitslider('destroy')
+                    $('.weight-sliders').limitslider({
+                        orientation: "vertical",
+                    });
+                    $('.weight-sliders .ui-slider-handle').remove()
+                    return
+                }
+                let ranges = Array(11).fill(true)
+                let limits = Array(10).fill().map((x, i) => (i === criteria.length - 1 ? [maxScore, maxScore] : [0, maxScore]));
+                let values = Array(10).fill().map((x, i) => maxScore * (i + 1) / criteria.length);
+                // destroy old multislider/limitslider and create new one to adapt to max score's change
+                $('.weight-sliders').limitslider('destroy')
+                var sliders = $('.weight-sliders').limitslider({
+                    orientation: "vertical",
+                    values: values,
+                    gap: 0,
+                    min: 0,
+                    max: maxScore,
+                    actualValue: function (value, index) {
+                        return Math.round((index == 0 ? value : value - this.values[index - 1]) * 10) / 10
+                    },
+                    step: 0.1,
+                    label: function (value, index) {
+                        return `${criteria[index]}: ${this.actualValue(value, index)}`
+                    },
+                    slide: function (event, ui) {
+                        let index = ui.handleIndex;
+                        let values = ui.values;
+                        let widget = $('.weight-sliders').data('vanderleeLimitslider')
+                        for (let i = 0; i < ui.values.length; i++) {
+                            $('#' + criteriaInputs[i]).val(widget.options.actualValue(values[i], i))
+                        }
+                        widget._renderRanges()
+                        widget._renderLabels()
+                        widget._renderTitles()
+                        // TODO: update cost sliders limits here if preferred
+                    },
+                    limits: limits,
+                    showRanges: true,
+                    ranges: ranges
+                });
+                // fill in initial value for textboxes
+                let widget = $('.weight-sliders').data('vanderleeLimitslider')
+                values.forEach((value, index) => {
+                    $('#' + criteriaInputs[index]).val(widget.options.actualValue(value, index))
+                })
+                // update slider based on input (only needed if (1) is enabled (textboxes are shown))
+                criteriaInputs.forEach(function (inpName, index) {
+                    $("#" + inpName).on('blur', function (event) {
+                        let prevVal = index > 0 ? widget.options.values[index - 1] : 0;
+                        // update slider
+                        widget._slide(event, index, prevVal + parseFloat(event.target.value));
+                        widget._renderRanges()
+                        widget._renderLabels()
+                        widget._renderTitles()
+                        // update inputs according to slider
+                        for (let i = 0; i < widget.options.values.length; i++) {
+                            $('#' + criteriaInputs[i]).val(widget.options.actualValue(widget.options.values[i], i))
+                        }
+
+                    })
+                })
+            })
+
+            // create empty slider at start, when MaxScore is not set
+            $('.weight-sliders').limitslider({
+                orientation: "vertical",
+            });
+            $('.weight-sliders .ui-slider-handle').remove()
+
+            // RANGE-SLIDERS HANDLE
+            // create sliders for range based criteria
+            $('.range-slider').each(function (index) {
+                let $txtLowerBound = $('#' + $(this).attr('txtLowerBound'))
+                let $txtUpperBound = $('#' + $(this).attr('txtUpperBound'))
+                let min = $(this).attr('min')
+                min = min != undefined ? parseFloat(min) : 0;
+                let max = $(this).attr('max')
+                max = max != undefined ? parseFloat(max) : 100;
+                let step = $(this).attr('step')
+                step = step != undefined ? parseFloat(step) : 1;
+
+                let slider = $(this).limitslider({
+                    range: true,
+                    min: min,
+                    max: max,
+                    left: min,
+                    right: max,
+                    step: step,
+                    label: true,
+                    values: [$txtLowerBound.val(), $txtUpperBound.val()],
+                    slide: function (event, ui) {
+                        $txtLowerBound.val(ui.values[0]);
+                        $txtUpperBound.val(ui.values[1]);
+                    },
+                    showRanges: true,
+                    ranges: [false, true, false]
+                });
+                // update slider values when type in textbox, only needed if (2) is enabled (textboxes are shown)
+                $txtLowerBound.on('blur', function (event) {
+                    slider.data('vanderleeLimitslider')._slide(event, 0, parseFloat(event.target.value));
+                })
+                $txtUpperBound.on('blur', function (event) {
+                    slider.data('vanderleeLimitslider')._slide(event, 1, parseFloat(event.target.value));
+                })
+            })
+
+            // COST-SLIDERS HANDLE
+            // create sliders for error cost (Штраф) (cost-slider)
+            $('.cost-slider').each(function (index) {
+                let $txtCost = $('#' + $(this).attr('txtCost'))
+                let step = $(this).attr('step')
+                step = step != undefined ? parseFloat(step) : 0.1;
+                let min = 0;
+                let max = 20;
+                let slider = $(this).limitslider({
+                    min: min,
+                    max: max,
+                    left: min,
+                    right: max,
+                    step: step,
+                    label: true,
+                    values: [$txtCost.val()],
+                    slide: function (event, ui) {
+                        $txtCost.val(ui.values[0]);
+                    },
+                    showRanges: true,
+                    ranges: [true, false]
+                });
+                // update slider values when type in textbox, only needed if (2) is enabled (textboxes are shown)
+                $txtCost.on('blur', function (event) {
+                    slider.data('vanderleeLimitslider')._slide(event, 0, parseFloat(event.target.value));
+                })
+            })
+
+            // uncommend line bellow to show weight textboxes (1)
+            //$('.weight-container').toggleClass('d-none',false)
+
+            // uncommend line bellow to show bounds textboxes (2)
+            //$('.bounds-container').toggleClass('d-none', false)
+
+            // uncommend line bellow to show error cost textboxes (3)
+            //$('.cost-textbox').toggleClass('d-none', false)
+
+            $("#AddForm").validate({
+                rules: {
+                    Name: {
+                        required: true
+                    },
+                    MaxScore: {
+                        required: true,
+                        min: 1
+                    }
+                },
+                messages: {
+                    Name: "Поле обязательно к заполнению",
+                    MaxScore: {
+                        required: "Поле обязательно к заполнению",
+                        min: jQuery.validator.format("Значение должно быть больше или равно {0}")
+                    }
+                }
+            });
+        });
+    </script>
+}

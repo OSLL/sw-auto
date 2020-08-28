@@ -122,7 +122,7 @@ namespace WebPaperAnalyzer.Models
             }
             catch (Exception)
             {
-                criterion.ForbiddenWordDictionary = null;
+                criterion.ForbiddenWordDictionary = new List<string>();
             }
             criterion.ForbiddenWordsCost = model.ForbiddenWordsCost;
             criterion.ForbiddenWordsErrorCost = model.ForbiddenWordsErrorCost;

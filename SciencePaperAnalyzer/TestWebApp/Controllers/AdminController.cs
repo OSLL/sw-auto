@@ -57,5 +57,12 @@ namespace WebPaperAnalyzer.Controllers
 
             return RedirectToAction("AddTeacher", "Admin");
         }
+
+        [HttpGet]
+        [Authorize(Roles = "admin")]
+        public IActionResult AdminMainPage()
+        {
+            return View();
+        }
     }
 }

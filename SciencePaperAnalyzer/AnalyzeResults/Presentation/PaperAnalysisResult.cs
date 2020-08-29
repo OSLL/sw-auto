@@ -89,5 +89,26 @@ namespace AnalyzeResults.Presentation
 
             return 0;
         }
+
+        public string GetShortSummary()
+        {
+            var result = "Проведенные проверки:\n";
+            foreach (NumericalCriterion check in Criteria.Where(x => (x as NumericalCriterion)?.Factor > 0))
+            {
+                var res = check.IsMet() ? Math.Round(check.Factor, 2) : 0;
+                result += $"{check.Name}: Набрано {res} из {Math.Round(check.Factor, 2)} баллов\n";
+            }
+            foreach(var error in Enum.GetValues(typeof(ErrorType)))
+            {
+                var specialError = Errors.FirstOrDefault(e => e.ErrorType == (ErrorType)error);
+                if (specialError != null && specialError.Weight > 0)
+                {
+                    var @res = GetSpecialGrade((ErrorType)error);
+                    result += $"{specialError.Name} : Набрано {res} из {Math.Round(specialError.Weight, 2)} баллов\n";
+                }
+            }
+
+            return result;
+        }
     }
 }

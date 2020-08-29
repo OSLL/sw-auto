@@ -191,7 +191,7 @@ namespace WebPaperAnalyzer.Controllers
         [Route("Home/ShortResult/{id}")]
         public IActionResult ShortResult(string id)
         {
-            return View(Repository.GetResult(id).Result);
+            return Content(Repository.GetResult(id).Result.GetShortSummary());
         }
 
         public async Task<IActionResult> Index()

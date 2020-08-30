@@ -21,7 +21,7 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Результаты проверки</title>
-    
+
 </head>
 <body>
     <div class="main-container">
@@ -30,11 +30,11 @@
             <div class="results-container">
                 <div class="grade-container">
                     @*
-                    90-100 perfect (green)
-                    70-89 good (lightgreen)
-                    55-69 meh (yellow)
-                    40-54 bad (orange)
-                    0-39 awful (red)
+                        90-100 perfect (green)
+                        70-89 good (lightgreen)
+                        55-69 meh (yellow)
+                        40-54 bad (orange)
+                        0-39 awful (red)
                     *@
                     <div class="grade-title">
                         Оценка стиля статьи:
@@ -144,7 +144,29 @@
                         case AnalyzeResults.Presentation.SectionType.PaperTitle:
                             <div>
                                 <div class="paper-title">
-                                    @Html.Raw(sect.ToStringVersion())
+
+                                    @foreach (string word in Model.PaperTitle.Split(' '))
+                                    {
+                                        @if (word.Length > 2)
+                                        {
+                                            <a class="papername-word" wordIds="@(Model.PaperTitleRefs.ContainsKey(word.Trim().ToLower()) ? String.Join(',', Model.PaperTitleRefs[word.Trim().ToLower()]) :"")" href="#">
+                                                @word
+                                            </a>
+                                        }
+                                        else if (word.Length > 1 && word.ToUpper() == word)
+                                        {
+                                            <a class="papername-word" wordIds="@(Model.PaperTitleRefs.ContainsKey(word.Trim()) ? String.Join(',', Model.PaperTitleRefs[word.Trim()]) : "")" href="#">
+                                                @word
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="papername-word">
+                                                @word
+                                            </span>
+                                        }
+                                    }
+                                    @*@Html.Raw(sect.ToStringVersion())*@
                                 </div>
                             </div>
                             break;
@@ -200,6 +222,31 @@
             </div>
 
             <div class="errors-container">
+                @if (Model.Keywords.Count > 0)
+                {
+                    <div class="keywords-container">
+                        <button class="keywords-collapsible">
+                            <div class="keyword-button-container">
+                                <div class="keyword-button-name">
+                                    Ключевые слова
+                                </div>
+                            </div>
+                        </button>
+                        <div class="keywords-content">
+                            <div class="keywords-content-collapsible">
+                                @foreach (KeyValuePair<string, List<int>> keyword in Model.Keywords)
+                                {
+                                    <a class="keyword-container" wordIds="@String.Join(',', keyword.Value)" href="#">
+                                        <div class="criteria-data-row italic">
+                                            @keyword.Key
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                }
                 <div class="error-type-container">
                     @if (Model.Errors.Any(x => x.ErrorType == ErrorType.UseOfPersonalPronouns) && Model.Errors.FirstOrDefault(x => x.ErrorType == ErrorType.UseOfPersonalPronouns)?.Weight > 0)
                     {

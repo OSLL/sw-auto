@@ -183,6 +183,8 @@
                 var criterion = document.getElementById("Criteria").value;
                 fdata.append("criterionName", criterion);
 
+                var keywords = $('#keywords')[0].value;
+                fdata.append("keywords", keywords);
 
                 $('#main')[0].style.display = 'none';
                 $('#load')[0].style.display = 'flex';

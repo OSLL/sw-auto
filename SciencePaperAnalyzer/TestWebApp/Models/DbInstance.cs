@@ -18,6 +18,7 @@ namespace WebPaperAnalyzer.Models
         public string Role { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class ResultCriterion
     {
         [BsonRepresentation(BsonType.ObjectId)]

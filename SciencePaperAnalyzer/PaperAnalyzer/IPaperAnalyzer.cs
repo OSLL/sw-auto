@@ -7,7 +7,7 @@ namespace PaperAnalyzer
 	public interface IPaperAnalyzer
 	{
 		PaperAnalysisResult ProcessTextWithResult(string text, 
-            string titlesString, string paperName, string refsName, 
+            string titlesString, string paperName, string refsName, string keywords,
 			ResultScoreSettings settings);
 	}
 }

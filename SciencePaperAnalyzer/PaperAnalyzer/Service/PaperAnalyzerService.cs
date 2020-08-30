@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
 using NLog;
@@ -18,7 +19,7 @@ namespace PaperAnalyzer.Service
             _paperAnalyzer = paperAnalyzer;
         }
 
-        public PaperAnalysisResult GetAnalyze(UploadFile file, string titles, string paperName, string refsName, ResultScoreSettings settings)
+        public PaperAnalysisResult GetAnalyze(UploadFile file, string titles, string paperName, string refsName, string keywords, ResultScoreSettings settings)
         {
             if (string.IsNullOrEmpty(file?.FileName))
             {
@@ -29,7 +30,7 @@ namespace PaperAnalyzer.Service
 
             var text = extractor.ExtractTextFromFileStream(file.DataStream);
 
-            var result = _paperAnalyzer.ProcessTextWithResult(text, titles, paperName, refsName, settings);
+            var result = _paperAnalyzer.ProcessTextWithResult(text, titles, paperName, refsName, keywords, settings);
 
             return result;
         }

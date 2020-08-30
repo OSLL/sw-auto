@@ -110,12 +110,6 @@
             <label for="UseOfPersonalPronouns">Использовать гибкую систему оценивания:</label>
             <input type="checkbox" id="UseOfPersonalPronouns" asp-for="UseOfPersonalPronounsGradingTypeVM" onclick="checkboxChange()" />
         </div>
-        <div id="UseOfPersonalPronounsFine" style="display: block">
-            <h5>
-                Штраф
-            </h5>
-            <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
-        </div>
         @if (Model.UseOfPersonalPronounsGradingTypeVM)
         {
             
@@ -130,6 +124,12 @@
                     </li>
                 }
             </div>
+            <div id="UseOfPersonalPronounsFine" style="display: none">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
+            </div>
         }
         else
         {
@@ -143,6 +143,12 @@
                         @Html.EditorFor(m => m.UseOfPersonalPronounsGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="UseOfPersonalPronounsFine" style="display: block">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
             </div>
         }
     </div>
@@ -160,12 +166,6 @@
             <label for="SourceNotReferenced">Использовать гибкую систему оценивания:</label>
             <input type="checkbox" id="SourceNotReferenced" asp-for="SourceNotReferencedGradingTypeVM" onclick="checkboxChange()" />
         </div>
-        <div id="SourceNotReferencedFine" style="display: block">
-            <h5>
-                Штраф
-            </h5>
-            <input type="text" asp-for="SourceNotReferencedErrorCost" />
-        </div>
         @if (Model.UseOfPersonalPronounsGradingTypeVM)
         {
             <div id="SourceNotReferencedScale" style="display: block">
@@ -178,6 +178,12 @@
                         @Html.EditorFor(m => m.SourceNotReferencedGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="SourceNotReferencedFine" style="display: none">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="SourceNotReferencedErrorCost" />
             </div>
         }
         else
@@ -192,6 +198,12 @@
                         @Html.EditorFor(m => m.SourceNotReferencedGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="SourceNotReferencedFine" style="display: block">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="SourceNotReferencedErrorCost" />
             </div>
         }
     </div>
@@ -209,12 +221,6 @@
             <label for="ShortSection">Использовать гибкую систему оценивания:</label>
             <input type="checkbox" id="ShortSection" asp-for="ShortSectionGradingTypeVM" onclick="checkboxChange()" />
         </div>
-        <div id="ShortSectionFine" style="display: block">
-            <h5>
-                Штраф
-            </h5>
-            <input type="text" asp-for="ShortSectionErrorCost" />
-        </div>
         @if (Model.UseOfPersonalPronounsGradingTypeVM)
         {
             <div id="ShortSectionScale" style="display: block">
@@ -227,6 +233,12 @@
                         @Html.EditorFor(m => m.ShortSectionGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="ShortSectionFine" style="display: none">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="ShortSectionErrorCost" />
             </div>
         }
         else
@@ -241,6 +253,12 @@
                         @Html.EditorFor(m => m.ShortSectionGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="ShortSectionFine" style="display: block">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="ShortSectionErrorCost" />
             </div>
         }
     </div>
@@ -258,12 +276,6 @@
             <label for="PictureNotReferenced">Использовать гибкую систему оценивания:</label>
             <input type="checkbox" id="PictureNotReferenced" asp-for="PictureNotReferencedGradingTypeVM" onclick="checkboxChange()" />
         </div>
-        <div id="PictureNotReferencedFine" style="display: block">
-            <h5>
-                Штраф
-            </h5>
-            <input type="text" asp-for="PictureNotReferencedErrorCost" />
-        </div>
         @if (Model.UseOfPersonalPronounsGradingTypeVM)
         {
             <div id="PictureNotReferencedScale" style="display: block">
@@ -276,6 +288,12 @@
                         @Html.EditorFor(m => m.PictureNotReferencedGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="PictureNotReferencedFine" style="display: none">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="PictureNotReferencedErrorCost" />
             </div>
         }
         else
@@ -290,6 +308,12 @@
                         @Html.EditorFor(m => m.PictureNotReferencedGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="PictureNotReferencedFine" style="display: block">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="PictureNotReferencedErrorCost" />
             </div>
         }
     </div>
@@ -307,12 +331,6 @@
             <label for="TableNotReferenced">Использовать гибкую систему оценивания:</label>
             <input type="checkbox" id="TableNotReferenced" asp-for="TableNotReferencedGradingTypeVM" onclick="checkboxChange()" />
         </div>
-        <div id="TableNotReferencedFine" style="display: block">
-            <h5>
-                Штраф
-            </h5>
-            <input type="text" asp-for="TableNotReferencedErrorCost" />
-        </div>
         @if (Model.UseOfPersonalPronounsGradingTypeVM)
         {
             <div id="TableNotReferencedScale" style="display: block">
@@ -325,6 +343,12 @@
                         @Html.EditorFor(m => m.TableNotReferencedGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="TableNotReferencedFine" style="display: none">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="TableNotReferencedErrorCost" />
             </div>
         }
         else
@@ -339,6 +363,12 @@
                         @Html.EditorFor(m => m.TableNotReferencedGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="TableNotReferencedFine" style="display: block">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="TableNotReferencedErrorCost" />
             </div>
         }
     </div>
@@ -356,12 +386,6 @@
             <label for="ForbiddenWords">Использовать гибкую систему оценивания:</label>
             <input type="checkbox" id="ForbiddenWords" asp-for="ForbiddenWordsGradingTypeVM" onclick="checkboxChange()" />
         </div>
-        <div id="ForbiddenWordsFine" style="display: block">
-            <h5>
-                Штраф
-            </h5>
-            <input type="text" asp-for="ForbiddenWordsErrorCost" />
-        </div>
         @if (Model.UseOfPersonalPronounsGradingTypeVM)
         {
             <div id="ForbiddenWordsScale" style="display: block">
@@ -374,6 +398,12 @@
                         @Html.EditorFor(m => m.ForbiddenWordsGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="ForbiddenWordsFine" style="display: none">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="ForbiddenWordsErrorCost" />
             </div>
         }
         else
@@ -388,6 +418,12 @@
                         @Html.EditorFor(m => m.ForbiddenWordsGrading[i].Value)
                     </li>
                 }
+            </div>
+            <div id="ForbiddenWordsFine" style="display: block">
+                <h5>
+                    Штраф
+                </h5>
+                <input type="text" asp-for="ForbiddenWordsErrorCost" />
             </div>
         }
     </div>

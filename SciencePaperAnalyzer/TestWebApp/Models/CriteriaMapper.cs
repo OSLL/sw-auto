@@ -39,9 +39,9 @@ namespace WebPaperAnalyzer.Models
                 },
                 KeywordsMentioning = new BoundedCriteria
                 {
-                    Weight = criteria.ZipfFactor,
-                    LowerBound = criteria.ZipfFactorLowerBound,
-                    UpperBound = criteria.ZipfFactorUpperBound,
+                    Weight = criteria.KeywordsMentioningFactor,
+                    LowerBound = 0,
+                    UpperBound = 0,
                 },
                 UseOfPersonalPronounsCost = criteria.UseOfPersonalPronounsCost,
                 UseOfPersonalPronounsErrorCost = criteria.UseOfPersonalPronounsErrorCost,

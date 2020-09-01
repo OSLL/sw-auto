@@ -38,7 +38,7 @@ namespace PaperAnalyzer
             var missingKeywords = keywordMarks.Where((kv) => kv.Value.Count == 0).ToList();
             var isSatisfied = missingKeywords.Count == 0;
             var keyWordsReport = new StringBuilder();
-            foreach(var kv in missingKeywords)
+            foreach (var kv in missingKeywords)
             {
                 keyWordsReport.Append($"{kv.Key}: отсутствует\n");
             }
@@ -92,7 +92,7 @@ namespace PaperAnalyzer
                         if (i + offset < sentence.Length)
                         {
                             siTemp.Add(sentence[i + offset].startIndex);
-                            if (keyword.Key.ToUpper()==keyword.Key)
+                            if (keyword.Key.ToUpper() == keyword.Key)
                             {
                                 if (keyword.Key == sentence[i + offset].valueOriginal)
                                 {
@@ -100,7 +100,8 @@ namespace PaperAnalyzer
                                     continue;
                                 }
                                 else break;
-                            }else
+                            }
+                            else
                             if (sentence[i + offset].morphology.IsEmptyNormalForm() || w.morphology.IsEmptyNormalForm())
                             {
                                 var common_length = Math.Min(sentence[i + offset].valueOriginal.Length, w.valueOriginal.Length);

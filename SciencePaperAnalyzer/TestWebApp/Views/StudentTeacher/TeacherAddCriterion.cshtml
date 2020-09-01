@@ -12,7 +12,13 @@
         margin-bottom: -.6em;
         right: -.3em;
     }
-
+    .bound-slider {
+        height: 150px;
+        margin: 10px
+    }
+    .bound-txt{
+        width: 50px;
+    }
     .weight-sliders {
         height: calc(100% - 100px);
         width: 20px;
@@ -254,6 +260,38 @@
                                     <input class="cost-textbox d-none" type="text" asp-for="TableNotReferencedErrorCost" />
                                 </div>
                             </div>
+
+
+
+                            <div class="criterion-add-submit" style="margin-bottom: 3%">
+                                <h3>
+                                    abcxyz
+                                </h3>
+                                <div class="weight-container">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="error-cost">
+                                        <div class="bounds-slider my-3" step="0.1"></div>
+                                        <input class="txt-value" type="text"/>
+                                        <div class="cost-sliders d-flex flex-row">
+
+                                        </div>
+                                        <input type="button" value="+" />
+                                        <input type="button" value="-" />
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
                             <div class="criterion-add-submit" style="margin-bottom: 3%">
                                 <h3>
                                     Запрещенные словари
@@ -496,5 +534,106 @@
                 }
             });
         });
+    </script>
+
+    <script>
+        // COST-BOUNDS-SLIDERS HANDLE
+        // create sliders for errors' cost's bounds
+        //orientation: "vertical",
+        // .data('vanderleeLimitslider')
+        $('.error-cost').each(function (index) {
+            let boundsSlider = $(this).children('.bounds-slider');
+            let txtValue = $(this).children('.txt-value');
+            let divCostSliders = $(this).children('div.cost-sliders');
+            let btnPlus = $(this).children("input[value='+']");
+            let btnMinus = $(this).children("input[value='-']");
+
+            boundsSlider.limitslider({
+                min: 0,
+                max: 20,
+                left: 0,
+                right: 20,
+                gap: 0.5,
+                step: 0.5,
+                label: true,
+                values: [0, 1.5],
+                slide: function (event, ui) {
+                    //$txtCost.val(ui.values[0]);
+                    //console.log(ui)
+                },
+                showRanges: true
+            });
+
+            function addBound(bound, index, min = 0, max = 20, defaultValue = 0) {
+                let sliderGroup = $("<div class='d-flex flex-column'><span></span><div class='bound-slider'></div><input type='text' class='bound-txt' /></div>").appendTo(divCostSliders)
+                let spanBound = sliderGroup.children('span').first();
+                spanBound.html(bound)
+                boundsSlider.on('limitsliderchange', function (event) {
+                    spanBound.html($(event.target).limitslider('values')[index])
+                })
+                let slider = sliderGroup.children('div.bound-slider')
+                slider.limitslider({
+                    orientation: "vertical",
+                    min: min,
+                    max: max,
+                    left: min,
+                    right: max,
+                    step: 0.5,
+                    label: true,
+                    values: [defaultValue],
+                    slide: function (event, ui) {
+                        console.log(event)
+                        //$txtCost.val(ui.values[0]);
+                        //console.log(ui)
+                    },
+                    showRanges: true,
+                    range: [true, false]
+                });
+            }
+
+            boundsSlider.limitslider('values').forEach((bound, i) => {
+                addBound(bound, i)
+            })
+
+            btnPlus.on('click', () => {
+                let currentValues = boundsSlider.limitslider('values')
+                let gap = boundsSlider.limitslider('option').gap;
+                let bound = currentValues[currentValues.length - 1] + gap;
+                let index = currentValues.length;
+                boundsSlider.limitslider('insert', index, currentValues[index - 1] + gap);
+                addBound(bound,index)
+            })
+
+            btnMinus.on('click', () => {
+                let currentValues = boundsSlider.limitslider('values')
+                let index = currentValues.length;
+                divCostSliders.children()[index-1].remove();
+                boundsSlider.limitslider('remove', index-1);
+            })
+
+            //let $txtCost = $('#' + $(this).attr('txtCost'))
+            //let step = $(this).attr('step')
+            //step = step != undefined ? parseFloat(step) : 0.1;
+            //let min = 0;
+            //let max = 20;
+            //let slider = $(this).limitslider({
+            //    min: min,
+            //    max: max,
+            //    left: min,
+            //    right: max,
+            //    step: step,
+            //    label: true,
+            //    values: [$txtCost.val()],
+            //    slide: function (event, ui) {
+            //        $txtCost.val(ui.values[0]);
+            //    },
+            //    showRanges: true,
+            //    ranges: [true, false]
+            //});
+            //// update slider values when type in textbox, only needed if (2) is enabled (textboxes are shown)
+            //$txtCost.on('blur', function (event) {
+            //    slider.data('vanderleeLimitslider')._slide(event, 0, parseFloat(event.target.value));
+            //})
+        })
     </script>
 }

@@ -1,20 +1,21 @@
 @using WebPaperAnalyzer.Models
+@using AnalyzeResults.Settings
 @model WebPaperAnalyzer.ViewModels.AddCriterion
 @{
     ViewBag.Title = "Добавление нового набора критериев";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <input type="button" class="upload-form2" value="Назад" onclick="window.location.href = '@Url.Action("TeacherMainPage", "StudentTeacher")';" />
-
-<div class="inline-flex-class">
-    <form asp-action="TeacherAddCriterion" asp-controller="StudentTeacher" style="width: 100%">
+@{
+    <div class="inline-flex-class">
+        <form asp-action="TeacherAddCriterion" asp-controller="StudentTeacher" style="width: 100%">
         <h2>Добавление нового набора критериев</h2>
         <div class="criterion-add-submit">
             <div>
                 <h3>
                     Название
                 </h3>
-                <input type="text" asp-for="Name" />
+                <input type="text" asp-for="Name"/>
             </div>
             <div>
                 <h3>
@@ -26,7 +27,7 @@
                 <h3>
                     Максимальная оценка за статью
                 </h3>
-                <input type="text" asp-for="MaxScore" />
+                <input type="text" asp-for="MaxScore"/>
             </div>
         </div>
         <div class="criterion-add-edit">
@@ -36,20 +37,20 @@
             <h5>
                 Вес критерия
             </h5>
-            <input type="text" asp-for="WaterCriterionFactor" />
+            <input type="text" asp-for="WaterCriterionFactor"/>
 
             <div class="criterion-add-bounds">
                 <div>
                     <h5>
                         Нижняя граница
                     </h5>
-                    <input type="text" asp-for="WaterCriterionLowerBound" />
+                    <input type="text" asp-for="WaterCriterionLowerBound"/>
                 </div>
                 <div>
                     <h5>
                         Верхняя граница
                     </h5>
-                    <input type="text" asp-for="WaterCriterionUpperBound" />
+                    <input type="text" asp-for="WaterCriterionUpperBound"/>
                 </div>
             </div>
         </div>
@@ -60,20 +61,20 @@
             <h5>
                 Вес критерия
             </h5>
-            <input type="text" asp-for="KeyWordsCriterionFactor" />
+            <input type="text" asp-for="KeyWordsCriterionFactor"/>
 
             <div class="criterion-add-bounds">
                 <div>
                     <h5>
                         Нижняя граница
                     </h5>
-                    <input type="text" asp-for="KeyWordsCriterionLowerBound" />
+                    <input type="text" asp-for="KeyWordsCriterionLowerBound"/>
                 </div>
                 <div>
                     <h5>
                         Верхняя граница
                     </h5>
-                    <input type="text" asp-for="KeyWordsCriterionUpperBound" />
+                    <input type="text" asp-for="KeyWordsCriterionUpperBound"/>
                 </div>
             </div>
         </div>
@@ -84,20 +85,20 @@
             <h5>
                 Вес критерия
             </h5>
-            <input type="text" asp-for="ZipfFactor" />
+            <input type="text" asp-for="ZipfFactor"/>
 
             <div class="criterion-add-bounds">
                 <div>
                     <h5>
                         Нижняя граница
                     </h5>
-                    <input type="text" asp-for="ZipfFactorLowerBound" />
+                    <input type="text" asp-for="ZipfFactorLowerBound"/>
                 </div>
                 <div>
                     <h5>
                         Верхняя граница
                     </h5>
-                    <input type="text" asp-for="ZipfFactorUpperBound" />
+                    <input type="text" asp-for="ZipfFactorUpperBound"/>
                 </div>
             </div>
         </div>
@@ -118,11 +119,28 @@
                 <h5>
                     Вес критерия
                 </h5>
-                <input type="text" asp-for="UseOfPersonalPronounsCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
+                <input type="text" asp-for="UseOfPersonalPronounsCost"/>
+                <div>
+                    <label for="UseOfPersonalPronouns">Использовать гибкую систему оценивания:</label>
+                    <input type="checkbox" id="UseOfPersonalPronouns" asp-for="UseOfPersonalPronounsGradingTypeVM" onclick="checkboxChange()"/>
+                </div>
+                <div id="UseOfPersonalPronounsFine" style="display: block">
+                    <h5>
+                        Штраф
+                    </h5>
+                    <input type="text" asp-for="UseOfPersonalPronounsErrorCost"/>
+                </div>
+                <div id="UseOfPersonalPronounsScale" style="display: none">
+                    @for (int i = 0; i < Model.UseOfPersonalPronounsGrading.Count; i++)
+                    {
+                        <li style="flex-direction: column">
+                            @Html.LabelFor(m => m.UseOfPersonalPronounsGrading[i].Boarder)
+                            @Html.EditorFor(m => m.UseOfPersonalPronounsGrading[i].Boarder)
+                            @Html.LabelFor(m => m.UseOfPersonalPronounsGrading[i].Value)
+                            @Html.EditorFor(m => m.UseOfPersonalPronounsGrading[i].Value)
+                        </li>
+                    }
+                </div>
             </div>
         </div>
         <div class="criterion-add-submit">
@@ -133,11 +151,28 @@
                 <h5>
                     Вес критерия
                 </h5>
-                <input type="text" asp-for="SourceNotReferencedCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="SourceNotReferencedErrorCost" />
+                <input type="text" asp-for="SourceNotReferencedCost"/>
+                <div>
+                    <label for="SourceNotReferenced">Использовать гибкую систему оценивания:</label>
+                    <input type="checkbox" id="SourceNotReferenced" asp-for="SourceNotReferencedGradingTypeVM" onclick="checkboxChange()"/>
+                </div>
+                <div id="SourceNotReferencedFine" style="display: block">
+                    <h5>
+                        Штраф
+                    </h5>
+                    <input type="text" asp-for="SourceNotReferencedErrorCost"/>
+                </div>
+                <div id="SourceNotReferencedScale" style="display: none">
+                    @for (int i = 0; i < Model.SourceNotReferencedGrading.Count; i++)
+                    {
+                        <li style="flex-direction: column">
+                            @Html.LabelFor(m => m.SourceNotReferencedGrading[i].Boarder)
+                            @Html.EditorFor(m => m.SourceNotReferencedGrading[i].Boarder)
+                            @Html.LabelFor(m => m.SourceNotReferencedGrading[i].Value)
+                            @Html.EditorFor(m => m.SourceNotReferencedGrading[i].Value)
+                        </li>
+                    }
+                </div>
             </div>
         </div>
         <div class="criterion-add-submit">
@@ -148,11 +183,28 @@
                 <h5>
                     Вес критерия
                 </h5>
-                <input type="text" asp-for="ShortSectionCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="ShortSectionErrorCost" />
+                <input type="text" asp-for="ShortSectionCost"/>
+                <div>
+                    <label for="ShortSection">Использовать гибкую систему оценивания:</label>
+                    <input type="checkbox" id="ShortSection" asp-for="ShortSectionGradingTypeVM" onclick="checkboxChange()"/>
+                </div>
+                <div id="ShortSectionFine" style="display: block">
+                    <h5>
+                        Штраф
+                    </h5>
+                    <input type="text" asp-for="ShortSectionErrorCost"/>
+                </div>
+                <div id="ShortSectionScale" style="display: none">
+                    @for (int i = 0; i < Model.ShortSectionGrading.Count; i++)
+                    {
+                        <li style="flex-direction: column">
+                            @Html.LabelFor(m => m.ShortSectionGrading[i].Boarder)
+                            @Html.EditorFor(m => m.ShortSectionGrading[i].Boarder)
+                            @Html.LabelFor(m => m.ShortSectionGrading[i].Value)
+                            @Html.EditorFor(m => m.ShortSectionGrading[i].Value)
+                        </li>
+                    }
+                </div>
             </div>
         </div>
         <div class="criterion-add-submit">
@@ -163,11 +215,28 @@
                 <h5>
                     Вес критерия
                 </h5>
-                <input type="text" asp-for="PictureNotReferencedCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="PictureNotReferencedErrorCost" />
+                <input type="text" asp-for="PictureNotReferencedCost"/>
+                <div>
+                    <label for="PictureNotReferenced">Использовать гибкую систему оценивания:</label>
+                    <input type="checkbox" id="PictureNotReferenced" asp-for="PictureNotReferencedGradingTypeVM" onclick="checkboxChange()"/>
+                </div>
+                <div id="PictureNotReferencedFine" style="display: block">
+                    <h5>
+                        Штраф
+                    </h5>
+                    <input type="text" asp-for="PictureNotReferencedErrorCost"/>
+                </div>
+                <div id="PictureNotReferencedScale" style="display: none">
+                    @for (int i = 0; i < Model.PictureNotReferencedGrading.Count; i++)
+                    {
+                        <li style="flex-direction: column">
+                            @Html.LabelFor(m => m.PictureNotReferencedGrading[i].Boarder)
+                            @Html.EditorFor(m => m.PictureNotReferencedGrading[i].Boarder)
+                            @Html.LabelFor(m => m.PictureNotReferencedGrading[i].Value)
+                            @Html.EditorFor(m => m.PictureNotReferencedGrading[i].Value)
+                        </li>
+                    }
+                </div>
             </div>
         </div>
         <div class="criterion-add-submit" style="margin-bottom: 3%">
@@ -178,11 +247,28 @@
                 <h5>
                     Вес критерия
                 </h5>
-                <input type="text" asp-for="TableNotReferencedCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="TableNotReferencedErrorCost" />
+                <input type="text" asp-for="TableNotReferencedCost"/>
+                <div>
+                    <label for="TableNotReferenced">Использовать гибкую систему оценивания:</label>
+                    <input type="checkbox" id="TableNotReferenced" asp-for="TableNotReferencedGradingTypeVM" onclick="checkboxChange()"/>
+                </div>
+                <div id="TableNotReferencedFine" style="display: block">
+                    <h5>
+                        Штраф
+                    </h5>
+                    <input type="text" asp-for="TableNotReferencedErrorCost"/>
+                </div>
+                <div id="TableNotReferencedScale" style="display: none">
+                    @for (int i = 0; i < Model.TableNotReferencedGrading.Count; i++)
+                    {
+                        <li style="flex-direction: column">
+                            @Html.LabelFor(m => m.TableNotReferencedGrading[i].Boarder)
+                            @Html.EditorFor(m => m.TableNotReferencedGrading[i].Boarder)
+                            @Html.LabelFor(m => m.TableNotReferencedGrading[i].Value)
+                            @Html.EditorFor(m => m.TableNotReferencedGrading[i].Value)
+                        </li>
+                    }
+                </div>
             </div>
         </div>
         <div class="criterion-add-submit" style="margin-bottom: 3%">
@@ -193,11 +279,28 @@
                 <h5>
                     Вес критерия
                 </h5>
-                <input type="text" asp-for="ForbiddenWordsCost" />
-                <h5>
-                    Штраф
-                </h5>
-                <input type="text" asp-for="ForbiddenWordsErrorCost" />
+                <input type="text" asp-for="ForbiddenWordsCost"/>
+                <div>
+                    <label for="ForbiddenWords">Использовать гибкую систему оценивания:</label>
+                    <input type="checkbox" id="ForbiddenWords" asp-for="ForbiddenWordsGradingTypeVM" onclick="checkboxChange()"/>
+                </div>
+                <div id="ForbiddenWordsFine" style="display: block">
+                    <h5>
+                        Штраф
+                    </h5>
+                    <input type="text" asp-for="ForbiddenWordsErrorCost"/>
+                </div>
+                <div id="ForbiddenWordsScale" style="display: none">
+                    @for (int i = 0; i < Model.ForbiddenWordsGrading.Count; i++)
+                    {
+                        <li style="flex-direction: column">
+                            @Html.LabelFor(m => m.ForbiddenWordsGrading[i].Boarder)
+                            @Html.EditorFor(m => m.ForbiddenWordsGrading[i].Boarder)
+                            @Html.LabelFor(m => m.ForbiddenWordsGrading[i].Value)
+                            @Html.EditorFor(m => m.ForbiddenWordsGrading[i].Value)
+                        </li>
+                    }
+                </div>
             </div>
         </div>
         @for (int i = 0; i < @Model.Dictionaries.Count; i++)
@@ -211,17 +314,103 @@
         <div class="criterion-add-submit">
             <input type="submit" value="Добавить критерий" class="add-button" />
         </div>
-    </form>
+        </form>
 
-    <div style="width: 100%">
-        <h2>Существующие наборы критериев</h2>
-        <input type="button" class="upload-form2" value="Показать критерии добавленные мной" style="width: 30%" onclick="window.location.href='@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = true})';" />
-        @foreach (var criterion in (IEnumerable<ResultCriterion>)ViewBag.Criteria)
-        {
-            <button type="submit" class="upload-form" , onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
-                Критерий: @criterion.Name, Создатель: @criterion.TeacherLogin,
-                Описание: @criterion.Summary
-            </button>
-        }
+        <div style="width: 100%">
+            <h2>Существующие наборы критериев</h2>
+            <input type="button" class="upload-form2" value="Показать критерии добавленные мной" style="width: 30%" onclick="window.location.href = '@Url.Action("TeacherAddCriterion", "StudentTeacher", new {mine = true})';"/>
+            @foreach (var criterion in (IEnumerable<ResultCriterion>) ViewBag.Criteria)
+            {
+                <button type="submit" class="upload-form" , onclick="window.location.href = '@Url.Action("EditDeleteCriterion", "StudentTeacher", new {name = @criterion.Name})';">
+                    Критерий: @criterion.Name, Создатель: @criterion.TeacherLogin,
+                    Описание: @criterion.Summary
+                </button>
+            }
+        </div>
     </div>
-</div>
+}
+<script type="text/javascript">
+    function checkboxChange() {
+        var checkBox = document.getElementById(event.target.id);
+        var fine;
+        var scale;
+        if (event.target.id === "UseOfPersonalPronouns") {
+            fine = document.getElementById("UseOfPersonalPronounsFine");
+            scale = document.getElementById("UseOfPersonalPronounsScale");
+            if (checkBox.checked === true) {
+                fine.style.display = "none";
+                scale.style.display = "block";
+                @Model.UseOfPersonalPronounsGradingTypeVM = true;
+            } else {
+                fine.style.display = "block";
+                scale.style.display = "none";
+                @Model.UseOfPersonalPronounsGradingTypeVM = false;
+            }
+        }
+        if (event.target.id === "SourceNotReferenced") {
+            fine = document.getElementById("SourceNotReferencedFine");
+            scale = document.getElementById("SourceNotReferencedScale");
+            if (checkBox.checked === true) {
+                fine.style.display = "none";
+                scale.style.display = "block";
+                @Model.UseOfPersonalPronounsGradingTypeVM = true;
+            } else {
+                fine.style.display = "block";
+                scale.style.display = "none";
+                @Model.UseOfPersonalPronounsGradingTypeVM = false;
+            }
+        }
+        if (event.target.id === "ShortSection") {
+            fine = document.getElementById("ShortSectionFine");
+            scale = document.getElementById("ShortSectionScale");
+            if (checkBox.checked === true) {
+                fine.style.display = "none";
+                scale.style.display = "block";
+                @Model.UseOfPersonalPronounsGradingTypeVM = true;
+            } else {
+                fine.style.display = "block";
+                scale.style.display = "none";
+                @Model.UseOfPersonalPronounsGradingTypeVM = false;
+            }
+        }
+        if (event.target.id === "PictureNotReferenced") {
+            fine = document.getElementById("PictureNotReferencedFine");
+            scale = document.getElementById("PictureNotReferencedScale");
+            if (checkBox.checked === true) {
+                fine.style.display = "none";
+                scale.style.display = "block";
+                @Model.UseOfPersonalPronounsGradingTypeVM = true;
+            } else {
+                fine.style.display = "block";
+                scale.style.display = "none";
+                @Model.UseOfPersonalPronounsGradingTypeVM = false;
+            }
+        }
+        if (event.target.id === "TableNotReferenced") {
+            fine = document.getElementById("TableNotReferencedFine");
+            scale = document.getElementById("TableNotReferencedScale");
+            if (checkBox.checked === true) {
+                fine.style.display = "none";
+                scale.style.display = "block";
+                @Model.UseOfPersonalPronounsGradingTypeVM = true;
+            } else {
+                fine.style.display = "block";
+                scale.style.display = "none";
+                @Model.UseOfPersonalPronounsGradingTypeVM = false;
+            }
+        }
+        if (event.target.id === "ForbiddenWords") {
+            fine = document.getElementById("ForbiddenWordsFine");
+            scale = document.getElementById("ForbiddenWordsScale");
+            if (checkBox.checked === true) {
+                fine.style.display = "none";
+                scale.style.display = "block";
+                @Model.UseOfPersonalPronounsGradingTypeVM = true;
+            } else {
+                fine.style.display = "block";
+                scale.style.display = "none";
+                @Model.UseOfPersonalPronounsGradingTypeVM = false;
+            }
+        }
+    }
+</script>

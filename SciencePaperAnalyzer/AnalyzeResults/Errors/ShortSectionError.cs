@@ -8,7 +8,7 @@ namespace AnalyzeResults.Errors
     [Serializable]
     public class ShortSectionError : Error
     {
-        public ShortSectionError(Guid sectionId, string sectionName, int sentencesNum, double errorCost, double weight, Dictionary<int, double> grading, GradingType gType)
+        public ShortSectionError(Guid sectionId, string sectionName, int sentencesNum, double errorCost, double weight, List<ScopePair> grading, GradingType gType)
             : base(ErrorType.ShortSection, "Короткий раздел", $"Предложений в разделе \"{sectionName}\": {sentencesNum}",
                   "В разделе меньше трёх предложений. Постарайтесь расширить раздел, либо уберите его.", errorCost, weight, grading, gType)
         {

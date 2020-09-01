@@ -8,7 +8,7 @@ namespace AnalyzeResults.Errors
     [Serializable]
     public class TableNotReferencedError : Error
     {
-        public TableNotReferencedError(int number, double errorCost, double weight, Dictionary<int, double> grading, GradingType gType)
+        public TableNotReferencedError(int number, double errorCost, double weight, List<ScopePair> grading, GradingType gType)
             : base(ErrorType.TableNotReferenced, "Нет ссылки на таблицу", $"Таблица №{number}",
                   "Необходимо хотя бы раз сослаться на каждую таблицу в правильном формате: табл. N", errorCost, weight, grading, gType)
         {

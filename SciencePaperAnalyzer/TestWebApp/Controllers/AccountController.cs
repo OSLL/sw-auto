@@ -75,6 +75,8 @@ namespace TestWebApp.Controllers
 
                     if (user.Role == "teacher")
                         return RedirectToAction("TeacherMainPage", "StudentTeacher");
+                    if (user.Role == "admin")
+                        return RedirectToAction("AdminMainPage", "Admin");
                     return RedirectToAction("Index", "Home");
                 }
             }

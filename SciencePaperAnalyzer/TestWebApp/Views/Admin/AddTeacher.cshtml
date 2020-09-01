@@ -1,0 +1,35 @@
+﻿@using WebPaperAnalyzer.Models
+@model WebPaperAnalyzer.ViewModels.LoginModel
+<div class="inline-flex-class">
+    <div style="width: 100%">
+        @using (Html.BeginForm())
+        {
+            <fieldset>
+                <legend>Добавить преподавателя</legend>
+
+                <p>
+                    Логин <br/>
+                    @Html.EditorFor(model => model.Login)
+                </p>
+
+                <p>
+                    Пароль <br />
+                    @Html.EditorFor(model => model.Password)
+                </p>
+
+                <p>
+                    <input type="submit" value="Добавить" />
+                </p>
+            </fieldset>
+        }
+    </div>
+    <div style="width: 100%">
+        <h2>Существующие учителя</h2>
+        @foreach (var user in (IEnumerable<User>)ViewBag.Teachers)
+        {
+            <button type="submit" class="upload-form">
+                Логин: @user.Login
+            </button>
+        }
+    </div>
+</div>

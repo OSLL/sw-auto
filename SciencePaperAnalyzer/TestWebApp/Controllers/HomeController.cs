@@ -186,6 +186,14 @@ namespace WebPaperAnalyzer.Controllers
             return View(Repository.GetResult(id).Result);
         }
 
+        [HttpGet]
+        [Route("Home/Result/{id}/short")]
+        [Route("Home/ShortResult/{id}")]
+        public IActionResult ShortResult(string id)
+        {
+            return Content(Repository.GetResult(id).Result.GetShortSummary());
+        }
+
         public async Task<IActionResult> Index()
         {
             var criteria = await _context.GetCriteria();

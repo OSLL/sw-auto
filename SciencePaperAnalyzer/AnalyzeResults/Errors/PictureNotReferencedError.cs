@@ -8,7 +8,7 @@ namespace AnalyzeResults.Errors
     [Serializable]
     public class PictureNotReferencedError : Error
     {
-        public PictureNotReferencedError(int number, double errorCost, double weight, Dictionary<int, double> grading, GradingType gType)
+        public PictureNotReferencedError(int number, double errorCost, double weight, List<ScopePair> grading, GradingType gType)
             : base(ErrorType.PictureNotReferenced, "Нет ссылки на рисунок", $"Рисунок №{number}",
                   "Необходимо хотя бы раз сослаться на каждый рисунок в правильном формате: рис. N", errorCost, weight, grading, gType)
         {

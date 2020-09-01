@@ -24,29 +24,36 @@ namespace AnalyzeResults.Settings
         public BoundedCriteria Zipf { get; set; }
         public double UseOfPersonalPronounsCost { get; set; }
         public double UseOfPersonalPronounsErrorCost { get; set; }
-        public Dictionary<int, double> UseOfPersonalPronounsGrading = new Dictionary<int, double>();
+        public List<ScopePair> UseOfPersonalPronounsGrading = new List<ScopePair>();
         public GradingType UseOfPersonalPronounsGradingType { get; set; }
         public double SourceNotReferencedCost { get; set; }
         public double SourceNotReferencedErrorCost { get; set; }
-        public Dictionary<int, double> SourceNotReferencedGrading = new Dictionary<int, double>();
+        public List<ScopePair> SourceNotReferencedGrading = new List<ScopePair>();
         public GradingType SourceNotReferencedGradingType { get; set; }
         public double ShortSectionCost { get; set; }
         public double ShortSectionErrorCost { get; set; }
-        public Dictionary<int, double> ShortSectionGrading = new Dictionary<int, double>();
+        public List<ScopePair> ShortSectionGrading = new List<ScopePair>();
         public GradingType ShortSectionGradingType { get; set; }
         public double PictureNotReferencedCost { get; set; }
         public double PictureNotReferencedErrorCost { get; set; }
-        public Dictionary<int, double> PictureNotReferencedGrading = new Dictionary<int, double>();
+        public List<ScopePair> PictureNotReferencedGrading = new List<ScopePair>();
         public GradingType PictureNotReferencedGradingType { get; set; }
         public double TableNotReferencedCost { get; set; }
         public double TableNotReferencedErrorCost { get; set; }
-        public Dictionary<int, double> TableNotReferencedGrading = new Dictionary<int, double>();
+        public List<ScopePair> TableNotReferencedGrading = new List<ScopePair>();
         public GradingType TableNotReferencedGradingType { get; set; }
         public double MaxScore { get; set; }
         public IEnumerable<ForbiddenWords> ForbiddenWords { get; set; }
         public double ForbiddenWordsCost { get; set; }
         public double ForbiddenWordsErrorCost { get; set; }
-        public Dictionary<int, double> ForbiddenWordsGrading = new Dictionary<int, double>();
+        public List<ScopePair> ForbiddenWordsGrading = new List<ScopePair>();
         public GradingType ForbiddenWordsGradingType { get; set; }
+    }
+
+    [Serializable]
+    public class ScopePair
+    {
+        public int Boarder { get; set; }
+        public int Value { get; set; }
     }
 }

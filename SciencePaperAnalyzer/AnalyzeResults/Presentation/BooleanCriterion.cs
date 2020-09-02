@@ -28,7 +28,7 @@ namespace AnalyzeResults.Presentation
 
         public override string GetStringValue()
         {
-            return Value? "Доволен" : "Неудовлетворен";
+            return Value? "Выполнен" : "Не выполнен";
         }
 
         public override bool IsMet()

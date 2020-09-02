@@ -1,0 +1,29 @@
+﻿@using AnalyzeResults.Errors
+@using AnalyzeResults.Presentation
+@model AnalyzeResults.Presentation.PaperAnalysisResult
+
+<div class="criteria-container">
+    <div class="criteria-header">
+        <div class="criteria-name">Проведенные проверки:</div>
+    </div>
+    <div class="criteria-data">
+        @foreach (NumericalCriterion crit in Model.Criteria.Where(x => (x as NumericalCriterion)?.Factor > 0))
+        {
+            var @res = @crit.IsMet() ? @Math.Round(@crit.Factor, 2) : 0;
+            <div class="criteria-data-row criterion-value">
+                @crit.Name : Набрано @res из @Math.Round(@crit.Factor, 2) баллов
+            </div>
+        }
+        @foreach (var error in Enum.GetValues(typeof(ErrorType)))
+        {
+            var specialError = @Model.Errors.FirstOrDefault(e => e.ErrorType == (ErrorType)error);
+            if (@specialError != null && @specialError.Weight > 0)
+            {
+                var @res = @Model.GetSpecialGrade((ErrorType) error);
+                <div class="criteria-data-row criterion-value">
+                    @specialError.Name : Набрано @res из @Math.Round(@specialError.Weight, 2) баллов
+                </div>
+            }
+        }
+    </div>
+</div>

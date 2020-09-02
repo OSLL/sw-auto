@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using NLog.Fluent;
 using WebPaperAnalyzer.DAL;
 using WebPaperAnalyzer.Models;
@@ -34,14 +36,14 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public IActionResult TeacherMainPage()
         {
             return View();
         }
 
         [HttpGet]
-        [Authorize(Roles ="teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public IActionResult AddDictionary()
         {
             _logger.LogDebug("Received Get request AddDictionary");
@@ -50,7 +52,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> GetDictionaries()
         {
             _logger.LogDebug("Received Get request GetDictionaries");
@@ -82,7 +84,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> AddDictionary(DictionaryModel model)
         {
             _logger.LogDebug("Received Post request AddDictionary");
@@ -119,7 +121,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> TeacherAddCriterion(bool mine)
         {
             _logger.LogDebug("Received Get request AddCriterion");
@@ -131,18 +133,54 @@ namespace TestWebApp.Controllers
             _logger.LogError($"Found {dict.ToList().Count} dictionary");
             //ViewBag.Dicts = dict.Select(d => d.Name).ToList();
             _logger.LogDebug(string.Join(",", dict.Select(d => d.Name).ToList()));
-            var model = new AddCriterion()
+            var model = new AddCriterion
             {
                 Dictionaries = dict.Select(x => new DictionaryCheckBoxModel() {Name = x.Name, IsSelected = false})
                     .ToList(),
+                ForbiddenWordsGradingType = GradingType.ErrorCostSubtraction,
+                ForbiddenWordsGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                TableNotReferencedGradingType = GradingType.ErrorCostSubtraction,
+                TableNotReferencedGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                UseOfPersonalPronounsGradingType = GradingType.ErrorCostSubtraction,
+                UseOfPersonalPronounsGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                PictureNotReferencedGradingType = GradingType.ErrorCostSubtraction,
+                PictureNotReferencedGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                ShortSectionGradingType = GradingType.ErrorCostSubtraction,
+                ShortSectionGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+                SourceNotReferencedGradingType = GradingType.ErrorCostSubtraction,
+                SourceNotReferencedGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList()
             };
+
             return View(model);
         }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
         {
+            Console.WriteLine(model.UseOfPersonalPronounsGrading);
+            Console.WriteLine(model.UseOfPersonalPronounsGrading.Count);
+            Console.WriteLine(model.UseOfPersonalPronounsGradingType);
+            Console.WriteLine(model.UseOfPersonalPronounsGradingTypeVM);
+
             _logger.LogDebug("Received Post request AddCriterion");
             try
             {
@@ -156,7 +194,7 @@ namespace TestWebApp.Controllers
             }
 
             _criteria = await _context.GetCriteria();
-            ResultCriterion criterion = _criteria.FirstOrDefault(u => u.Name == model.Name);
+            ResultCriterion criterion = _criteria?.FirstOrDefault(u => u.Name == model.Name);
             if (criterion == null)
             {
                 criterion = ResultCriterion.FromViewModelToResultCriterion(model, User.Identity.Name);
@@ -166,14 +204,14 @@ namespace TestWebApp.Controllers
         }
         
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public IActionResult TeacherViewResults()
         {
             return View(_results.GetResultsByLogin(User.Identity.Name, true).Where(res => res.StudentLogin != null));
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> EditDeleteCriterion(string name)
         {
             var criterion = _context.GetCriteriaByName(name);
@@ -184,7 +222,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> EditCriterion(AddCriterion editCriterion)
         {
             var result =
@@ -195,7 +233,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> DeleteCriterion(string id)
         {
             await _context.DeleteCriterion(id);
@@ -203,7 +241,7 @@ namespace TestWebApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<FileResult> DownloadDictionary(string name)
 		{
             _logger.LogDebug($"Receive request DownloadDictionary {name}");
@@ -215,7 +253,7 @@ namespace TestWebApp.Controllers
 		}
 
         [HttpGet]
-        [Authorize(Roles = "teacher")]
+        [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> DeleteDictionary(string name)
 		{
             _logger.LogDebug($"Receive request DeleteDictionary {name}");

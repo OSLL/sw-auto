@@ -9,7 +9,7 @@ namespace AnalyzeResults.Errors
     public abstract class Error
     {
         public Error(ErrorType type, string name, string explanation, string tip, double errorCost, double weight,
-                     Dictionary<int, double> grading, GradingType gType)
+                     List<ScopePair> grading, GradingType gType)
         {
             ErrorType = type;
             Name = name;
@@ -40,7 +40,7 @@ namespace AnalyzeResults.Errors
         public double Weight { get; }
 
         [BsonElement("grading")]
-        public Dictionary<int, double> Grading { get; }
+        public List<ScopePair> Grading { get; }
 
         [BsonElement("gradingtype")]
         public GradingType GradingType { get; }

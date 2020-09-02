@@ -4,6 +4,8 @@ using System.Linq;
 using AnalyzeResults.Settings;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace WebPaperAnalyzer.Models
 {
@@ -35,29 +37,41 @@ namespace WebPaperAnalyzer.Models
         public double KeywordsMentioningFactor { get; set; }
         public double UseOfPersonalPronounsCost { get; set; }
         public double UseOfPersonalPronounsErrorCost { get; set; }
-        public Dictionary<int, double> UseOfPersonalPronounsGrading = new Dictionary<int, double>();
+        public List<ScopePair> UseOfPersonalPronounsGrading { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [BsonRepresentation(BsonType.String)]
         public GradingType UseOfPersonalPronounsGradingType { get; set; }
         public double SourceNotReferencedCost { get; set; }
         public double SourceNotReferencedErrorCost { get; set; }
-        public Dictionary<int, double> SourceNotReferencedGrading = new Dictionary<int, double>();
+        public List<ScopePair> SourceNotReferencedGrading { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [BsonRepresentation(BsonType.String)]
         public GradingType SourceNotReferencedGradingType { get; set; }
         public double ShortSectionCost { get; set; }
         public double ShortSectionErrorCost { get; set; }
-        public Dictionary<int, double> ShortSectionGrading = new Dictionary<int, double>();
+        public List<ScopePair> ShortSectionGrading { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [BsonRepresentation(BsonType.String)]
         public GradingType ShortSectionGradingType { get; set; }
         public double PictureNotReferencedCost { get; set; }
         public double PictureNotReferencedErrorCost { get; set; }
-        public Dictionary<int, double> PictureNotReferencedGrading = new Dictionary<int, double>();
+        public List<ScopePair> PictureNotReferencedGrading { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [BsonRepresentation(BsonType.String)]
         public GradingType PictureNotReferencedGradingType { get; set; }
         public double TableNotReferencedCost { get; set; }
         public double TableNotReferencedErrorCost { get; set; }
-        public Dictionary<int, double> TableNotReferencedGrading = new Dictionary<int, double>();
+        public List<ScopePair> TableNotReferencedGrading { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [BsonRepresentation(BsonType.String)]
         public GradingType TableNotReferencedGradingType { get; set; }
         public double MaxScore { get; set; }
         public IEnumerable<ForbiddenWords> ForbiddenWords { get; set; }
         public double ForbiddenWordsCost { get; set; }
         public double ForbiddenWordsErrorCost { get; set; }
-        public Dictionary<int, double> ForbiddenWordsGrading = new Dictionary<int, double>();
+        public List<ScopePair> ForbiddenWordsGrading { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        [BsonRepresentation(BsonType.String)]
         public GradingType ForbiddenWordsGradingType { get; set; }
 
         public string TeacherLogin { get; set; }
@@ -122,17 +136,24 @@ namespace WebPaperAnalyzer.Models
             }
             catch (Exception)
             {
-                criterion.ForbiddenWordDictionary = null;
+                criterion.ForbiddenWordDictionary = new List<string>();
             }
             criterion.ForbiddenWordsCost = model.ForbiddenWordsCost;
             criterion.ForbiddenWordsErrorCost = model.ForbiddenWordsErrorCost;
 
-            criterion.ForbiddenWordsGradingType = GradingType.ErrorCostSubtraction;
-            criterion.TableNotReferencedGradingType = GradingType.ErrorCostSubtraction;
-            criterion.UseOfPersonalPronounsGradingType = GradingType.ErrorCostSubtraction;
-            criterion.PictureNotReferencedGradingType = GradingType.ErrorCostSubtraction;
-            criterion.ShortSectionGradingType = GradingType.ErrorCostSubtraction;
-            criterion.SourceNotReferencedGradingType = GradingType.ErrorCostSubtraction;
+            criterion.ForbiddenWordsGradingType = model.ForbiddenWordsGradingTypeVM ? GradingType.GradingTable : GradingType.ErrorCostSubtraction;
+            criterion.TableNotReferencedGradingType = model.TableNotReferencedGradingTypeVM ? GradingType.GradingTable : GradingType.ErrorCostSubtraction;
+            criterion.UseOfPersonalPronounsGradingType = model.UseOfPersonalPronounsGradingTypeVM ? GradingType.GradingTable : GradingType.ErrorCostSubtraction;
+            criterion.PictureNotReferencedGradingType = model.PictureNotReferencedGradingTypeVM ? GradingType.GradingTable : GradingType.ErrorCostSubtraction;
+            criterion.ShortSectionGradingType = model.ShortSectionGradingTypeVM ? GradingType.GradingTable : GradingType.ErrorCostSubtraction;
+            criterion.SourceNotReferencedGradingType = model.SourceNotReferencedGradingTypeVM ? GradingType.GradingTable : GradingType.ErrorCostSubtraction;
+
+            criterion.ForbiddenWordsGrading = new List<ScopePair>(model.ForbiddenWordsGrading);
+            criterion.TableNotReferencedGrading = new List<ScopePair>(model.TableNotReferencedGrading);
+            criterion.UseOfPersonalPronounsGrading = new List<ScopePair>(model.UseOfPersonalPronounsGrading);
+            criterion.PictureNotReferencedGrading = new List<ScopePair>(model.PictureNotReferencedGrading);
+            criterion.ShortSectionGrading = new List<ScopePair>(model.ShortSectionGrading);
+            criterion.SourceNotReferencedGrading = new List<ScopePair>(model.SourceNotReferencedGrading);
 
             criterion.Recalculate();
 

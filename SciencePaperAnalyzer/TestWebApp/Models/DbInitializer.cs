@@ -46,7 +46,7 @@ namespace WebPaperAnalyzer.Models
                 {
                     Login = login,
                     Password = password,
-                    Role = "teacher"
+                    Role = "admin"
                 });
                 Console.WriteLine("Admin account created:");
                 Console.WriteLine("Login: " + login);

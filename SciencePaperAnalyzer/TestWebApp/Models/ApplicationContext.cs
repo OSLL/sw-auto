@@ -31,7 +31,7 @@ namespace WebPaperAnalyzer.Models
 
         public ApplicationContext(MongoSettings settings)
         {
-            string connectionString = @"mongodb://root:example@localhost:27017";
+            string connectionString = @"mongodb://root:example@mongo:27017";
             MongoClient client = new MongoClient(connectionString);
             IMongoDatabase database = client.GetDatabase("resultsDB");
             Users = database.GetCollection<User>("users");

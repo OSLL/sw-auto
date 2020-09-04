@@ -22,6 +22,10 @@ namespace AnalyzeResults.Settings
         /// Фактор Ципф
         /// </summary>
         public BoundedCriteria Zipf { get; set; }
+        /// <summary>
+        /// Упоминание ключевых слов
+        /// </summary>
+        public BoundedCriteria KeywordsMentioning { get; set; }
         public double UseOfPersonalPronounsCost { get; set; }
         public double UseOfPersonalPronounsErrorCost { get; set; }
         public List<ScopePair> UseOfPersonalPronounsGrading = new List<ScopePair>();

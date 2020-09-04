@@ -36,7 +36,13 @@ namespace WebPaperAnalyzer.Models
                     Weight = criteria.ZipfFactor,
                     LowerBound = criteria.ZipfFactorLowerBound,
                     UpperBound = criteria.ZipfFactorUpperBound,
-                },                
+                },
+                KeywordsMentioning = new BoundedCriteria
+                {
+                    Weight = criteria.KeywordsMentioningFactor,
+                    LowerBound = 0,
+                    UpperBound = 0,
+                },
                 UseOfPersonalPronounsCost = criteria.UseOfPersonalPronounsCost,
                 UseOfPersonalPronounsErrorCost = criteria.UseOfPersonalPronounsErrorCost,
                 UseOfPersonalPronounsGrading = criteria.UseOfPersonalPronounsGrading,

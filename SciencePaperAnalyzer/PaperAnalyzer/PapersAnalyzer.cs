@@ -12,6 +12,7 @@ using AnalyzeResults.Errors;
 using System.Text;
 using AnalyzeResults.Settings;
 using DocumentFormat.OpenXml.Drawing;
+using System.Collections.Immutable;
 
 namespace PaperAnalyzer
 {
@@ -32,6 +33,19 @@ namespace PaperAnalyzer
             _environment = environment;
         }
 
+        private Criterion CreateKeywordMentioningCriterion(Dictionary<string, List<int>> keywordMarks, ResultScoreSettings settings)
+        {
+            var missingKeywords = keywordMarks.Where((kv) => kv.Value.Count == 0).ToList();
+            var isSatisfied = missingKeywords.Count == 0;
+            var keyWordsReport = new StringBuilder();
+            foreach (var kv in missingKeywords)
+            {
+                keyWordsReport.Append($"{kv.Key}: отсутствует\n");
+            }
+            return new BooleanCriterion("Упоминание ключевых слов", isSatisfied, settings.KeywordsMentioning.Weight,
+                        "Каждое ключевое слово из списка должно быть упомянуто хотя бы один раз в тексте работы.",
+                        $"{keyWordsReport}");
+        }
         private Dictionary<string, Word[]> PrepareKeywordsDict(string keywords, char delimiter = ',')
         {
             Dictionary<string, Word[]> result = new Dictionary<string, Word[]>();
@@ -78,7 +92,7 @@ namespace PaperAnalyzer
                         if (i + offset < sentence.Length)
                         {
                             siTemp.Add(sentence[i + offset].startIndex);
-                            if (keyword.Key.ToUpper()==keyword.Key)
+                            if (keyword.Key.ToUpper() == keyword.Key)
                             {
                                 if (keyword.Key == sentence[i + offset].valueOriginal)
                                 {
@@ -86,17 +100,18 @@ namespace PaperAnalyzer
                                     continue;
                                 }
                                 else break;
-                            }else
+                            }
+                            else
                             if (sentence[i + offset].morphology.IsEmptyNormalForm() || w.morphology.IsEmptyNormalForm())
                             {
                                 var common_length = Math.Min(sentence[i + offset].valueOriginal.Length, w.valueOriginal.Length);
                                 // compare original value if normal form not available
-                                if (common_length > 5 && sentence[i + offset].valueOriginal.Substring(0, common_length - 2) != w.valueOriginal.Substring(0, common_length - 2))
+                                if (common_length > 4 && sentence[i + offset].valueOriginal.ToLower().Substring(0, common_length - 2) != w.valueOriginal.ToLower().Substring(0, common_length - 2))
                                 {
                                     break;
                                 }
                                 else
-                                if (common_length <= 5 && sentence[i + offset].valueOriginal != w.valueOriginal)
+                                if (common_length <= 4 && sentence[i + offset].valueOriginal != w.valueOriginal)
                                 {
                                     break;
                                 }
@@ -461,10 +476,12 @@ namespace PaperAnalyzer
                         }
                         else
                         {
+                            // completed extracting title from the text, put the left over of the current "sentence/line" back to the list for further processing
                             if (string.IsNullOrWhiteSpace(paperNameTemp))
                             {
                                 Word[] leftover = newResult[0].Skip(sentence.Words.IndexOf(w)).ToArray();
                                 newResult[0] = leftover;
+                                paperNameWords.AddRange(sentence.Words.Take(sentence.Words.IndexOf(w)));
                             }
                             match = false;
                             break;
@@ -502,6 +519,41 @@ namespace PaperAnalyzer
                     //    section = new Section();
                     //}
                 }
+
+
+                // processing keywords (mark appearance of keywords and store in the dictionary)
+                // loop through r to get keyword in sentence
+                var wholeTextWords = newResult.SelectMany(x => x).ToArray();
+                var keywordInSentence = MarkKeywordInSentence(keywordDict, wholeTextWords);
+                // add sentence's result to text's result
+                foreach (KeyValuePair<string, List<int>> kv in keywordInSentence)
+                {
+                    if (keywordMarks.ContainsKey(kv.Key))
+                    {
+                        keywordMarks[kv.Key].AddRange(kv.Value);
+                    }
+                    else
+                    {
+                        keywordMarks[kv.Key] = kv.Value;
+                    }
+                }
+                // end processing keywords
+
+                // processing paper name (mark appearance of words from paper name and store in the dictionary)
+                var papernameInSentence = MarkKeywordInSentence(paperNameDict, wholeTextWords);
+                foreach (KeyValuePair<string, List<int>> kv in papernameInSentence)
+                {
+                    if (papernameMarks.ContainsKey(kv.Key))
+                    {
+                        papernameMarks[kv.Key].AddRange(kv.Value);
+                    }
+                    else
+                    {
+                        papernameMarks[kv.Key] = kv.Value;
+                    }
+                }
+                // end processing paper name
+
                 foreach (var r in newResult)
                 {
                     var sentence = new SentenceHtml(SentenceType.Basic, r.Select(x => new WordHtml(x.valueOriginal, x.posTaggerOutputType, x.startIndex)));
@@ -526,38 +578,6 @@ namespace PaperAnalyzer
 
                     if (r == newResult.Last())
                         sections.Add(section);
-
-                    // processing keywords
-                    // loop through r and get keyword in sentence
-                    var keywordInSentence = MarkKeywordInSentence(keywordDict, r);
-                    // add sentence's result to text's result
-                    foreach (KeyValuePair<string, List<int>> kv in keywordInSentence)
-                    {
-                        if (keywordMarks.ContainsKey(kv.Key))
-                        {
-                            keywordMarks[kv.Key].AddRange(kv.Value);
-                        }
-                        else
-                        {
-                            keywordMarks[kv.Key] = kv.Value;
-                        }
-                    }
-                    // end processing keywords
-
-                    // processing paper name
-                    var papernameInSentence = MarkKeywordInSentence(paperNameDict, r);
-                    foreach (KeyValuePair<string, List<int>> kv in papernameInSentence)
-                    {
-                        if (papernameMarks.ContainsKey(kv.Key))
-                        {
-                            papernameMarks[kv.Key].AddRange(kv.Value);
-                        }
-                        else
-                        {
-                            papernameMarks[kv.Key] = kv.Value;
-                        }
-                    }
-                    // end processing paper name
 
                     foreach (var word in r)
                     {
@@ -629,6 +649,8 @@ namespace PaperAnalyzer
                 for (int i = 0; i < 10 && i < top10.Count; i++)
                     keyWordsReport.Append($"{top10[i].Key}:   {top10[i].Value} раз\n");
 
+
+                // TODO: add criterion here, value from IsAllKeywordsMentioned
                 var criteria = new List<Criterion>
                 {
                     new NumericalCriterion("Уровень водности", waterLvl,
@@ -645,7 +667,8 @@ namespace PaperAnalyzer
                         settings.Zipf.LowerBound, settings.Zipf.UpperBound, settings.Zipf.Weight,
                         "Значение отклонения текста статьи от идеальной кривой по Ципфу",
                         "Постарайтесь разнообразить текст, добавить связки между разделами, возможно, увеличить количество прилагательных.",
-                        "Постарайтесь увеличить частоту употребления ключевых слов, возможно, снизить количество прилагательных.")
+                        "Постарайтесь увеличить частоту употребления ключевых слов, возможно, снизить количество прилагательных."),
+                    CreateKeywordMentioningCriterion(keywordMarks, settings)
                 };
 
                 var personalPronErrorsWordIds = errors.Where(x => x is UseOfPersonalPronounsError)

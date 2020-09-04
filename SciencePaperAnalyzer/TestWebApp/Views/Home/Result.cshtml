@@ -64,7 +64,7 @@
                         <div class="criteria-name">Проведенные проверки:</div>
                     </div>
                     <div class="criteria-data">
-                        @foreach (NumericalCriterion crit in Model.Criteria.Where(x => (x as NumericalCriterion)?.Factor > 0))
+                        @foreach (Criterion crit in Model.Criteria.Where(x => (x as Criterion)?.Factor > 0))
                         {
                             var @res = @crit.IsMet() ? @Math.Round(@crit.Factor, 2) : 0;
                             <div class="criteria-data-row criterion-value">
@@ -84,7 +84,7 @@
                         }
                     </div>
                 </div>
-                @foreach (NumericalCriterion crit in Model.Criteria.Where(x => (x as NumericalCriterion)?.Factor > 0))
+                @foreach (Criterion crit in Model.Criteria.Where(x => (x as Criterion)?.Factor > 0))
                 {
                     <div class="criteria-container">
                         <div class="criteria-header">

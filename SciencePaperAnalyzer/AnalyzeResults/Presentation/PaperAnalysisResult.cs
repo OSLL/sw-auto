@@ -51,10 +51,10 @@ namespace AnalyzeResults.Presentation
 
         public double GetPaperGrade()
         {
-            var resultScore = Criteria.Where(x => x is NumericalCriterion).Select(crit => (crit as NumericalCriterion).GetGradePart())
+            var resultScore = Criteria.Where(x => x is Criterion).Select(crit => (crit as Criterion).GetGradePart())
                 .Aggregate((result, part) => result + part);
-            var weightTmp = MaxScore - Criteria.Where(x => x is NumericalCriterion)
-                .Sum(crit => (crit as NumericalCriterion).Factor);
+            var weightTmp = MaxScore - Criteria.Where(x => x is Criterion)
+                .Sum(crit => (crit as Criterion).Factor);
 
 
             foreach (var error in Enum.GetValues(typeof(ErrorType)))
@@ -100,7 +100,7 @@ namespace AnalyzeResults.Presentation
         public string GetShortSummary()
         {
             var result = "Проведенные проверки:\n";
-            foreach (NumericalCriterion check in Criteria.Where(x => (x as NumericalCriterion)?.Factor > 0))
+            foreach (Criterion check in Criteria.Where(x => (x as Criterion)?.Factor > 0))
             {
                 var res = check.IsMet() ? Math.Round(check.Factor, 2) : 0;
                 result += $"{check.Name}: Набрано {res} из {Math.Round(check.Factor, 2)} баллов\n";

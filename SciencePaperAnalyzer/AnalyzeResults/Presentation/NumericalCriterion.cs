@@ -13,11 +13,10 @@ namespace AnalyzeResults.Presentation
         public NumericalCriterion(string name, double value, double lowerBound, double upperBound, double factor, string description = "",
             string adviceToLower = "", string adviceToRaise = "",
             IntervalType lowerBoundType = IntervalType.Closed, IntervalType upperBoundType = IntervalType.Closed)
-            : base(name, CriterionType.Numerical, description)
+            : base(name, CriterionType.Numerical, description, factor)
         {
             Interval = new Interval<double>(lowerBound, upperBound, lowerBoundType, upperBoundType);
             Value = value;
-            Factor = factor;
             _adviceToLower = adviceToLower;
             _adviceToRaise = adviceToRaise;
         }
@@ -27,9 +26,6 @@ namespace AnalyzeResults.Presentation
 
         [BsonElement("value")]
         public double Value { get; set; }
-
-        [BsonElement("factor")]
-        public double Factor { get; set; }
 
         public override string GetStringRequirements()
         {

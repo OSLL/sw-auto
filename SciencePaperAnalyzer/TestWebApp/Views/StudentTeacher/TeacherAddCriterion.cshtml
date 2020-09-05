@@ -23,6 +23,10 @@
         width: 50px;
     }
 
+    .criteria-checkbox {
+        width: auto !important;
+    }
+
     .weight-sliders {
         height: calc(100% - 100px);
         width: 20px;
@@ -73,6 +77,7 @@
 
                             <div class="criterion-add-edit">
                                 <h3>
+                                    <input type="checkbox" for="WaterCriterionFactor" class="criteria-checkbox" />
                                     Уровень водности
                                 </h3>
                                 <div class="weight-container d-none">
@@ -104,6 +109,7 @@
                             </div>
                             <div class="criterion-add-edit">
                                 <h3>
+                                    <input type="checkbox" for="KeyWordsCriterionFactor" class="criteria-checkbox" />
                                     Тошнота
                                 </h3>
                                 <div class="weight-container d-none">
@@ -135,6 +141,7 @@
                             </div>
                             <div class="criterion-add-edit">
                                 <h3>
+                                    <input type="checkbox" for="ZipfFactor" class="criteria-checkbox" />
                                     Ципф
                                 </h3>
                                 <div class="weight-container d-none">
@@ -166,6 +173,7 @@
                             </div>
                             <div class="criterion-add-edit">
                                 <h3>
+                                    <input type="checkbox" for="KeywordsMentioningFactor" class="criteria-checkbox" />
                                     Упоминание ключевых слов
                                 </h3>
                                 <div class="weight-container d-none">
@@ -179,6 +187,7 @@
 
                             <div class="criterion-add-submit">
                                 <h3>
+                                    <input type="checkbox" for="UseOfPersonalPronounsCost" class="criteria-checkbox" />
                                     Использование личных местоимений
                                 </h3>
                                 <div class="weight-container d-none">
@@ -215,6 +224,7 @@
 
                             <div class="criterion-add-submit">
                                 <h3>
+                                    <input type="checkbox" for="SourceNotReferencedCost" class="criteria-checkbox" />
                                     Нет ссылки на источник
                                 </h3>
                                 <div class="weight-container d-none">
@@ -251,6 +261,7 @@
 
                             <div class="criterion-add-submit">
                                 <h3>
+                                    <input type="checkbox" for="ShortSectionCost" class="criteria-checkbox" />
                                     Короткий раздел
                                 </h3>
                                 <div class="weight-container d-none">
@@ -285,6 +296,7 @@
                             </div>
                             <div class="criterion-add-submit">
                                 <h3>
+                                    <input type="checkbox" for="PictureNotReferencedCost" class="criteria-checkbox" />
                                     Нет ссылки на рисунок
                                 </h3>
                                 <div class="weight-container d-none">
@@ -319,6 +331,7 @@
                             </div>
                             <div class="criterion-add-submit" style="margin-bottom: 3%">
                                 <h3>
+                                    <input type="checkbox" for="TableNotReferencedCost" class="criteria-checkbox" />
                                     Нет ссылки на таблицу
                                 </h3>
                                 <div class="weight-container d-none">
@@ -355,6 +368,7 @@
 
                             <div class="criterion-add-submit" style="margin-bottom: 3%">
                                 <h3>
+                                    <input type="checkbox" for="ForbiddenWordsCost" class="criteria-checkbox" />
                                     Запрещенные словари
                                 </h3>
                                 <div class="weight-container d-none">
@@ -435,18 +449,38 @@
 @section Scripts {
     <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
     <script>
-        var criteria = ["Уровень водности", "Тошнота", "Ципф", "Упоминание ключевых слов", "Использование личных местоимений",
-            "Нет ссылки на источник", "Короткий раздел", "Нет ссылки на рисунок", "Нет ссылки на таблицу", "Запрещенные словари"].reverse()
 
-        var criteriaInputs = ["WaterCriterionFactor", "KeyWordsCriterionFactor", "ZipfFactor", "KeywordsMentioningFactor", "UseOfPersonalPronounsCost",
-            "SourceNotReferencedCost", "ShortSectionCost", "PictureNotReferencedCost", "TableNotReferencedCost", "ForbiddenWordsCost"].reverse()
-
+        var criteria_all = [
+            { name: "Уровень водности", input: "WaterCriterionFactor", enabled: true },
+            { name: "Тошнота", input: "KeyWordsCriterionFactor", enabled: true },
+            { name: "Ципф", input: "ZipfFactor", enabled: true },
+            { name: "Упоминание ключевых слов", input: "KeywordsMentioningFactor", enabled: true },
+            { name: "Использование личных местоимений", input: "UseOfPersonalPronounsCost", enabled: true },
+            { name: "Нет ссылки на источник", input: "SourceNotReferencedCost", enabled: true },
+            { name: "Короткий раздел", input: "ShortSectionCost", enabled: true },
+            { name: "Нет ссылки на рисунок", input: "PictureNotReferencedCost", enabled: true },
+            { name: "Нет ссылки на таблицу", input: "TableNotReferencedCost", enabled: true },
+            { name: "Запрещенные словари", input: "ForbiddenWordsCost", enabled: true }
+        ].reverse()
 
         $(function () {
+            function updateGroupBackground() {
+                criteria_all.forEach((criterion, index) => {
+                    let input = $('#' + criterion.input)
+                    // change group's background color to gray if weight = 0
+                    let inputGroup = input.parent().parent();
+                    inputGroup.toggleClass('bg-secondary', input.val() == 0 || !criterion.enabled)
+                });
+            }
             // WEIGHT-SLIDERS HANDLE
             // update weight distribution slider when textbox MaxScore changed
-            $('#MaxScore').on('change', function (event) {
-                let maxScore = parseFloat(event.target.value);
+            function initVerticalSlider(eventOrMaxscore, assignedValues = null) {
+                let maxScore = eventOrMaxscore.target ? parseFloat(eventOrMaxscore.target.value) : eventOrMaxscore;
+                let criteria = criteria_all.filter(e => e.enabled)
+                // fill disabled criteria's input box with 0
+                criteria_all.filter(e => !e.enabled).forEach(criterion => {
+                    $('#' + criterion.input).val(0)
+                })
                 if (isNaN(maxScore) || maxScore <= 0) {
                     $('.weight-sliders').limitslider('destroy')
                     $('.weight-sliders').limitslider({
@@ -455,9 +489,9 @@
                     $('.weight-sliders .ui-slider-handle').remove()
                     return
                 }
-                let ranges = Array(11).fill(true)
-                let limits = Array(10).fill().map((x, i) => (i === criteria.length - 1 ? [maxScore, maxScore] : [0, maxScore]));
-                let values = Array(10).fill().map((x, i) => maxScore * (i + 1) / criteria.length);
+                let ranges = Array(criteria.length + 1).fill(true)
+                let limits = Array(criteria.length).fill().map((x, i) => (i === criteria.length - 1 ? [maxScore, maxScore] : [0, maxScore]));
+                let values = assignedValues ? assignedValues : Array(criteria.length).fill().map((x, i) => maxScore * (i + 1) / criteria.length);
                 // destroy old multislider/limitslider and create new one to adapt to max score's change
                 $('.weight-sliders').limitslider('destroy')
                 var sliders = $('.weight-sliders').limitslider({
@@ -471,19 +505,17 @@
                     },
                     step: 0.1,
                     label: function (value, index) {
-                        return `${criteria[index]}: ${this.actualValue(value, index)}`
+                        return `${criteria[index].name}: ${this.actualValue(value, index)}`
                     },
                     slide: function (event, ui) {
                         let index = ui.handleIndex;
                         let values = ui.values;
                         let widget = $('.weight-sliders').data('vanderleeLimitslider')
                         for (let i = 0; i < ui.values.length; i++) {
-                            let input = $('#' + criteriaInputs[i])
+                            let input = $('#' + criteria[i].input)
                             input.val(widget.options.actualValue(values[i], i))
-                            // change group's background color to gray if weight = 0
-                            let inputGroup = input.parent().parent();
-                            inputGroup.toggleClass('bg-secondary', input.val()==0)
                         }
+                        updateGroupBackground();
                         widget._renderRanges()
                         widget._renderLabels()
                         widget._renderTitles()
@@ -495,11 +527,11 @@
                 // fill in initial value for textboxes
                 let widget = $('.weight-sliders').data('vanderleeLimitslider')
                 values.forEach((value, index) => {
-                    $('#' + criteriaInputs[index]).val(widget.options.actualValue(value, index))
+                    $('#' + criteria[index].input).val(widget.options.actualValue(value, index))
                 })
                 // update slider based on input (only needed if (1) is enabled (textboxes are shown))
-                criteriaInputs.forEach(function (inpName, index) {
-                    $("#" + inpName).on('blur', function (event) {
+                criteria.forEach(function (criterion, index) {
+                    $("#" + criterion.input).on('blur', function (event) {
                         let prevVal = index > 0 ? widget.options.values[index - 1] : 0;
                         // update slider
                         widget._slide(event, index, prevVal + parseFloat(event.target.value));
@@ -508,12 +540,55 @@
                         widget._renderTitles()
                         // update inputs according to slider
                         for (let i = 0; i < widget.options.values.length; i++) {
-                            $('#' + criteriaInputs[i]).val(widget.options.actualValue(widget.options.values[i], i))
+                            $('#' + criteria[i].input).val(widget.options.actualValue(widget.options.values[i], i))
                         }
 
                     })
                 })
+                $('.criteria-checkbox').each(function (index) {
+                    let criterionInp = $(this).attr('for');
+                    $(this).prop('checked', parseFloat($('#' + criterionInp).val()) != 0)
+                })
+            }
+            $('#MaxScore').on('change', initVerticalSlider)
+            $('.criteria-checkbox').on('input', function (event) {
+                let isEnabled = event.target.checked;
+                let criterionIndex = criteria_all.findIndex(e => e.input == $(event.target).attr('for'));
+
+                let currentValues = $('.weight-sliders').limitslider('values')
+                if (!isEnabled) {
+                    let enabledCriteria = criteria_all.filter(e => e.enabled)
+                    let disabledIndex = enabledCriteria.findIndex(e => e.input == $(event.target).attr('for'));
+                    if (disabledIndex == enabledCriteria.length - 1) {
+                        if (disabledIndex - 1 >= 0) {
+                            currentValues[disabledIndex - 1] = currentValues[disabledIndex];
+                        }
+                    }
+                    currentValues.splice(disabledIndex, 1);
+                    criteria_all[criterionIndex].enabled = isEnabled;
+                    initVerticalSlider($('#MaxScore').val(), currentValues);
+                } else {
+                    criteria_all[criterionIndex].enabled = isEnabled;
+                    let enabledIndex = criteria_all.filter(e => e.enabled).findIndex(e => e.input == $(event.target).attr('for'));
+
+                    if (enabledIndex == currentValues.length) {
+                        let maxScore = $('#MaxScore').val();
+                        let lower = enabledIndex - 2 < 0 ? parseFloat(maxScore) : currentValues[enabledIndex - 2];
+                        let upper = parseFloat(maxScore)
+                        currentValues.splice(enabledIndex - 1, 0, (lower + upper) / 2.0);
+                        console.log(currentValues)
+                        initVerticalSlider($('#MaxScore').val(), currentValues)
+                    } else {
+                        let lower = enabledIndex - 1 < 0 ? 0 : currentValues[enabledIndex - 1];
+                        let upper = enabledIndex == currentValues.length - 1 ? currentValues[currentValues.length - 1] : currentValues[enabledIndex];
+                        currentValues.splice(enabledIndex, 0, (lower + upper) / 2.0);
+                        initVerticalSlider($('#MaxScore').val(), currentValues)
+                    }
+
+                }
+                updateGroupBackground()
             })
+
 
             // create empty slider at start, when MaxScore is not set
             $('.weight-sliders').limitslider({
@@ -587,7 +662,7 @@
             })
 
             // uncommend line bellow to show weight textboxes (1)
-            //$('.weight-container').toggleClass('d-none',false)
+            //$('.weight-container').toggleClass('d-none', false)
 
             // uncommend line bellow to show bounds textboxes (2)
             //$('.bounds-container').toggleClass('d-none', false)
@@ -620,7 +695,7 @@
         // FLEXIBLE-COST-SLIDERS HANDLE
         $('.error-cost').each(function (index, element) {
             let initialValue = $(this).attr('data-initial-value') // starting value, provided by controller
-            initialValue = JSON.parse(initialValue); 
+            initialValue = JSON.parse(initialValue);
             let targetName = $(this).attr('data-target-name') // target property of the model (to set the name for inputs)
             let boundsSlider = $(this).children('.bounds-slider');
             let divCostSliders = $(this).children('div.cost-sliders');
@@ -678,11 +753,11 @@
                     slider.data('vanderleeLimitslider')._slide(event, 0, parseFloat(event.target.value));
                 })
             }
-            
+
             initialValue.forEach((grading, i) => {
                 addBound(grading.boarder, i, 0, 20, grading.value)
             })
-            
+
             btnPlus.on('click', () => {
                 let currentValues = boundsSlider.limitslider('values')
                 let gap = boundsSlider.limitslider('option').gap;

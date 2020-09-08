@@ -66,9 +66,9 @@
                     <div class="criteria-data">
                         @foreach (Criterion crit in Model.Criteria.Where(x => (x as Criterion)?.Factor > 0))
                         {
-                            var @res = @crit.IsMet() ? @Math.Round(@crit.Factor, 2) : 0;
+                            var @res = @crit.IsMet() ? @crit.Factor : 0;
                             <div class="criteria-data-row criterion-value">
-                                @crit.Name : Набрано @res из @Math.Round(@crit.Factor, 2) баллов
+                                @crit.Name : Набрано @Math.Round(@res, 2) из @Math.Round(@crit.Factor, 2) баллов
                             </div>
                         }
                         @foreach (var error in Enum.GetValues(typeof(ErrorType)))
@@ -76,9 +76,9 @@
                             var specialError = @Model.Errors.FirstOrDefault(e => e.ErrorType == (ErrorType)error);
                             if (@specialError != null && @specialError.Weight > 0)
                             {
-                                var @res = @Model.GetSpecialGrade((ErrorType) error);
+                                var @res = @Model.GetSpecialGrade((ErrorType)error);
                                 <div class="criteria-data-row criterion-value">
-                                    @specialError.Name : Набрано @res из @Math.Round(@specialError.Weight, 2) баллов
+                                    @specialError.Name : Набрано @Math.Round(res, 2) из @Math.Round(@specialError.Weight, 2) баллов
                                 </div>
                             }
                         }
@@ -257,7 +257,7 @@
                                     @Model.Errors.First(x => x.ErrorType == ErrorType.UseOfPersonalPronouns).Name
                                 </div>
                                 <div class="error-button-name">
-                                    Набрано @Model.GetSpecialGrade(ErrorType.UseOfPersonalPronouns) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
+                                    Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.UseOfPersonalPronouns), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
                                 </div>
                                 <div class="error-button-data">
                                     <div class="error-button-data-row italic">
@@ -298,7 +298,7 @@
                                     @Model.Errors.First(x => x.ErrorType == ErrorType.UseOfForbiddenWord).Name
                                 </div>
                                 <div class="error-button-name">
-                                    Набрано @Model.GetSpecialGrade(ErrorType.UseOfForbiddenWord) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
+                                    Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.UseOfForbiddenWord), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
                                 </div>
                                 <div class="error-button-data">
                                     <div class="error-button-data-row italic">
@@ -319,7 +319,7 @@
                                 {
                                     <a class="error-container" wordId="@error.ErrorWord.StartIndex" href="#@error.ErrorWord.StartIndex">
                                         <div class="criteria-data-row italic">
-                                            @error.ErrorWord.Original из словаря @error.DictionaryName
+                                            '@error.ErrorWord.Original' из словаря <b>@error.DictionaryName</b>
                                         </div>
                                     </a>
                                 }
@@ -338,7 +338,7 @@
                                     @Model.Errors.First(x => x.ErrorType == ErrorType.SourceNotReferenced).Name
                                 </div>
                                 <div class="error-button-name">
-                                    Набрано @Model.GetSpecialGrade(ErrorType.SourceNotReferenced) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
+                                    Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.SourceNotReferenced), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
                                 </div>
                                 <div class="error-button-data">
                                     <div class="error-button-data-row italic">
@@ -377,7 +377,7 @@
                                     @Model.Errors.First(x => x.ErrorType == ErrorType.PictureNotReferenced).Name
                                 </div>
                                 <div class="error-button-name">
-                                    Набрано @Model.GetSpecialGrade(ErrorType.PictureNotReferenced) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
+                                    Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.PictureNotReferenced), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
                                 </div>
                                 <div class="error-button-data">
                                     <div class="error-button-data-row italic">
@@ -416,7 +416,7 @@
                                     @Model.Errors.First(x => x.ErrorType == ErrorType.TableNotReferenced).Name
                                 </div>
                                 <div class="error-button-name">
-                                    Набрано @Model.GetSpecialGrade(ErrorType.TableNotReferenced) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
+                                    Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.TableNotReferenced), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
                                 </div>
                                 <div class="error-button-data">
                                     <div class="error-button-data-row italic">
@@ -455,7 +455,7 @@
                                     @Model.Errors.First(x => x.ErrorType == ErrorType.ShortSection).Name
                                 </div>
                                 <div class="error-button-name">
-                                    Набрано @Model.GetSpecialGrade(ErrorType.ShortSection) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
+                                    Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.ShortSection), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
                                 </div>
                                 <div class="error-button-data">
                                     <div class="error-button-data-row italic">

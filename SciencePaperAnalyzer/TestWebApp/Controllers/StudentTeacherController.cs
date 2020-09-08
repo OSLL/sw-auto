@@ -176,6 +176,11 @@ namespace TestWebApp.Controllers
         [Authorize(Roles = "teacher, admin")]
         public async Task<IActionResult> TeacherAddCriterion(AddCriterion model)
         {
+            Console.WriteLine(model.UseOfPersonalPronounsGrading);
+            Console.WriteLine(model.UseOfPersonalPronounsGrading.Count);
+            Console.WriteLine(model.UseOfPersonalPronounsGradingType);
+            Console.WriteLine(model.UseOfPersonalPronounsGradingTypeVM);
+
             _logger.LogDebug("Received Post request AddCriterion");
             try
             {

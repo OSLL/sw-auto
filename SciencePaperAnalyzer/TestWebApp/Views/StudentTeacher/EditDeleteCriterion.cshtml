@@ -1,542 +1,812 @@
 ﻿@using WebPaperAnalyzer.ViewModels
 @model WebPaperAnalyzer.ViewModels.AddCriterion
+@{
+    ViewBag.Title = "Изменение набора критериев";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .ui-slider-vertical .ui-slider-handle {
+        left: auto;
+        margin-left: auto;
+        margin-bottom: -.6em;
+        right: -.3em;
+    }
+
+    .bounded-cost-slider {
+        height: 150px;
+        margin: 10px
+    }
+
+    .cost-txt, .bound-txt {
+        width: 50px;
+    }
+
+    .criteria-checkbox {
+        width: auto !important;
+    }
+
+    .weight-sliders {
+        height: calc(100% - 100px);
+        width: 20px;
+        margin: 50px 10px;
+    }
+
+        .weight-sliders .ui-slider-handle {
+            /*            font-size: 1.3em;*/
+            /*            top: -.4em;*/
+        }
+</style>
 
 <input type="button" value="Назад" onclick="window.location.href = '@Url.Action("TeacherAddCriterion", "StudentTeacher")';" />
 
-<form asp-action="EditCriterion" asp-controller="StudentTeacher">
-    <h3>Изменение набора критериев</h3>
-    <div class="criterion-add-submit">
-        <div>
-            <h3>
-                Название
-            </h3>
-            <input type="text" asp-for="Name" />
-        </div>
-        <div>
-            <h3>
-                Краткое описание
-            </h3>
-            <textarea type="text" asp-for="Summary"></textarea>
-        </div>
-        <div>
-            <h3>
-                Максимальная оценка за статью
-            </h3>
-            <input type="text" asp-for="MaxScore" />
-        </div>
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            Уровень водности
-        </h3>
-        <h5>
-            Вес критерия
-        </h5>
-        <input type="text" asp-for="WaterCriterionFactor" />
+@*<<<<<<< HEAD*@
 
-        <div class="criterion-add-bounds">
-            <div>
-                <h5>
-                    Нижняя граница
-                </h5>
-                <input type="text" asp-for="WaterCriterionLowerBound" />
-            </div>
-            <div>
-                <h5>
-                    Верхняя граница
-                </h5>
-                <input type="text" asp-for="WaterCriterionUpperBound" />
-            </div>
-        </div>
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            Тошнота
-        </h3>
-        <h5>
-            Вес критерия
-        </h5>
-        <input type="text" asp-for="KeyWordsCriterionFactor" />
 
-        <div class="criterion-add-bounds">
-            <div>
-                <h5>
-                    Нижняя граница
-                </h5>
-                <input type="text" asp-for="KeyWordsCriterionLowerBound" />
-            </div>
-            <div>
-                <h5>
-                    Верхняя граница
-                </h5>
-                <input type="text" asp-for="KeyWordsCriterionUpperBound" />
-            </div>
-        </div>
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            Ципф
-        </h3>
-        <h5>
-            Вес критерия
-        </h5>
-        <input type="text" asp-for="ZipfFactor" />
 
-        <div class="criterion-add-bounds">
-            <div>
-                <h5>
-                    Нижняя граница
-                </h5>
-                <input type="text" asp-for="ZipfFactorLowerBound" />
-            </div>
-            <div>
-                <h5>
-                    Верхняя граница
-                </h5>
-                <input type="text" asp-for="ZipfFactorUpperBound" />
-            </div>
-        </div>
-    </div>
-    <div class="criterion-add-edit">
-        <h3>
-            Упоминание ключевых слов
-        </h3>
-        <h5>
-            Вес критерия
-        </h5>
-        <input type="text" asp-for="KeywordsMentioningFactor" />
-    </div>
-    <div class="criterion-add-submit">
-        <div>
-            <h3>
-                Использование личных местоимений
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="UseOfPersonalPronounsCost" />
-            <div>
-                <label for="UseOfPersonalPronouns">Использовать гибкую систему оценивания:</label>
-                <input type="checkbox" id="UseOfPersonalPronouns" asp-for="UseOfPersonalPronounsGradingTypeVM" onclick="checkboxChange()" />
-            </div>
-            @if (Model.UseOfPersonalPronounsGradingTypeVM)
-            {
+<div class="container-fluid h-100 mb-5">
+    <div class="row h-100">
+        <div class="col-md-6 offset-md-1">
+            <form id="EditForm" asp-action="EditCriterion" asp-controller="StudentTeacher">
 
-                <div id="UseOfPersonalPronounsScale" style="display: block">
-                    @for (int i = 0; i < Model.UseOfPersonalPronounsGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.UseOfPersonalPronounsGrading[i].Boarder)
-                            @Html.EditorFor(m => m.UseOfPersonalPronounsGrading[i].Boarder)
-                            @Html.LabelFor(m => m.UseOfPersonalPronounsGrading[i].Value)
-                            @Html.EditorFor(m => m.UseOfPersonalPronounsGrading[i].Value)
-                        </li>
-                    }
+                <div class="container-fluid h-100">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Изменение набора критериев</h2>
+                        </div>
+                    </div>
+                    <div class="row border-top border-dark mt-4 pt-4">
+                        <div class="col">
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    Название
+                                </h3>
+                                <input class="w-100" type="text" asp-for="Name" />
+                                <h3>
+                                    Краткое описание
+                                </h3>
+                                <textarea class="w-100" type="text" asp-for="Summary"></textarea>
+                                <h3>
+                                    Максимальная оценка за статью
+                                </h3>
+                                <input class="w-100" type="text" asp-for="MaxScore" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row h-100 flex-row-reverse border-top border-dark mt-4 pt-4">
+                        <div class="col-10">
+
+                            <div class="criterion-add-edit">
+                                <h3>
+                                    <input type="checkbox" for="WaterCriterionFactor" class="criteria-checkbox" />
+                                    Уровень водности
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="WaterCriterionFactor" />
+                                </div>
+                                <div class="my-3">
+                                    <h5>
+                                        Границы
+                                    </h5>
+                                    <div class="range-slider" txtLowerBound="WaterCriterionLowerBound" txtUpperBound="WaterCriterionUpperBound" min="0" max="50"></div>
+                                </div>
+                                <div class="criterion-add-bounds bounds-container d-none">
+                                    <div>
+                                        <h5>
+                                            Нижняя граница
+                                        </h5>
+                                        <input type="text" asp-for="WaterCriterionLowerBound" />
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            Верхняя граница
+                                        </h5>
+                                        <input type="text" asp-for="WaterCriterionUpperBound" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-edit">
+                                <h3>
+                                    <input type="checkbox" for="KeyWordsCriterionFactor" class="criteria-checkbox" />
+                                    Тошнота
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="KeyWordsCriterionFactor" />
+                                </div>
+                                <div class="my-3">
+                                    <h5>
+                                        Границы
+                                    </h5>
+                                    <div class="range-slider" txtLowerBound="KeyWordsCriterionLowerBound" txtUpperBound="KeyWordsCriterionUpperBound" min="0" max="50"></div>
+                                </div>
+                                <div class="criterion-add-bounds bounds-container d-none">
+                                    <div>
+                                        <h5>
+                                            Нижняя граница
+                                        </h5>
+                                        <input type="text" asp-for="KeyWordsCriterionLowerBound" />
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            Верхняя граница
+                                        </h5>
+                                        <input type="text" asp-for="KeyWordsCriterionUpperBound" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-edit">
+                                <h3>
+                                    <input type="checkbox" for="ZipfFactor" class="criteria-checkbox" />
+                                    Ципф
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="ZipfFactor" />
+                                </div>
+                                <div class="my-3">
+                                    <h5>
+                                        Границы
+                                    </h5>
+                                    <div class="range-slider" txtLowerBound="ZipfFactorLowerBound" txtUpperBound="ZipfFactorUpperBound" min="0" max="50" step="0.5"></div>
+                                </div>
+                                <div class="criterion-add-bounds bounds-container d-none">
+                                    <div>
+                                        <h5>
+                                            Нижняя граница
+                                        </h5>
+                                        <input type="text" asp-for="ZipfFactorLowerBound" />
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            Верхняя граница
+                                        </h5>
+                                        <input type="text" asp-for="ZipfFactorUpperBound" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-edit">
+                                <h3>
+                                    <input type="checkbox" for="KeywordsMentioningFactor" class="criteria-checkbox" />
+                                    Упоминание ключевых слов
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="KeywordsMentioningFactor" />
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    <input type="checkbox" for="UseOfPersonalPronounsCost" class="criteria-checkbox" />
+                                    Использование личных местоимений
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="UseOfPersonalPronounsCost" />
+                                </div>
+                                <div>
+                                    <label for="UseOfPersonalPronounsGradingTypeVM">Использовать гибкую систему оценивания:</label>
+                                    <input type="checkbox" data-toggle-grading asp-for="UseOfPersonalPronounsGradingTypeVM" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="ErrorCostSubtraction @(Model.UseOfPersonalPronounsGradingTypeVM?"d-none":"")">
+                                        <div class="cost-slider my-3" txtCost="UseOfPersonalPronounsErrorCost" step="0.1"></div>
+                                        <input class="cost-textbox d-none" type="text" asp-for="UseOfPersonalPronounsErrorCost" />
+                                    </div>
+                                    <div class="GradingTable @(!Model.UseOfPersonalPronounsGradingTypeVM?"d-none":"")">
+                                        <div class="error-cost" data-target-name="UseOfPersonalPronounsGrading" data-initial-value='@Html.Raw(Json.Serialize(Model.UseOfPersonalPronounsGrading))'>
+                                            <div class="bounds-slider my-3" step="0.1"></div>
+                                            <div class="cost-sliders d-flex flex-row">
+
+                                            </div>
+                                            <input type="button" value="+" />
+                                            <input type="button" value="-" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    <input type="checkbox" for="SourceNotReferencedCost" class="criteria-checkbox" />
+                                    Нет ссылки на источник
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="SourceNotReferencedCost" />
+                                </div>
+                                <div>
+                                    <label for="SourceNotReferencedGradingTypeVM">Использовать гибкую систему оценивания:</label>
+                                    <input type="checkbox" data-toggle-grading asp-for="SourceNotReferencedGradingTypeVM" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="ErrorCostSubtraction @(Model.SourceNotReferencedGradingTypeVM?"d-none":"")">
+                                        <div class="cost-slider my-3" txtCost="SourceNotReferencedErrorCost" step="0.1"></div>
+                                        <input class="cost-textbox d-none" type="text" asp-for="SourceNotReferencedErrorCost" />
+                                    </div>
+                                    <div class="GradingTable @(!Model.SourceNotReferencedGradingTypeVM?"d-none":"")">
+                                        <div class="error-cost" data-target-name="SourceNotReferencedGrading" data-initial-value='@Html.Raw(Json.Serialize(Model.SourceNotReferencedGrading))'>
+                                            <div class="bounds-slider my-3" step="0.1"></div>
+                                            <div class="cost-sliders d-flex flex-row">
+
+                                            </div>
+                                            <input type="button" value="+" />
+                                            <input type="button" value="-" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    <input type="checkbox" for="ShortSectionCost" class="criteria-checkbox" />
+                                    Короткий раздел
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="ShortSectionCost" />
+                                </div>
+                                <div>
+                                    <label for="ShortSectionGradingTypeVM">Использовать гибкую систему оценивания:</label>
+                                    <input type="checkbox" data-toggle-grading asp-for="ShortSectionGradingTypeVM" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="ErrorCostSubtraction @(Model.ShortSectionGradingTypeVM?"d-none":"")">
+                                        <div class="cost-slider my-3" txtCost="ShortSectionErrorCost" step="0.1"></div>
+                                        <input class="cost-textbox d-none" type="text" asp-for="ShortSectionErrorCost" />
+                                    </div>
+                                    <div class="GradingTable @(!Model.ShortSectionGradingTypeVM?"d-none":"")">
+                                        <div class="error-cost" data-target-name="ShortSectionGrading" data-initial-value='@Html.Raw(Json.Serialize(Model.ShortSectionGrading))'>
+                                            <div class="bounds-slider my-3" step="0.1"></div>
+                                            <div class="cost-sliders d-flex flex-row">
+
+                                            </div>
+                                            <input type="button" value="+" />
+                                            <input type="button" value="-" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit">
+                                <h3>
+                                    <input type="checkbox" for="PictureNotReferencedCost" class="criteria-checkbox" />
+                                    Нет ссылки на рисунок
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="PictureNotReferencedCost" />
+                                </div>
+                                <div>
+                                    <label for="PictureNotReferencedGradingTypeVM">Использовать гибкую систему оценивания:</label>
+                                    <input type="checkbox" data-toggle-grading asp-for="PictureNotReferencedGradingTypeVM" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="ErrorCostSubtraction @(Model.PictureNotReferencedGradingTypeVM?"d-none":"")">
+                                        <div class="cost-slider my-3" txtCost="PictureNotReferencedErrorCost" step="0.1"></div>
+                                        <input class="cost-textbox d-none" type="text" asp-for="PictureNotReferencedErrorCost" />
+                                    </div>
+                                    <div class="GradingTable @(!Model.PictureNotReferencedGradingTypeVM?"d-none":"")">
+                                        <div class="error-cost" data-target-name="PictureNotReferencedGrading" data-initial-value='@Html.Raw(Json.Serialize(Model.PictureNotReferencedGrading))'>
+                                            <div class="bounds-slider my-3" step="0.1"></div>
+                                            <div class="cost-sliders d-flex flex-row">
+
+                                            </div>
+                                            <input type="button" value="+" />
+                                            <input type="button" value="-" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit" style="margin-bottom: 3%">
+                                <h3>
+                                    <input type="checkbox" for="TableNotReferencedCost" class="criteria-checkbox" />
+                                    Нет ссылки на таблицу
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="TableNotReferencedCost" />
+                                </div>
+                                <div>
+                                    <label for="TableNotReferencedGradingTypeVM">Использовать гибкую систему оценивания:</label>
+                                    <input type="checkbox" data-toggle-grading asp-for="TableNotReferencedGradingTypeVM" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="ErrorCostSubtraction @(Model.TableNotReferencedGradingTypeVM?"d-none":"")">
+                                        <div class="cost-slider my-3" txtCost="TableNotReferencedErrorCost" step="0.1"></div>
+                                        <input class="cost-textbox d-none" type="text" asp-for="TableNotReferencedErrorCost" />
+                                    </div>
+                                    <div class="GradingTable @(!Model.TableNotReferencedGradingTypeVM?"d-none":"")">
+                                        <div class="error-cost" data-target-name="TableNotReferencedGrading" data-initial-value='@Html.Raw(Json.Serialize(Model.TableNotReferencedGrading))'>
+                                            <div class="bounds-slider my-3" step="0.1"></div>
+                                            <div class="cost-sliders d-flex flex-row">
+
+                                            </div>
+                                            <input type="button" value="+" />
+                                            <input type="button" value="-" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="criterion-add-submit" style="margin-bottom: 3%">
+                                <h3>
+                                    <input type="checkbox" for="ForbiddenWordsCost" class="criteria-checkbox" />
+                                    Запрещенные словари
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="ForbiddenWordsCost" />
+                                </div>
+                                <div>
+                                    <label for="ForbiddenWordsGradingTypeVM">Использовать гибкую систему оценивания:</label>
+                                    <input type="checkbox" data-toggle-grading asp-for="ForbiddenWordsGradingTypeVM" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="ErrorCostSubtraction @(Model.ForbiddenWordsGradingTypeVM?"d-none":"")">
+                                        <div class="cost-slider my-3" txtCost="ForbiddenWordsErrorCost" step="0.1"></div>
+                                        <input class="cost-textbox d-none" type="text" asp-for="ForbiddenWordsErrorCost" />
+                                    </div>
+                                    <div class="GradingTable @(!Model.ForbiddenWordsGradingTypeVM?"d-none":"")">
+                                        <div class="error-cost" data-target-name="ForbiddenWordsGrading" data-initial-value='@Html.Raw(Json.Serialize(Model.ForbiddenWordsGrading))'>
+                                            <div class="bounds-slider my-3" step="0.1"></div>
+                                            <div class="cost-sliders d-flex flex-row">
+
+                                            </div>
+                                            <input type="button" value="+" />
+                                            <input type="button" value="-" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5>
+                                        Словари запрещенных слов
+                                    </h5>
+
+                                    <ul>
+                                        @{
+                                            var dictionaryCheckBoxModel = @Model.ForbiddenWordDictionary.Select(x => new DictionaryCheckBoxModel() { Name = x, IsSelected = true }).ToList();
+                                            @for (int i = 0; i < dictionaryCheckBoxModel.Count(); i++)
+                                            {
+                                                <li style="text-align: left; margin-left: 20%">
+                                                    @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected, true)
+                                                    @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
+                                                    @Html.HiddenFor(m => m.Dictionaries[i].Name)
+                                                </li>
+                                            }
+                                            @for (int i = 0; i < @Model.Dictionaries.Count; i++)
+                                            {
+                                                <li style="text-align: left; margin-left: 20%">
+                                                    @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
+                                                    @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
+                                                    @Html.HiddenFor(m => m.Dictionaries[i].Name)
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="weight-sliders"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="criterion-add-submit">
+                                @if (User.Identity.Name == @Model.TeacherLogin)
+                                {
+                                    <div class="criterion-add-edit">
+                                        <input type="submit" value="Сохранить изменения" class="add-button" />
+                                        <input type="button" class="delete-button" value="Удалить критерий" onclick="window.location.href = '@Url.Action("DeleteCriterion", "StudentTeacher", new {id = @Model.Id})';" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div id="UseOfPersonalPronounsFine" style="display: none">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
-                </div>
-            }
-            else
-            {
-                <div id="UseOfPersonalPronounsScale" style="display: none">
-                    @for (int i = 0; i < Model.UseOfPersonalPronounsGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.UseOfPersonalPronounsGrading[i].Boarder)
-                            @Html.EditorFor(m => m.UseOfPersonalPronounsGrading[i].Boarder)
-                            @Html.LabelFor(m => m.UseOfPersonalPronounsGrading[i].Value)
-                            @Html.EditorFor(m => m.UseOfPersonalPronounsGrading[i].Value)
-                        </li>
-                    }
-                </div>
-                <div id="UseOfPersonalPronounsFine" style="display: block">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="UseOfPersonalPronounsErrorCost" />
-                </div>
-            }
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="TeacherLogin" />
+            </form>
         </div>
     </div>
-    <div class="criterion-add-submit">
-        <div>
-            <h3>
-                Нет ссылки на источник
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="SourceNotReferencedCost" />
-            <div>
-                <label for="SourceNotReferenced">Использовать гибкую систему оценивания:</label>
-                <input type="checkbox" id="SourceNotReferenced" asp-for="SourceNotReferencedGradingTypeVM" onclick="checkboxChange()" />
-            </div>
-            @if (Model.UseOfPersonalPronounsGradingTypeVM)
-            {
-                <div id="SourceNotReferencedScale" style="display: block">
-                    @for (int i = 0; i < Model.SourceNotReferencedGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.SourceNotReferencedGrading[i].Boarder)
-                            @Html.EditorFor(m => m.SourceNotReferencedGrading[i].Boarder)
-                            @Html.LabelFor(m => m.SourceNotReferencedGrading[i].Value)
-                            @Html.EditorFor(m => m.SourceNotReferencedGrading[i].Value)
-                        </li>
+</div>
+
+@section Scripts {
+    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
+    <script>
+
+        var criteria_all = [
+            { name: "Уровень водности", input: "WaterCriterionFactor", enabled: true },
+            { name: "Тошнота", input: "KeyWordsCriterionFactor", enabled: true },
+            { name: "Ципф", input: "ZipfFactor", enabled: true },
+            { name: "Упоминание ключевых слов", input: "KeywordsMentioningFactor", enabled: true },
+            { name: "Использование личных местоимений", input: "UseOfPersonalPronounsCost", enabled: true },
+            { name: "Нет ссылки на источник", input: "SourceNotReferencedCost", enabled: true },
+            { name: "Короткий раздел", input: "ShortSectionCost", enabled: true },
+            { name: "Нет ссылки на рисунок", input: "PictureNotReferencedCost", enabled: true },
+            { name: "Нет ссылки на таблицу", input: "TableNotReferencedCost", enabled: true },
+            { name: "Запрещенные словари", input: "ForbiddenWordsCost", enabled: true }
+        ].reverse()
+
+        $(function () {
+            function updateGroupBackground() {
+                criteria_all.forEach((criterion, index) => {
+                    let input = $('#' + criterion.input)
+                    // change group's background color to gray if weight = 0
+                    let inputGroup = input.parent().parent();
+                    inputGroup.toggleClass('bg-secondary', input.val() == 0 || !criterion.enabled)
+                });
+            }
+            // WEIGHT-SLIDERS HANDLE
+            // update weight distribution slider when textbox MaxScore changed
+            function initVerticalSlider(eventOrMaxscore, assignedValues = null) {
+                let maxScore = eventOrMaxscore.target ? parseFloat(eventOrMaxscore.target.value) : eventOrMaxscore;
+                let criteria = criteria_all.filter(e => e.enabled)
+                // fill disabled criteria's input box with 0
+                criteria_all.filter(e => !e.enabled).forEach(criterion => {
+                    $('#' + criterion.input).val(0)
+                })
+                if (isNaN(maxScore) || maxScore <= 0) {
+                    $('.weight-sliders').limitslider('destroy')
+                    $('.weight-sliders').limitslider({
+                        orientation: "vertical",
+                    });
+                    $('.weight-sliders .ui-slider-handle').remove()
+                    return
+                }
+                let ranges = Array(criteria.length + 1).fill(true)
+                let limits = Array(criteria.length).fill().map((x, i) => (i === criteria.length - 1 ? [maxScore, maxScore] : [0, maxScore]));
+                let values = assignedValues ? assignedValues : Array(criteria.length).fill().map((x, i) => maxScore * (i + 1) / criteria.length);
+                // destroy old multislider/limitslider and create new one to adapt to max score's change
+                if ($('.weight-sliders').data('vanderleeLimitslider')) {
+                    $('.weight-sliders').limitslider('destroy')
+                }
+                var sliders = $('.weight-sliders').limitslider({
+                    orientation: "vertical",
+                    values: values,
+                    gap: 0,
+                    min: 0,
+                    max: maxScore,
+                    actualValue: function (value, index) {
+                        return Math.round((index == 0 ? value : value - this.values[index - 1]) * 10) / 10
+                    },
+                    step: 0.1,
+                    label: function (value, index) {
+                        return `${criteria[index].name}: ${this.actualValue(value, index)}`
+                    },
+                    slide: function (event, ui) {
+                        let index = ui.handleIndex;
+                        let values = ui.values;
+                        let widget = $('.weight-sliders').data('vanderleeLimitslider')
+                        for (let i = 0; i < ui.values.length; i++) {
+                            let input = $('#' + criteria[i].input)
+                            input.val(widget.options.actualValue(values[i], i))
+                        }
+                        updateGroupBackground();
+                        widget._renderRanges()
+                        widget._renderLabels()
+                        widget._renderTitles()
+                    },
+                    limits: limits,
+                    showRanges: true,
+                    ranges: ranges
+                });
+                // fill in initial value for textboxes
+                let widget = $('.weight-sliders').data('vanderleeLimitslider')
+                values.forEach((value, index) => {
+                    $('#' + criteria[index].input).val(widget.options.actualValue(value, index))
+                })
+                // update slider based on input (only needed if (1) is enabled (textboxes are shown))
+                criteria.forEach(function (criterion, index) {
+                    $("#" + criterion.input).on('blur', function (event) {
+                        let prevVal = index > 0 ? widget.options.values[index - 1] : 0;
+                        // update slider
+                        widget._slide(event, index, prevVal + parseFloat(event.target.value));
+                        widget._renderRanges()
+                        widget._renderLabels()
+                        widget._renderTitles()
+                        // update inputs according to slider
+                        for (let i = 0; i < widget.options.values.length; i++) {
+                            $('#' + criteria[i].input).val(widget.options.actualValue(widget.options.values[i], i))
+                        }
+
+                    })
+                })
+                $('.criteria-checkbox').each(function (index) {
+                    let criterionInp = $(this).attr('for');
+                    $(this).prop('checked', parseFloat($('#' + criterionInp).val()) != 0)
+                })
+            }
+            $('#MaxScore').on('change', initVerticalSlider)
+            $('.criteria-checkbox').on('input', function (event) {
+                let isEnabled = event.target.checked;
+                let criterionIndex = criteria_all.findIndex(e => e.input == $(event.target).attr('for'));
+
+                let currentValues = $('.weight-sliders').limitslider('values')
+                if (!isEnabled) {
+                    let enabledCriteria = criteria_all.filter(e => e.enabled)
+                    let disabledIndex = enabledCriteria.findIndex(e => e.input == $(event.target).attr('for'));
+                    if (disabledIndex == enabledCriteria.length - 1) {
+                        if (disabledIndex - 1 >= 0) {
+                            currentValues[disabledIndex - 1] = currentValues[disabledIndex];
+                        }
                     }
-                </div>
-                <div id="SourceNotReferencedFine" style="display: none">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="SourceNotReferencedErrorCost" />
-                </div>
-            }
-            else
-            {
-                <div id="SourceNotReferencedScale" style="display: none">
-                    @for (int i = 0; i < Model.SourceNotReferencedGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.SourceNotReferencedGrading[i].Boarder)
-                            @Html.EditorFor(m => m.SourceNotReferencedGrading[i].Boarder)
-                            @Html.LabelFor(m => m.SourceNotReferencedGrading[i].Value)
-                            @Html.EditorFor(m => m.SourceNotReferencedGrading[i].Value)
-                        </li>
+                    currentValues.splice(disabledIndex, 1);
+                    criteria_all[criterionIndex].enabled = isEnabled;
+                    initVerticalSlider($('#MaxScore').val(), currentValues);
+                } else {
+                    criteria_all[criterionIndex].enabled = isEnabled;
+                    let enabledIndex = criteria_all.filter(e => e.enabled).findIndex(e => e.input == $(event.target).attr('for'));
+
+                    if (enabledIndex == currentValues.length) {
+                        let maxScore = $('#MaxScore').val();
+                        let lower = enabledIndex - 2 < 0 ? parseFloat(maxScore) : currentValues[enabledIndex - 2];
+                        let upper = parseFloat(maxScore)
+                        currentValues.splice(enabledIndex - 1, 0, (lower + upper) / 2.0);
+                        console.log(currentValues)
+                        initVerticalSlider($('#MaxScore').val(), currentValues)
+                    } else {
+                        let lower = enabledIndex - 1 < 0 ? 0 : currentValues[enabledIndex - 1];
+                        let upper = enabledIndex == currentValues.length - 1 ? currentValues[currentValues.length - 1] : currentValues[enabledIndex];
+                        currentValues.splice(enabledIndex, 0, (lower + upper) / 2.0);
+                        initVerticalSlider($('#MaxScore').val(), currentValues)
                     }
-                </div>
-                <div id="SourceNotReferencedFine" style="display: block">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="SourceNotReferencedErrorCost" />
-                </div>
-            }
-        </div>
-    </div>
-    <div class="criterion-add-submit">
-        <div>
-            <h3>
-                Короткий раздел
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="ShortSectionCost" />
-            <div>
-                <label for="ShortSection">Использовать гибкую систему оценивания:</label>
-                <input type="checkbox" id="ShortSection" asp-for="ShortSectionGradingTypeVM" onclick="checkboxChange()" />
-            </div>
-            @if (Model.UseOfPersonalPronounsGradingTypeVM)
-            {
-                <div id="ShortSectionScale" style="display: block">
-                    @for (int i = 0; i < Model.ShortSectionGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.ShortSectionGrading[i].Boarder)
-                            @Html.EditorFor(m => m.ShortSectionGrading[i].Boarder)
-                            @Html.LabelFor(m => m.ShortSectionGrading[i].Value)
-                            @Html.EditorFor(m => m.ShortSectionGrading[i].Value)
-                        </li>
+
+                }
+                updateGroupBackground()
+            });
+
+            // create slider and load in information from textboxes (DIFF FROM ADD)
+            (function () {
+                let maxScore = parseFloat($('#MaxScore').val());
+
+                let values = []
+                criteria_all.forEach((criterion, i) => {
+                    let weight = parseFloat($('#' + criterion.input).val())
+                    criterion.enabled = (weight != 0)
+                    $(`input[type='checkbox'][for='${criterion.input}']`).prop('checked', (weight != 0));
+                    if(weight!=0)
+                        values.push(weight);
+                })
+                values = values.reduce((prev, cur, index) => {
+                    prev.push((index == 0 ? 0 : prev[index - 1]) + cur)
+                    return prev
+                }, [])
+                initVerticalSlider(maxScore, values);
+                // assign values from slider back to textboxes (due to value parsing/type casting, values keep varying by 0.01 or so)
+                //let widget = $('.weight-sliders').data('vanderleeLimitslider')
+                //criteria_all.filter(e => e.enabled).forEach((criterion, i) => {
+                //    let input = $('#' + criterion.input)
+                //    input.val(widget.options.actualValue(values[i], i))
+                //})
+                updateGroupBackground();
+            })();
+
+            // RANGE-SLIDERS HANDLE
+            // create sliders for range based criteria
+            $('.range-slider').each(function (index) {
+                let $txtLowerBound = $('#' + $(this).attr('txtLowerBound'))
+                let $txtUpperBound = $('#' + $(this).attr('txtUpperBound'))
+                let min = $(this).attr('min')
+                min = min != undefined ? parseFloat(min) : 0;
+                let max = $(this).attr('max')
+                max = max != undefined ? parseFloat(max) : 100;
+                let step = $(this).attr('step')
+                step = step != undefined ? parseFloat(step) : 1;
+
+                let slider = $(this).limitslider({
+                    range: true,
+                    min: min,
+                    max: max,
+                    left: min,
+                    right: max,
+                    step: step,
+                    label: true,
+                    values: [$txtLowerBound.val(), $txtUpperBound.val()],
+                    slide: function (event, ui) {
+                        $txtLowerBound.val(ui.values[0]);
+                        $txtUpperBound.val(ui.values[1]);
+                    },
+                    showRanges: true,
+                    ranges: [false, true, false]
+                });
+                // update slider values when type in textbox, only needed if (2) is enabled (textboxes are shown)
+                $txtLowerBound.on('blur', function (event) {
+                    slider.data('vanderleeLimitslider')._slide(event, 0, parseFloat(event.target.value));
+                })
+                $txtUpperBound.on('blur', function (event) {
+                    slider.data('vanderleeLimitslider')._slide(event, 1, parseFloat(event.target.value));
+                })
+            })
+
+            // COST-SLIDERS HANDLE
+            // create sliders for error cost (Штраф) (cost-slider)
+            $('.cost-slider').each(function (index) {
+                let $txtCost = $('#' + $(this).attr('txtCost'))
+                let step = $(this).attr('step')
+                step = step != undefined ? parseFloat(step) : 0.1;
+                let min = 0;
+                let max = 20;
+                let slider = $(this).limitslider({
+                    min: min,
+                    max: max,
+                    left: min,
+                    right: max,
+                    step: step,
+                    label: true,
+                    values: [$txtCost.val()],
+                    slide: function (event, ui) {
+                        $txtCost.val(ui.values[0]);
+                    },
+                    showRanges: true,
+                    ranges: [true, false]
+                });
+                // update slider values when type in textbox, only needed if (2) is enabled (textboxes are shown)
+                $txtCost.on('blur', function (event) {
+                    slider.data('vanderleeLimitslider')._slide(event, 0, parseFloat(event.target.value));
+                })
+            })
+
+            // uncommend line bellow to show weight textboxes (1)
+            $('.weight-container').toggleClass('d-none', false)
+
+            // uncommend line bellow to show bounds textboxes (2)
+            $('.bounds-container').toggleClass('d-none', false)
+
+            // uncommend line bellow to show error cost textboxes (3)
+            $('.cost-textbox').toggleClass('d-none', false)
+
+            $("#EditForm").validate({
+                rules: {
+                    Name: {
+                        required: true
+                    },
+                    MaxScore: {
+                        required: true,
+                        min: 1
                     }
-                </div>
-                <div id="ShortSectionFine" style="display: none">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="ShortSectionErrorCost" />
-                </div>
-            }
-            else
-            {
-                <div id="ShortSectionScale" style="display: none">
-                    @for (int i = 0; i < Model.ShortSectionGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.ShortSectionGrading[i].Boarder)
-                            @Html.EditorFor(m => m.ShortSectionGrading[i].Boarder)
-                            @Html.LabelFor(m => m.ShortSectionGrading[i].Value)
-                            @Html.EditorFor(m => m.ShortSectionGrading[i].Value)
-                        </li>
+                },
+                messages: {
+                    Name: "Поле обязательно к заполнению",
+                    MaxScore: {
+                        required: "Поле обязательно к заполнению",
+                        min: jQuery.validator.format("Значение должно быть больше или равно {0}")
                     }
-                </div>
-                <div id="ShortSectionFine" style="display: block">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="ShortSectionErrorCost" />
-                </div>
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // FLEXIBLE-COST-SLIDERS HANDLE
+        $('.error-cost').each(function (index, element) {
+            let initialValue = $(this).attr('data-initial-value') // starting value, provided by controller
+            initialValue = JSON.parse(initialValue);
+            let targetName = $(this).attr('data-target-name') // target property of the model (to set the name for inputs)
+            let boundsSlider = $(this).children('.bounds-slider');
+            let divCostSliders = $(this).children('div.cost-sliders');
+            let btnPlus = $(this).children("input[value='+']");
+            let btnMinus = $(this).children("input[value='-']");
+            // initialize the horizontal slider (defining the grading ranges)
+            boundsSlider.limitslider({
+                min: 0,
+                max: 20,
+                left: 0,
+                right: 20,
+                gap: 1,
+                step: 1,
+                label: true,
+                values: initialValue.map(e => e.boarder),
+                change: function (event, ui) {
+                    let spanBound = $(divCostSliders.children()[ui.handleIndex]).children('span');
+                    let txtBound = $(divCostSliders.children()[ui.handleIndex]).children('input.bound-txt');
+                    txtBound.val(ui.value);
+                    spanBound.html(">=" + ui.value)
+                },
+                showRanges: true
+            });
+            // add new bound mark and a vertical slider
+            function addBound(bound, index, min = 0, max = 20, defaultValue = 0) {
+                let sliderGroup = $("<div class='d-flex flex-column'></div>").appendTo(divCostSliders)
+                let spanBound = $('<span></span>').appendTo(sliderGroup);
+                let txtBoarder = $("<input />").toggleClass("bound-txt d-none", true)
+                    .attr("name", `${targetName}[${index}].Boarder`)
+                    .attr("value", bound)
+                    .appendTo(sliderGroup);
+                let txtCost = $("<input />").toggleClass("cost-txt d-none", true)
+                    .attr("name", `${targetName}[${index}].Value`)
+                    .attr("value", defaultValue)
+                    .appendTo(sliderGroup);
+                spanBound.html(">=" + bound)
+                spanBound.attr('val', bound)
+                let slider = $("<div></div>").toggleClass('bounded-cost-slider', true).appendTo(sliderGroup);
+                slider.limitslider({
+                    orientation: "vertical",
+                    min: min,
+                    max: max,
+                    left: min,
+                    right: max,
+                    step: 1,
+                    label: true,
+                    values: [defaultValue],
+                    change: function (event, ui) {
+                        txtCost.val(ui.value >= 0 ? ui.value : 0)
+                    },
+                    showRanges: true,
+                    ranges: [true, false]
+                });
+                txtCost.on('blur', (event) => {
+                    slider.data('vanderleeLimitslider')._slide(event, 0, parseFloat(event.target.value));
+                })
             }
-        </div>
-    </div>
-    <div class="criterion-add-submit">
-        <div>
-            <h3>
-                Нет ссылки на рисунок
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="PictureNotReferencedCost" />
-            <div>
-                <label for="PictureNotReferenced">Использовать гибкую систему оценивания:</label>
-                <input type="checkbox" id="PictureNotReferenced" asp-for="PictureNotReferencedGradingTypeVM" onclick="checkboxChange()" />
-            </div>
-            @if (Model.UseOfPersonalPronounsGradingTypeVM)
-            {
-                <div id="PictureNotReferencedScale" style="display: block">
-                    @for (int i = 0; i < Model.PictureNotReferencedGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.PictureNotReferencedGrading[i].Boarder)
-                            @Html.EditorFor(m => m.PictureNotReferencedGrading[i].Boarder)
-                            @Html.LabelFor(m => m.PictureNotReferencedGrading[i].Value)
-                            @Html.EditorFor(m => m.PictureNotReferencedGrading[i].Value)
-                        </li>
-                    }
-                </div>
-                <div id="PictureNotReferencedFine" style="display: none">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="PictureNotReferencedErrorCost" />
-                </div>
-            }
-            else
-            {
-                <div id="PictureNotReferencedScale" style="display: none">
-                    @for (int i = 0; i < Model.PictureNotReferencedGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.PictureNotReferencedGrading[i].Boarder)
-                            @Html.EditorFor(m => m.PictureNotReferencedGrading[i].Boarder)
-                            @Html.LabelFor(m => m.PictureNotReferencedGrading[i].Value)
-                            @Html.EditorFor(m => m.PictureNotReferencedGrading[i].Value)
-                        </li>
-                    }
-                </div>
-                <div id="PictureNotReferencedFine" style="display: block">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="PictureNotReferencedErrorCost" />
-                </div>
-            }
-        </div>
-    </div>
-    <div class="criterion-add-submit" style="margin-bottom: 3%">
-        <div>
-            <h3>
-                Нет ссылки на таблицу
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="TableNotReferencedCost" />
-            <div>
-                <label for="TableNotReferenced">Использовать гибкую систему оценивания:</label>
-                <input type="checkbox" id="TableNotReferenced" asp-for="TableNotReferencedGradingTypeVM" onclick="checkboxChange()" />
-            </div>
-            @if (Model.UseOfPersonalPronounsGradingTypeVM)
-            {
-                <div id="TableNotReferencedScale" style="display: block">
-                    @for (int i = 0; i < Model.TableNotReferencedGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.TableNotReferencedGrading[i].Boarder)
-                            @Html.EditorFor(m => m.TableNotReferencedGrading[i].Boarder)
-                            @Html.LabelFor(m => m.TableNotReferencedGrading[i].Value)
-                            @Html.EditorFor(m => m.TableNotReferencedGrading[i].Value)
-                        </li>
-                    }
-                </div>
-                <div id="TableNotReferencedFine" style="display: none">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="TableNotReferencedErrorCost" />
-                </div>
-            }
-            else
-            {
-                <div id="TableNotReferencedScale" style="display: none">
-                    @for (int i = 0; i < Model.TableNotReferencedGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.TableNotReferencedGrading[i].Boarder)
-                            @Html.EditorFor(m => m.TableNotReferencedGrading[i].Boarder)
-                            @Html.LabelFor(m => m.TableNotReferencedGrading[i].Value)
-                            @Html.EditorFor(m => m.TableNotReferencedGrading[i].Value)
-                        </li>
-                    }
-                </div>
-                <div id="TableNotReferencedFine" style="display: block">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="TableNotReferencedErrorCost" />
-                </div>
-            }
-        </div>
-    </div>
-    <div class="criterion-add-submit" style="margin-bottom: 3%">
-        <div>
-            <h3>
-                Запрещенные словари
-            </h3>
-            <h5>
-                Вес критерия
-            </h5>
-            <input type="text" asp-for="ForbiddenWordsCost" />
-            <div>
-                <label for="ForbiddenWords">Использовать гибкую систему оценивания:</label>
-                <input type="checkbox" id="ForbiddenWords" asp-for="ForbiddenWordsGradingTypeVM" onclick="checkboxChange()" />
-            </div>
-            @if (Model.UseOfPersonalPronounsGradingTypeVM)
-            {
-                <div id="ForbiddenWordsScale" style="display: block">
-                    @for (int i = 0; i < Model.ForbiddenWordsGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.ForbiddenWordsGrading[i].Boarder)
-                            @Html.EditorFor(m => m.ForbiddenWordsGrading[i].Boarder)
-                            @Html.LabelFor(m => m.ForbiddenWordsGrading[i].Value)
-                            @Html.EditorFor(m => m.ForbiddenWordsGrading[i].Value)
-                        </li>
-                    }
-                </div>
-                <div id="ForbiddenWordsFine" style="display: none">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="ForbiddenWordsErrorCost" />
-                </div>
-            }
-            else
-            {
-                <div id="ForbiddenWordsScale" style="display: none">
-                    @for (int i = 0; i < Model.ForbiddenWordsGrading.Count; i++)
-                    {
-                        <li style="flex-direction: column">
-                            @Html.LabelFor(m => m.ForbiddenWordsGrading[i].Boarder)
-                            @Html.EditorFor(m => m.ForbiddenWordsGrading[i].Boarder)
-                            @Html.LabelFor(m => m.ForbiddenWordsGrading[i].Value)
-                            @Html.EditorFor(m => m.ForbiddenWordsGrading[i].Value)
-                        </li>
-                    }
-                </div>
-                <div id="ForbiddenWordsFine" style="display: block">
-                    <h5>
-                        Штраф
-                    </h5>
-                    <input type="text" asp-for="ForbiddenWordsErrorCost" />
-                </div>
-            }
-        </div>
-    </div>
-    @for (int i = 0; i < @Model.Dictionaries.Count; i++)
-    {
-        <li style="text-align: left; margin-left: 20%">
-            @Html.CheckBoxFor(m => m.Dictionaries[i].IsSelected)
-            @Html.LabelFor(m => m.Dictionaries[i].Name, Model.Dictionaries[i].Name)
-            @Html.HiddenFor(m => m.Dictionaries[i].Name)
-        </li>
-    }
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="TeacherLogin" />
-    @if (User.Identity.Name == @Model.TeacherLogin)
-    {
-        <div class="criterion-add-edit">
-            <input type="submit" value="Сохранить изменения" class="add-button" />
-            <input type="button" class="delete-button" value="Удалить критерий" onclick="window.location.href = '@Url.Action("DeleteCriterion", "StudentTeacher", new {id = @Model.Id})';" />
-        </div>
-    }
-</form>
-<script type="text/javascript">
-    function checkboxChange() {
-        var checkBox = document.getElementById(event.target.id);
-        var fine;
-        var scale;
-        if (event.target.id === "UseOfPersonalPronouns") {
-            fine = document.getElementById("UseOfPersonalPronounsFine");
-            scale = document.getElementById("UseOfPersonalPronounsScale");
-            if (checkBox.checked === true) {
-                fine.style.display = "none";
-                scale.style.display = "block";
-                @Model.UseOfPersonalPronounsGradingTypeVM = true;
-            } else {
-                fine.style.display = "block";
-                scale.style.display = "none";
-                @Model.UseOfPersonalPronounsGradingTypeVM = false;
-            }
-        }
-        if (event.target.id === "SourceNotReferenced") {
-            fine = document.getElementById("SourceNotReferencedFine");
-            scale = document.getElementById("SourceNotReferencedScale");
-            if (checkBox.checked === true) {
-                fine.style.display = "none";
-                scale.style.display = "block";
-                @Model.UseOfPersonalPronounsGradingTypeVM = true;
-            } else {
-                fine.style.display = "block";
-                scale.style.display = "none";
-                @Model.UseOfPersonalPronounsGradingTypeVM = false;
-            }
-        }
-        if (event.target.id === "ShortSection") {
-            fine = document.getElementById("ShortSectionFine");
-            scale = document.getElementById("ShortSectionScale");
-            if (checkBox.checked === true) {
-                fine.style.display = "none";
-                scale.style.display = "block";
-                @Model.UseOfPersonalPronounsGradingTypeVM = true;
-            } else {
-                fine.style.display = "block";
-                scale.style.display = "none";
-                @Model.UseOfPersonalPronounsGradingTypeVM = false;
-            }
-        }
-        if (event.target.id === "PictureNotReferenced") {
-            fine = document.getElementById("PictureNotReferencedFine");
-            scale = document.getElementById("PictureNotReferencedScale");
-            if (checkBox.checked === true) {
-                fine.style.display = "none";
-                scale.style.display = "block";
-                @Model.UseOfPersonalPronounsGradingTypeVM = true;
-            } else {
-                fine.style.display = "block";
-                scale.style.display = "none";
-                @Model.UseOfPersonalPronounsGradingTypeVM = false;
-            }
-        }
-        if (event.target.id === "TableNotReferenced") {
-            fine = document.getElementById("TableNotReferencedFine");
-            scale = document.getElementById("TableNotReferencedScale");
-            if (checkBox.checked === true) {
-                fine.style.display = "none";
-                scale.style.display = "block";
-                @Model.UseOfPersonalPronounsGradingTypeVM = true;
-            } else {
-                fine.style.display = "block";
-                scale.style.display = "none";
-                @Model.UseOfPersonalPronounsGradingTypeVM = false;
-            }
-        }
-        if (event.target.id === "ForbiddenWords") {
-            fine = document.getElementById("ForbiddenWordsFine");
-            scale = document.getElementById("ForbiddenWordsScale");
-            if (checkBox.checked === true) {
-                fine.style.display = "none";
-                scale.style.display = "block";
-                @Model.UseOfPersonalPronounsGradingTypeVM = true;
-            } else {
-                fine.style.display = "block";
-                scale.style.display = "none";
-                @Model.UseOfPersonalPronounsGradingTypeVM = false;
-            }
-        }
-    }
-</script>
+
+            initialValue.forEach((grading, i) => {
+                addBound(grading.boarder, i, 0, 20, grading.value)
+            })
+
+            btnPlus.on('click', () => {
+                let currentValues = boundsSlider.limitslider('values')
+                let gap = boundsSlider.limitslider('option').gap;
+                let bound = currentValues[currentValues.length - 1] + gap;
+                let index = currentValues.length;
+                boundsSlider.limitslider('insert', index, currentValues[index - 1] + gap);
+                addBound(bound, index)
+            })
+
+            btnMinus.on('click', () => {
+                let currentValues = boundsSlider.limitslider('values')
+                let index = currentValues.length;
+                divCostSliders.children()[index - 1].remove();
+                boundsSlider.limitslider('remove', index - 1);
+            })
+        })
+
+
+
+        $("input[type='checkbox'][data-toggle-grading").on('change', function (event) {
+            let isChecked = $(this).prop('checked')
+            $(event.target).parent().next().children('.ErrorCostSubtraction').toggleClass('d-none', isChecked)
+            $(event.target).parent().next().children('.GradingTable').toggleClass('d-none', !isChecked)
+        });
+    </script>
+}

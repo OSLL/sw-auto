@@ -86,12 +86,12 @@ namespace AnalyzeResults.Presentation
                 case GradingType.ErrorCostSubtraction:
                     return Math.Max(weight - errorCount * errorCost, 0);
                 case GradingType.GradingTable:
-                    var result = specialError.Grading.OrderBy(g => g.Boarder)
-                        .FirstOrDefault(g => errorCount <= g.Boarder);
+                    var result = specialError.Grading.OrderByDescending(g => g.Boarder)
+                        .FirstOrDefault(g => errorCount >= g.Boarder);
                     if (result == null)
-                        return 0;
+                        return weight;
                     else
-                        return result.Value;
+                        return Math.Max(weight - result.Value, 0);
             }
 
             return 0;

@@ -1,0 +1,13 @@
+version: '2.1'
+services:
+    sut:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: python3 /tests.py --username="admin" --password="password"
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:4444"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+        network_mode: "host"

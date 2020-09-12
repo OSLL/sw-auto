@@ -33,18 +33,27 @@ namespace PaperAnalyzer
             _environment = environment;
         }
 
-        private Criterion CreateKeywordMentioningCriterion(Dictionary<string, List<int>> keywordMarks, ResultScoreSettings settings)
+        private Criterion CreateKeywordMentioningCriterion(Dictionary<string, List<int>> keywordMarks, Dictionary<string, Word[]> keywordDict, ResultScoreSettings settings)
         {
-            var missingKeywords = keywordMarks.Where((kv) => kv.Value.Count == 0).ToList();
-            var isSatisfied = missingKeywords.Count == 0;
-            var keyWordsReport = new StringBuilder();
-            foreach (var kv in missingKeywords)
+            if (keywordDict.Count > 0)
             {
-                keyWordsReport.Append($"{kv.Key}: отсутствует\n");
+                var missingKeywords = keywordMarks.Where((kv) => kv.Value.Count == 0).ToList();
+                var isSatisfied = missingKeywords.Count == 0;
+                var keyWordsReport = new StringBuilder();
+                foreach (var kv in missingKeywords)
+                {
+                    keyWordsReport.Append($"{kv.Key}: отсутствует\n");
+                }
+                return new BooleanCriterion("Упоминание ключевых слов", isSatisfied, settings.KeywordsMentioning.Weight,
+                            "Каждое ключевое слово из списка должно быть упомянуто хотя бы один раз в тексте работы.",
+                            $"{keyWordsReport}");
             }
-            return new BooleanCriterion("Упоминание ключевых слов", isSatisfied, settings.KeywordsMentioning.Weight,
-                        "Каждое ключевое слово из списка должно быть упомянуто хотя бы один раз в тексте работы.",
-                        $"{keyWordsReport}");
+            else
+            {
+                return new BooleanCriterion("Упоминание ключевых слов", false, settings.KeywordsMentioning.Weight,
+                            "Каждое ключевое слово из списка должно быть упомянуто хотя бы один раз в тексте работы.",
+                            $"Список ключевых слов должен быть определен в тексте работы.");
+            }
         }
         private Dictionary<string, Word[]> PrepareKeywordsDict(string keywords, char delimiter = ',')
         {
@@ -668,7 +677,7 @@ namespace PaperAnalyzer
                         "Значение отклонения текста статьи от идеальной кривой по Ципфу",
                         "Постарайтесь разнообразить текст, добавить связки между разделами, возможно, увеличить количество прилагательных.",
                         "Постарайтесь увеличить частоту употребления ключевых слов, возможно, снизить количество прилагательных."),
-                    CreateKeywordMentioningCriterion(keywordMarks, settings)
+                    CreateKeywordMentioningCriterion(keywordMarks,keywordDict, settings)
                 };
 
                 var personalPronErrorsWordIds = errors.Where(x => x is UseOfPersonalPronounsError)

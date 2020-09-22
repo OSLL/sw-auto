@@ -14,11 +14,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the stack
+    - name: Build/Run the tests
       run: docker-compose up -d
-      working-directory: ./SciencePaperAnalyzer
+      working-directory: ./selenium-tests
     - name: Check running containers
       run: docker ps
-    - name: Run integration tests
-      run: docker-compose up
+    - name: Check the test result
+      run: docker-compose logs sut | grep 'OK'
       working-directory: ./selenium-tests
+    - name: Break down the docker containers
+      run: docker-compose down
+      working-directory: ./selenium-tests            

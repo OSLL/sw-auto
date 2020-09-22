@@ -19,6 +19,10 @@ jobs:
       working-directory: ./selenium-tests
     - name: Check running containers
       run: docker ps
+    - name: Wait for test to run
+      uses: jakejarvis/wait-action@v0.1.0
+      with:
+        time: '30s'
     - name: Check the test result
       run: docker-compose logs sut | grep 'OK'
       working-directory: ./selenium-tests

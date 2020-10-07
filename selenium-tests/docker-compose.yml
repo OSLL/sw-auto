@@ -1,0 +1,38 @@
+version: '2.1'
+services:
+    mongo:
+        image: mongo
+        restart: always
+        logging:
+           driver: "none"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: example
+    
+    web-analyzer:
+        build: ../SciencePaperAnalyzer/
+        restart: always
+        ports:
+            - 4444:80
+        logging:
+            driver: "none"
+        environment:
+            MongoDB__Host: mongo
+        depends_on:
+            - mongo
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:80"]
+            interval: 10s
+            timeout: 10s
+            retries: 5
+        links:
+            - mongo
+    sut:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: python3 /tests.py --username="admin" --password="password"
+        network_mode: "host"
+        depends_on:
+            web-analyzer:
+                condition: service_healthy

@@ -7,7 +7,8 @@ mongo_password=${2}
 echo "Inserting passwords"
 #Inserting mongo password
 echo "MONGO_INITDB_ROOT_PASSWORD=${mongo_password}" > .env
-echo "ADMIN_PASSWORD=${admin_password}" >> .env
+echo "MongoSettings__Password=${mongo_password}" >> .env
+echo "AdminAccount__Password=${admin_password}" >> .env
 
 cd SciencePaperAnalyzer/
 

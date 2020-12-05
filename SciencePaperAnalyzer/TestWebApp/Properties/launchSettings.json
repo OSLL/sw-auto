@@ -12,6 +12,8 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
+        "RecaptchaSettings__SecretKey": "6LfbsfkZAAAAACjzfOQ0sNSKE1y0h8BqZwxQHeS4",
+        "RecaptchaSettings__SiteKey": "6LfbsfkZAAAAAONr4OyCRDlXWzgoN8zqbKfPqKOC",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },

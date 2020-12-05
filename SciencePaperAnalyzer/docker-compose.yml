@@ -25,6 +25,10 @@ services:
         - 4444:80
       environment:
         MongoDB__Host: mongo
+        AdminAccount__Login: admin
+        AdminAccount__Password: 123456
+        MongoSettings__User: root
+        MongoSettings__Password: example
       depends_on:
         - mongo
       links:

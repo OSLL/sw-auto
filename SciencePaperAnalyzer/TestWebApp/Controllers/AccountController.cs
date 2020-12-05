@@ -33,7 +33,7 @@ namespace TestWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            if (model.Login != null && model.Password == model.ConfirmPassword &&
+           /* if (model.Login != null && model.Password == model.ConfirmPassword &&
                 model.Password != null)
             {
                 model.Role = "student";
@@ -51,7 +51,7 @@ namespace TestWebApp.Controllers
 
                     return RedirectToAction("Index", "Home");
                 }
-            }
+            }*/
 
             return View(model);
         }

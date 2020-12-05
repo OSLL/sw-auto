@@ -31,12 +31,16 @@ namespace WebPaperAnalyzer.Models
 
         public ApplicationContext(MongoSettings settings)
         {
-            string connectionString = @"mongodb://root:example@mongo:27017";
-            MongoClient client = new MongoClient(connectionString);
-            IMongoDatabase database = client.GetDatabase("resultsDB");
-            Users = database.GetCollection<User>("users");
-            Criteria = database.GetCollection<ResultCriterion>("criteria");
-            Words = database.GetCollection<ForbiddenWords>("words");
+            if (settings!=null)
+            {
+                //string connectionString = $@"mongodb://{settings.User}:{settings.Password}@{settings.Host}:{settings.Port}";
+
+                MongoClient client = new MongoClient(settings.ConnectionString);
+                IMongoDatabase database = client.GetDatabase(settings.Database);
+                Users = database.GetCollection<User>("users");
+                Criteria = database.GetCollection<ResultCriterion>("criteria");
+                Words = database.GetCollection<ForbiddenWords>("words");
+            }
         }
 
         public async Task<IEnumerable<User>> GetUsers()

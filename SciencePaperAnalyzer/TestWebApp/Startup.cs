@@ -42,10 +42,10 @@ namespace TestWebApp
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
             services.Configure<ResultScoreSettings>(Configuration.GetSection(nameof(ResultScoreSettings)));
             services.Configure<MongoSettings>(Configuration.GetSection(nameof(MongoSettings)));
             services.AddTransient<DbInitializer>();
+            services.AddHttpClient();
             services.AddSingleton<IResultRepository, ResultRepository>();
             services.AddTransient<IPaperAnalyzerService, PaperAnalyzerService>();
             services.AddTransient<IPaperAnalyzer, PapersAnalyzer>();

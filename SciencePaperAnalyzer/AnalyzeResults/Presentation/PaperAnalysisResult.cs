@@ -76,8 +76,11 @@ namespace AnalyzeResults.Presentation
 
             if (specialError == null)
                 return 0;
-
             var weight = specialError.Weight;
+            if (specialError.ErrorCost < 0)
+            {
+                return weight;
+            }
             var errorCost = specialError.ErrorCost;
             var errorCount = Errors.Count(e => e.ErrorType == type);
 

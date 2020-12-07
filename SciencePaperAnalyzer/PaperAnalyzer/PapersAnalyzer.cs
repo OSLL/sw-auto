@@ -780,6 +780,45 @@ namespace PaperAnalyzer
                         settings.TableNotReferencedErrorCost, settings.TableNotReferencedCost,
                         settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
 
+                // create default object for non-occurred errors
+                if(!errors.Any(e => e.ErrorType == ErrorType.UseOfPersonalPronouns))
+                {
+                    errors.Add(new UseOfPersonalPronounsError(null, -1, settings.UseOfPersonalPronounsCost, settings.UseOfPersonalPronounsGrading,
+                                    settings.UseOfPersonalPronounsGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.UseOfForbiddenWord))
+                {
+                    errors.Add(new UseOfForbiddenWordsError(null, null,
+                                    -1, settings.ForbiddenWordsCost,
+                                    settings.ForbiddenWordsGrading, settings.ForbiddenWordsGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.SourceNotReferenced))
+                {
+                    errors.Add(new SourceNotReferencedError(-1,
+                            -1, settings.SourceNotReferencedCost,
+                            settings.SourceNotReferencedGrading, settings.SourceNotReferencedGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.ShortSection))
+                {
+                    errors.Add(new ShortSectionError(Guid.Empty, "",
+                            -1,
+                            -1, settings.ShortSectionCost,
+                            settings.ShortSectionGrading, settings.ShortSectionGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.PictureNotReferenced))
+                {
+                    errors.Add(new PictureNotReferencedError(-1,
+                        -1, settings.PictureNotReferencedCost,
+                        settings.PictureNotReferencedGrading, settings.PictureNotReferencedGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.TableNotReferenced))
+                {
+                    errors.Add(new TableNotReferencedError(-1,
+                        -1, settings.TableNotReferencedCost,
+                        settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
+                }            
+
+
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.MaxScore);
                 // save keyword marks in result set
                 analysisResult.Keywords = keywordMarks;

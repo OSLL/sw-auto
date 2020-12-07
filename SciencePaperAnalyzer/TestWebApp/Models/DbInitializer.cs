@@ -64,7 +64,6 @@ namespace WebPaperAnalyzer.Models
                 // check if it's capped
                 var command = new BsonDocument { { "collStats", "results" }, { "scale", 1 } };
                 var result = database.RunCommand<BsonDocument>(command);
-                Console.WriteLine(result.ToString());
                 if (!result.GetValue("capped").AsBoolean)
                 {
                     database.RunCommand<BsonDocument>(new BsonDocument {

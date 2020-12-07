@@ -18,6 +18,10 @@ services:
             driver: "none"
         environment:
             MongoDB__Host: mongo
+            RecaptchaSettings__SiteKey=6LfbsfkZAAAAAONr4OyCRDlXWzgoN8zqbKfPqKOC
+            RecaptchaSettings__SecretKey=6LfbsfkZAAAAACjzfOQ0sNSKE1y0h8BqZwxQHeS4
+            AdminAccount__Login=admin
+            AdminAccount__Password=password
         depends_on:
             - mongo
         healthcheck:

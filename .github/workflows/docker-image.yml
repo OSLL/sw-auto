@@ -23,6 +23,8 @@ jobs:
       uses: jakejarvis/wait-action@v0.1.0
       with:
         time: '30s'
+    - name: Test logs
+      run: docker-compose logs sut
     - name: Check the test result
       run: docker-compose logs sut | grep 'OK'
       working-directory: ./selenium-tests

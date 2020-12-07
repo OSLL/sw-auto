@@ -25,6 +25,7 @@ jobs:
         time: '30s'
     - name: Test logs
       run: docker-compose logs sut
+      working-directory: ./selenium-tests
     - name: Check the test result
       run: docker-compose logs sut | grep 'OK'
       working-directory: ./selenium-tests

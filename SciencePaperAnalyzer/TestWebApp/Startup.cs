@@ -13,6 +13,7 @@ using WebPaperAnalyzer.Models;
 using PaperAnalyzer;
 using PaperAnalyzer.Service;
 using WebPaperAnalyzer.DAL;
+using WebPaperAnalyzer.Services;
 
 namespace TestWebApp
 {
@@ -42,10 +43,11 @@ namespace TestWebApp
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
             services.Configure<ResultScoreSettings>(Configuration.GetSection(nameof(ResultScoreSettings)));
             services.Configure<MongoSettings>(Configuration.GetSection(nameof(MongoSettings)));
             services.AddTransient<DbInitializer>();
+            services.AddHttpClient();
+            services.AddScoped<IViewRenderService, ViewRenderService>();
             services.AddSingleton<IResultRepository, ResultRepository>();
             services.AddTransient<IPaperAnalyzerService, PaperAnalyzerService>();
             services.AddTransient<IPaperAnalyzer, PapersAnalyzer>();

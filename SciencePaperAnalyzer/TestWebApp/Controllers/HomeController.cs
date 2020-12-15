@@ -17,6 +17,8 @@ using PaperAnalyzer.Service;
 using TestWebApp.Models;
 using WebPaperAnalyzer.DAL;
 using WebPaperAnalyzer.Models;
+using WebPaperAnalyzer.Services;
+using WebPaperAnalyzer.ViewModels;
 
 namespace WebPaperAnalyzer.Controllers
 {
@@ -25,17 +27,19 @@ namespace WebPaperAnalyzer.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private ApplicationContext _context;
+        private IViewRenderService _viewRenderService;
 
         private readonly IPaperAnalyzerService _analyzeService;
         protected IResultRepository Repository;
         protected MongoSettings MongoSettings { get; set; }
-
         public HomeController(
             ILogger<HomeController> logger,
             IPaperAnalyzerService analyzeService,
             IResultRepository repository,
-            IOptions<MongoSettings> mongoSettings = null)
+            IOptions<MongoSettings> mongoSettings = null,
+            IViewRenderService viewRenderService = null)
         {
+            _viewRenderService = viewRenderService;
             MongoSettings = mongoSettings?.Value;
             Repository = repository;
             _context = new ApplicationContext(MongoSettings);
@@ -43,20 +47,20 @@ namespace WebPaperAnalyzer.Controllers
             _analyzeService = analyzeService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
+        private async Task ProcessFile(string resultId, IFormFile file, string titles, string paperName, string refsName,
                                                     string criterionName = null, string keywords = "")
         {
             _logger.LogInformation($"Received request UploadFile with criterionName {criterionName}");
             if (file == null)
             {
-                return new PartialViewResult();
+                throw new Exception("File not uploaded");
+                //return new PartialViewResult();
             }
 
             var uploadFile = new UploadFile
             {
-                FileName = file.FileName, 
-                Length = file.Length, 
+                FileName = file.FileName,
+                Length = file.Length,
                 DataStream = new MemoryStream()
             };
 
@@ -97,23 +101,23 @@ namespace WebPaperAnalyzer.Controllers
                 settings = new ResultScoreSettings()
                 {
                     WaterCriteria = new BoundedCriteria
-					{
+                    {
                         Weight = 35,
                         LowerBound = 14,
                         UpperBound = 20
-					},
+                    },
                     KeyWordsCriteria = new BoundedCriteria
-					{
+                    {
                         Weight = 30,
                         LowerBound = 6,
                         UpperBound = 14,
-					},
+                    },
                     Zipf = new BoundedCriteria
-					{
+                    {
                         Weight = 30,
                         LowerBound = 5.5,
                         UpperBound = 9.5,
-					},
+                    },
                     KeywordsMentioning = new BoundedCriteria
                     {
                         Weight = 5,
@@ -134,7 +138,7 @@ namespace WebPaperAnalyzer.Controllers
                 };
             }
 
-            PaperAnalysisResult result;
+            PaperAnalysisResult result=null;
             try
             {
                 _logger.LogInformation($"Settings have {settings.ForbiddenWords.Count(x => true)} dictionary");
@@ -142,62 +146,139 @@ namespace WebPaperAnalyzer.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+
                 result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
-                    new List<AnalyzeResults.Errors.Error>(), 0) {Error = ex.Message};
-                return Error(ex.Message);
+                    new List<AnalyzeResults.Errors.Error>(), 0)
+                { Error = ex.Message };
+                throw;// Error(ex.Message);
+            }
+            finally
+            {
+                AnalysisResult analysisResult;
+                if (criterion != null)
+                {
+                    analysisResult = new AnalysisResult
+                    {
+                        Id = resultId,
+                        Result = result,
+                        StudentLogin = User.Identity.Name,
+                        TeacherLogin = criterion.TeacherLogin,
+                        Criterion = criterion.Name
+                    };
+                }
+                else
+                {
+                    analysisResult = new AnalysisResult
+                    {
+                        Id = resultId,
+                        Result = result,
+                        StudentLogin = null,
+                        TeacherLogin = null,
+                        Criterion = null
+                    };
+                }
+
+                _logger.LogDebug($"Result saved by Id {analysisResult.Id}");
+                Repository.AddResult(analysisResult);
             }
 
-            AnalysisResult analysisResult;
-            if (criterion != null)
-            {
-                analysisResult = new AnalysisResult
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Result = result,
-                    StudentLogin = User.Identity.Name,
-                    TeacherLogin = criterion.TeacherLogin,
-                    Criterion = criterion.Name
-                };
-            }
-            else
-            {
-                analysisResult = new AnalysisResult
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Result = result,
-                    StudentLogin = null,
-                    TeacherLogin = null,
-                    Criterion = null
-                };
-            }
-
-            _logger.LogDebug($"Result saved by Id {analysisResult.Id}");
-            Repository.AddResult(analysisResult);
-            return Ok(analysisResult.Id);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CurlUploadFile(IFormFile file, IFormFile paperName, string criteriaName)
+        public async Task<IActionResult> UploadFile(IFormFile file, string titles, string paperName, string refsName,
+                                                    string criterionName = null, string keywords = "")
+        {
+            try
+            {
+                string id = Guid.NewGuid().ToString();
+                await ProcessFile(id, file, titles, paperName, refsName, criterionName, keywords);
+                return Ok(id);
+            }
+            catch (Exception ex)
+            {
+                return Error(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult CurlUploadFile(IFormFile file, IFormFile paperName, string criteriaName)
         {
             Stream stream = paperName.OpenReadStream();
             byte[] buffer = new byte[stream.Length];
             stream.Read(buffer, 0, (int)stream.Length);
-            return await UploadFile(file, "", Encoding.UTF8.GetString(buffer), "", criteriaName);
+            Console.WriteLine(criteriaName);
+            string id = Guid.NewGuid().ToString();
+            Response.OnCompleted(async () =>
+            {
+                try
+                {
+                    await ProcessFile(id, file, "", Encoding.UTF8.GetString(buffer), "", criteriaName);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.StackTrace);
+                    Console.WriteLine(ex.Message);
+                }
+            });
+            return Ok(id);
         }
 
         [HttpGet]
         public IActionResult Result(string id)
         {
             _logger.LogDebug($"Try to show result by ID: {id}");
-            return View(Repository.GetResult(id).Result);
+            AnalysisResult analysisResult = Repository.GetResult(id);
+            if (analysisResult != null)
+            {
+                return View(analysisResult.Result);
+            }
+            else
+            {
+                PaperAnalysisResult result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
+                                                                new List<AnalyzeResults.Errors.Error>(), 0)
+                { Error = "Your work is being processed..." };
+                return View(result);
+            }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Badge(string id)
+        {
+            AnalysisResult analysisResult = Repository.GetResult(id);
+            if (analysisResult != null)
+            {
+                string criterion = string.IsNullOrEmpty(analysisResult.Criterion) ? "" : analysisResult.Criterion;
+                int score = Convert.ToInt32(analysisResult.Result.GetPaperGrade());
+                int maxScore = Convert.ToInt32(analysisResult.Result.MaxScore);
+                var result = await _viewRenderService.RenderToStringAsync("Home/Badge", new BadgeModel()
+                {
+                    Criterion = criterion,
+                    Score = score,
+                    MaxScore = maxScore,
+                    IsProcessing = false
+                });
+                return Content(result, "image/svg+xml", Encoding.UTF8);
+            }
+            else
+            {
+                var result = await _viewRenderService.RenderToStringAsync("Home/Badge", new BadgeModel()
+                {
+                    Criterion = "",
+                    Score = -1,
+                    MaxScore = -1,
+                    IsProcessing = true
+                });
+                return Content(result, "image/svg+xml", Encoding.UTF8);
+            }
+        }
         [HttpGet]
         [Route("Home/Result/{id}/short")]
         [Route("Home/ShortResult/{id}")]
         public IActionResult ShortResult(string id)
         {
-            return Content(Repository.GetResult(id).Result.GetShortSummary());
+            return Content(Repository.GetResult(id)?.Result.GetShortSummary());
         }
 
         public async Task<IActionResult> Index()
@@ -236,7 +317,8 @@ namespace WebPaperAnalyzer.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error(string message)
         {
-            return View(new ErrorViewModel { 
+            return View(new ErrorViewModel
+            {
                 RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier,
                 Message = message
             });

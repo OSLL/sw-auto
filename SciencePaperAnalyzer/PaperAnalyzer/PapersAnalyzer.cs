@@ -13,6 +13,7 @@ using System.Text;
 using AnalyzeResults.Settings;
 using DocumentFormat.OpenXml.Drawing;
 using System.Collections.Immutable;
+using Microsoft.Extensions.Configuration;
 
 namespace PaperAnalyzer
 {
@@ -26,11 +27,12 @@ namespace PaperAnalyzer
         private static readonly List<string> personalPronouns = new List<string>
         {
             "я", "ты", "мой", "мое", "моё", "моя", "твой", "твое", "твоё", "твоя"
-        };
-
-        public PapersAnalyzer(IPaperAnalyzerEnvironment environment)
+};
+        private readonly IConfiguration _appConfig;
+        public PapersAnalyzer(IPaperAnalyzerEnvironment environment, IConfiguration appConfig = null)
         {
             _environment = environment;
+            _appConfig = appConfig;
         }
 
         private Criterion CreateKeywordMentioningCriterion(Dictionary<string, List<int>> keywordMarks, Dictionary<string, Word[]> keywordDict, ResultScoreSettings settings)
@@ -190,6 +192,22 @@ namespace PaperAnalyzer
                     refsName = "Список литературы";
                 if (string.IsNullOrEmpty(paperName))
                     paperName = "";
+                // paper name not provided by user, assume the first line is the title, if a condition is met (paperName=='#auto#') 
+                // the condition is added due to the fact that only task 3 (the full paper) should contain the first line as article's name
+                // so when sending work for task 3, we either pass article's name manually, or pass the flag for auto detection
+                // TODO: move the flag to an outer constant or sth
+                bool autoExtractPaperName = paperName.Equals(_appConfig==null?"":_appConfig.GetValue("AutoTitleExtractionToken","#auto#"));
+                if (autoExtractPaperName)
+                {
+                    var assumedPaperName = Regex.Match(text, @"^[\S\s]+?[\s]\n");
+                    if (assumedPaperName.Success)
+                    {
+                        paperName = assumedPaperName.Value;
+                        paperName = Regex.Replace(paperName, @"[#\n]", "");
+                    }
+                }
+                Console.OutputEncoding = Encoding.UTF8;
+                Console.WriteLine(paperName);
                 if (string.IsNullOrEmpty(titlesString))
                     titlesString = "";
 
@@ -199,6 +217,8 @@ namespace PaperAnalyzer
                 // same for paper name
                 paperName = Regex.Replace(paperName.Replace(",", " , "), @"\s+", " ");
                 var paperNameDict = PrepareKeywordsDict(paperName, ' ');
+                Console.WriteLine(paperName);
+
 
                 Dictionary<string, List<int>> keywordMarks = new Dictionary<string, List<int>>();
                 Dictionary<string, List<int>> papernameMarks = new Dictionary<string, List<int>>();
@@ -312,7 +332,7 @@ namespace PaperAnalyzer
                             for (int i = minNum; i <= maxNum; i++)
                                 referenceIndexes.Add(i);
                         }
-                        else
+                        else if(match.Length>0)
                         {
                             var num = int.Parse(match);
                             referenceIndexes.Add(num);
@@ -518,6 +538,8 @@ namespace PaperAnalyzer
                 {
                     // paper name not provided by user or provided but not found in text 
                     // NOTE: uncomment code below if we want to assume that first sentence is the paper's name
+                    // DEPRECATED: newResult[0] does not contain the whole first sentence, instead it contains first phrase (?) 
+                    // new implementation of auto extract is above (extract whole first line of the text)
                     //if (newResult.Count > 0) 
                     //{
                     //    section.Type = SectionType.PaperTitle;
@@ -758,6 +780,45 @@ namespace PaperAnalyzer
                         settings.TableNotReferencedErrorCost, settings.TableNotReferencedCost,
                         settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
 
+                // create default object for non-occurred errors
+                if(!errors.Any(e => e.ErrorType == ErrorType.UseOfPersonalPronouns))
+                {
+                    errors.Add(new UseOfPersonalPronounsError(null, -1, settings.UseOfPersonalPronounsCost, settings.UseOfPersonalPronounsGrading,
+                                    settings.UseOfPersonalPronounsGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.UseOfForbiddenWord))
+                {
+                    errors.Add(new UseOfForbiddenWordsError(null, null,
+                                    -1, settings.ForbiddenWordsCost,
+                                    settings.ForbiddenWordsGrading, settings.ForbiddenWordsGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.SourceNotReferenced))
+                {
+                    errors.Add(new SourceNotReferencedError(-1,
+                            -1, settings.SourceNotReferencedCost,
+                            settings.SourceNotReferencedGrading, settings.SourceNotReferencedGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.ShortSection))
+                {
+                    errors.Add(new ShortSectionError(Guid.Empty, "",
+                            -1,
+                            -1, settings.ShortSectionCost,
+                            settings.ShortSectionGrading, settings.ShortSectionGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.PictureNotReferenced))
+                {
+                    errors.Add(new PictureNotReferencedError(-1,
+                        -1, settings.PictureNotReferencedCost,
+                        settings.PictureNotReferencedGrading, settings.PictureNotReferencedGradingType));
+                }
+                if (!errors.Any(e => e.ErrorType == ErrorType.TableNotReferenced))
+                {
+                    errors.Add(new TableNotReferencedError(-1,
+                        -1, settings.TableNotReferencedCost,
+                        settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
+                }            
+
+
                 var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.MaxScore);
                 // save keyword marks in result set
                 analysisResult.Keywords = keywordMarks;
@@ -772,6 +833,9 @@ namespace PaperAnalyzer
             }
             catch (Exception ex)
             {
+                Console.OutputEncoding = Encoding.UTF8;
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
                 throw ex;
             }
 

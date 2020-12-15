@@ -33,9 +33,9 @@ namespace WebPaperAnalyzer.Models
         {
             if (settings!=null)
             {
-                string connectionString = $@"mongodb://{settings.User}:{settings.Password}@{settings.Host}:{settings.Port}";
+                //string connectionString = $@"mongodb://{settings.User}:{settings.Password}@{settings.Host}:{settings.Port}";
 
-                MongoClient client = new MongoClient(connectionString);
+                MongoClient client = new MongoClient(settings.ConnectionString);
                 IMongoDatabase database = client.GetDatabase(settings.Database);
                 Users = database.GetCollection<User>("users");
                 Criteria = database.GetCollection<ResultCriterion>("criteria");

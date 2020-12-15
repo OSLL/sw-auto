@@ -52,10 +52,11 @@ namespace WebPaperAnalyzer.DAL
                     data = ms.ToArray();
                 }
 
-                var test = new BinaryForm {
-                    Id = result.Id, 
+                var test = new BinaryForm
+                {
+                    Id = result.Id,
                     Data = data,
-                    StudentLogin = result.StudentLogin, 
+                    StudentLogin = result.StudentLogin,
                     TeacherLogin = result.TeacherLogin,
                     Criterion = result.Criterion
                 };
@@ -81,14 +82,21 @@ namespace WebPaperAnalyzer.DAL
                 memStream.Write(result[0].Data, 0, result[0].Data.Length);
                 memStream.Seek(0, SeekOrigin.Begin);
                 var obj = binForm.Deserialize(memStream);
-                return new AnalysisResult {Id = id, Result = obj as PaperAnalysisResult };
+                return new AnalysisResult
+                {
+                    Id = id,
+                    Result = obj as PaperAnalysisResult,
+                    Criterion = result[0].Criterion,
+                    StudentLogin = result[0].StudentLogin,
+                    TeacherLogin = result[0].TeacherLogin
+                };
             }
         }
 
         public IEnumerable<AnalysisResult> GetResultsByLogin(string login, bool type)
         {
             var filter = Builders<BinaryForm>.Filter.Eq(type ? "TeacherLogin" : "StudentLogin", login);
-            var binaryFormCollection =  _resultsCollection.Find(filter).ToList();
+            var binaryFormCollection = _resultsCollection.Find(filter).ToList();
             var resultList = new List<AnalysisResult>();
             foreach (var result in binaryFormCollection)
             {
@@ -100,8 +108,11 @@ namespace WebPaperAnalyzer.DAL
                     var obj = binForm.Deserialize(memStream);
                     resultList.Add(new AnalysisResult
                     {
-                        Id = result.Id, StudentLogin = result.StudentLogin, TeacherLogin = result.TeacherLogin, 
-                        Criterion = result.Criterion, Result = obj as PaperAnalysisResult
+                        Id = result.Id,
+                        StudentLogin = result.StudentLogin,
+                        TeacherLogin = result.TeacherLogin,
+                        Criterion = result.Criterion,
+                        Result = obj as PaperAnalysisResult
                     });
                 }
             }

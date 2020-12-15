@@ -2,13 +2,34 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using AnalyzeResults.Settings;
 using Microsoft.AspNetCore.Rewrite.Internal.UrlMatches;
+using Newtonsoft.Json.Linq;
 using WebPaperAnalyzer.Models;
 
 namespace WebPaperAnalyzer.ViewModels
 {
+    public class Recaptcha
+    {
+        public static bool RecaptchaPassed(HttpClient httpClient, string secret, string gRecaptchaResponse)
+        {
+            var res = httpClient.GetAsync($"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={gRecaptchaResponse}").Result;
+
+            if (res.StatusCode != HttpStatusCode.OK)
+                return false;
+
+            string JSONres = res.Content.ReadAsStringAsync().Result;
+            dynamic JSONdata = JObject.Parse(JSONres);
+
+            if (JSONdata.success != "true")
+                return false;
+
+            return true;
+        }
+    }
     public class RegisterModel
     {
         [Required(ErrorMessage = "Не указан логин")]
@@ -91,7 +112,7 @@ namespace WebPaperAnalyzer.ViewModels
                 ForbiddenWordsGrading = model.ForbiddenWordsGrading,
                 ForbiddenWordsErrorCost = model.ForbiddenWordsErrorCost,
                 Dictionaries = dictionary.Select(x => new DictionaryCheckBoxModel
-                    { Name = x.Name, IsSelected = false }).ToList()
+                { Name = x.Name, IsSelected = false }).ToList()
             };
 
             return criterion;

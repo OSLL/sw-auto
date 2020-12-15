@@ -19,6 +19,7 @@ namespace TestWebApp
                 using (var scoped = host.Services.CreateScope())
                 {
                     var dbInitializer = host.Services.GetService<DbInitializer>();
+                    dbInitializer.InitCollections().Wait();
                     dbInitializer.InitAdmin().Wait();
                 }
                 host.Run();

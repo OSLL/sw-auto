@@ -71,13 +71,15 @@ namespace PaperAnalyzer
                     {
                         keywordWords.AddRange(r);
                     }
-                    if (keyword.ToUpper() != keyword)
+                    if (!Regex.IsMatch(keyword, @"\b(?:[A-Z][a-z]*){2,}"))
+                    // now use regex to detect abbreviation and acronyms
+                    // changed from (keyword.ToUpper() != keyword)
                     {
                         result.Add(key, keywordWords.ToArray());
                     }
                     else
                     {
-                        result.Add(keyword, keywordWords.ToArray());
+                        result.Add(keyword.Trim(), keywordWords.ToArray());
                     }
                 }
             }
@@ -89,6 +91,7 @@ namespace PaperAnalyzer
             Dictionary<string, List<int>> result = new Dictionary<string, List<int>>();
             foreach (KeyValuePair<string, Word[]> keyword in keywords)
             {
+                Console.WriteLine(keyword.Key);
                 result[keyword.Key] = new List<int>();
             }
             for (var i = 0; i < sentence.Length; i++)
@@ -103,10 +106,13 @@ namespace PaperAnalyzer
                         if (i + offset < sentence.Length)
                         {
                             siTemp.Add(sentence[i + offset].startIndex);
-                            if (keyword.Key.ToUpper() == keyword.Key)
+                            if (Regex.IsMatch(keyword.Key, @"\b(?:[A-Z][a-z]*){2,}"))
+                            // now use regex to detect abbreviation and acronyms
+                            // changed from (keyword.Key.ToUpper() == keyword.Key). 
                             {
                                 if (keyword.Key == sentence[i + offset].valueOriginal)
                                 {
+                                    Console.WriteLine("short keyword " + keyword.Key);
                                     offset += 1;
                                     continue;
                                 }

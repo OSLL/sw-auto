@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using AnalyzeResults.Presentation;
 using Syncfusion.Pdf.Parsing;
 
 namespace TextExtractor
@@ -12,6 +14,10 @@ namespace TextExtractor
     /// </summary>
     public class PdfTextExtractor : ITextExtractor
     {
+        public List<Section> ExtractStructureFromFileStream(Stream fileStream, bool extractTitle)
+        {
+            throw new NotImplementedException();
+        }
 
         public string ExtractTextFromFileStream(Stream fileStream)
         {

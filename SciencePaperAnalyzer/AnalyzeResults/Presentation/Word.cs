@@ -16,13 +16,13 @@ namespace AnalyzeResults.Presentation
         }
 
         [BsonElement("original")]
-        public string Original { get; }
+        public string Original { get; set; }
 
         [BsonElement("type")]
-        public PosTaggerOutputType Type { get; }
+        public PosTaggerOutputType Type { get; set; }
 
         [BsonElement("startindex")]
-        public int StartIndex { get; }
+        public int StartIndex { get; set; }
 
         [BsonElement("haserrors")]
         public bool HasErrors { get; set; }

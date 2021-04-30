@@ -4,14 +4,16 @@ using System;
 namespace AnalyzeResults.Presentation
 {
     [Serializable]
+    [BsonKnownTypes(typeof(NumericalCriterion), typeof(BooleanCriterion))]
     public abstract class Criterion
     {
-        public Criterion(string name, CriterionType type, string description = "", double factor = 0)
+        public Criterion(string name, CriterionType type, string description = "", double factor = 0, bool isPlaceholder = false)
         {
             Name = name;
             Type = type;
             Description = description;
             Factor = factor;
+            IsPlaceholder = isPlaceholder;
         }
 
         [BsonElement("name")]
@@ -25,6 +27,9 @@ namespace AnalyzeResults.Presentation
 
         [BsonElement("factor")]
         public double Factor { get; set; }
+
+        [BsonElement("isPlaceholder")]
+        public bool IsPlaceholder { get; set; }
 
         public abstract bool IsMet();
 

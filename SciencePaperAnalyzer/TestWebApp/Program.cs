@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using NLog.Web;
 using WebPaperAnalyzer.Models;
+using Hangfire;
+
 namespace TestWebApp
 {
     public class Program

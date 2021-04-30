@@ -65,6 +65,10 @@ namespace WebPaperAnalyzer.ViewModels
         public bool ShortSectionGradingTypeVM { get; set; }
         public bool PictureNotReferencedGradingTypeVM { get; set; }
         public bool TableNotReferencedGradingTypeVM { get; set; }
+
+        public bool DiscordantSentenceGradingTypeVM { get; set; }
+        public bool MissingSentenceGradingTypeVM { get; set; }
+
         public bool ForbiddenWordsGradingTypeVM { get; set; }
         public static AddCriterion FromResultCriterionToForm(ResultCriterion model,
             IEnumerable<ForbiddenWords> dictionary)
@@ -85,6 +89,9 @@ namespace WebPaperAnalyzer.ViewModels
                 ZipfFactor = model.ZipfFactor,
                 ZipfFactorLowerBound = model.ZipfFactorLowerBound,
                 ZipfFactorUpperBound = model.ZipfFactorUpperBound,
+                KeywordsQualityCriterionFactor = model.KeywordsQualityCriterionFactor,
+                KeywordsQualityCriterionLowerBound = model.KeywordsQualityCriterionLowerBound,
+                KeywordsQualityCriterionUpperBound = model.KeywordsQualityCriterionUpperBound,
                 KeywordsMentioningFactor = model.KeywordsMentioningFactor,
                 UseOfPersonalPronounsCost = model.UseOfPersonalPronounsCost,
                 UseOfPersonalPronounsGradingTypeVM = model.UseOfPersonalPronounsGradingType == GradingType.GradingTable,
@@ -98,14 +105,27 @@ namespace WebPaperAnalyzer.ViewModels
                 ShortSectionGradingTypeVM = model.ShortSectionGradingType == GradingType.GradingTable,
                 ShortSectionErrorCost = model.ShortSectionErrorCost,
                 ShortSectionGrading = model.ShortSectionGrading,
+                
                 PictureNotReferencedCost = model.PictureNotReferencedCost,
                 PictureNotReferencedGradingTypeVM = model.PictureNotReferencedGradingType == GradingType.GradingTable,
                 PictureNotReferencedErrorCost = model.PictureNotReferencedErrorCost,
                 PictureNotReferencedGrading = model.PictureNotReferencedGrading,
+                
                 TableNotReferencedCost = model.TableNotReferencedCost,
                 TableNotReferencedGradingTypeVM = model.TableNotReferencedGradingType == GradingType.GradingTable,
                 TableNotReferencedErrorCost = model.TableNotReferencedErrorCost,
                 TableNotReferencedGrading = model.TableNotReferencedGrading,
+
+                DiscordantSentenceCost = model.DiscordantSentenceCost,
+                DiscordantSentenceGradingTypeVM = model.DiscordantSentenceGradingType == GradingType.GradingTable,
+                DiscordantSentenceErrorCost = model.DiscordantSentenceErrorCost,
+                DiscordantSentenceGrading = model.DiscordantSentenceGrading,
+
+                MissingSentenceCost = model.MissingSentenceCost,
+                MissingSentenceGradingTypeVM = model.MissingSentenceGradingType == GradingType.GradingTable,
+                MissingSentenceErrorCost = model.MissingSentenceErrorCost,
+                MissingSentenceGrading = model.MissingSentenceGrading,
+
                 ForbiddenWordDictionary = model.ForbiddenWordDictionary,
                 ForbiddenWordsGradingTypeVM = model.ForbiddenWordsGradingType == GradingType.GradingTable,
                 ForbiddenWordsCost = model.ForbiddenWordsCost,

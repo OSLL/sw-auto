@@ -1,5 +1,8 @@
-﻿namespace AnalyzeResults.Errors
+﻿using System;
+
+namespace AnalyzeResults.Errors
 {
+    [Serializable]
     public enum ErrorType
     {
         UseOfPersonalPronouns,
@@ -9,5 +12,7 @@
         Other,
         PictureNotReferenced,
         TableNotReferenced,
+        DiscordantSentence,
+        MissingSentence
     }
 }

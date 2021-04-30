@@ -36,6 +36,9 @@ namespace AnalyzeResults.Presentation
         [BsonElement("haserrors")]
         public bool HasErrors { get; set; }
 
+        [BsonIgnore]
+        public string OriginalText { get; set; }
+
         public string ToStringVersion()
         {
             switch (Type)

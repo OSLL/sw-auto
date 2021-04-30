@@ -178,6 +178,16 @@ namespace PaperAnalyzer
             }
             return "";
         }
+
+        public PaperAnalysisResult ProcessTextWithResult(
+            List<Section> sections,
+            string paperName,
+            string keywords,
+            ResultScoreSettings settings)
+        {
+            throw new NotImplementedException();
+        }
+
         public PaperAnalysisResult ProcessTextWithResult(
             string text,
             string titlesString,
@@ -196,7 +206,7 @@ namespace PaperAnalyzer
                 // the condition is added due to the fact that only task 3 (the full paper) should contain the first line as article's name
                 // so when sending work for task 3, we either pass article's name manually, or pass the flag for auto detection
                 // TODO: move the flag to an outer constant or sth
-                bool autoExtractPaperName = paperName.Equals(_appConfig==null?"":_appConfig.GetValue("AutoTitleExtractionToken","#auto#"));
+                bool autoExtractPaperName = paperName.Equals(_appConfig == null ? "" : _appConfig.GetValue("AutoTitleExtractionToken", "#auto#"));
                 if (autoExtractPaperName)
                 {
                     var assumedPaperName = Regex.Match(text, @"^[\S\s]+?[\s]\n");
@@ -207,7 +217,7 @@ namespace PaperAnalyzer
                     }
                 }
                 Console.OutputEncoding = Encoding.UTF8;
-                Console.WriteLine(paperName);
+                //Console.WriteLine(paperName);
                 if (string.IsNullOrEmpty(titlesString))
                     titlesString = "";
 
@@ -217,7 +227,7 @@ namespace PaperAnalyzer
                 // same for paper name
                 paperName = Regex.Replace(paperName.Replace(",", " , "), @"\s+", " ");
                 var paperNameDict = PrepareKeywordsDict(paperName, ' ');
-                Console.WriteLine(paperName);
+                //Console.WriteLine(paperName);
 
 
                 Dictionary<string, List<int>> keywordMarks = new Dictionary<string, List<int>>();
@@ -332,7 +342,7 @@ namespace PaperAnalyzer
                             for (int i = minNum; i <= maxNum; i++)
                                 referenceIndexes.Add(i);
                         }
-                        else if(match.Length>0)
+                        else if (match.Length > 0)
                         {
                             var num = int.Parse(match);
                             referenceIndexes.Add(num);
@@ -781,7 +791,7 @@ namespace PaperAnalyzer
                         settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
 
                 // create default object for non-occurred errors
-                if(!errors.Any(e => e.ErrorType == ErrorType.UseOfPersonalPronouns))
+                if (!errors.Any(e => e.ErrorType == ErrorType.UseOfPersonalPronouns))
                 {
                     errors.Add(new UseOfPersonalPronounsError(null, -1, settings.UseOfPersonalPronounsCost, settings.UseOfPersonalPronounsGrading,
                                     settings.UseOfPersonalPronounsGradingType));
@@ -816,10 +826,17 @@ namespace PaperAnalyzer
                     errors.Add(new TableNotReferencedError(-1,
                         -1, settings.TableNotReferencedCost,
                         settings.TableNotReferencedGrading, settings.TableNotReferencedGradingType));
-                }            
+                }
 
 
-                var analysisResult = new PaperAnalysisResult(sections, criteria, errors, settings.MaxScore);
+                //Console.WriteLine($"{text}");
+                //foreach (var s in sections)
+                //{
+                //    Console.WriteLine(s.ToStringVersion());
+                //}
+                Console.WriteLine($"Section count: {sections.Count}");
+                Console.WriteLine($"Paper name: {paperName}");
+                var analysisResult = new PaperAnalysisResult(text, sections, criteria, errors, settings.MaxScore);
                 // save keyword marks in result set
                 analysisResult.Keywords = keywordMarks;
                 analysisResult.PaperTitle = paperName;

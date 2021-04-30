@@ -23,6 +23,10 @@ namespace AnalyzeResults.Settings
         /// </summary>
         public BoundedCriteria Zipf { get; set; }
         /// <summary>
+        /// Фактор Ципф
+        /// </summary>
+        public BoundedCriteria KeywordsQuality { get; set; }
+        /// <summary>
         /// Упоминание ключевых слов
         /// </summary>
         public BoundedCriteria KeywordsMentioning { get; set; }
@@ -46,6 +50,17 @@ namespace AnalyzeResults.Settings
         public double TableNotReferencedErrorCost { get; set; }
         public List<ScopePair> TableNotReferencedGrading = new List<ScopePair>();
         public GradingType TableNotReferencedGradingType { get; set; }
+
+        public double DiscordantSentenceCost { get; set; }
+        public double DiscordantSentenceErrorCost { get; set; }
+        public List<ScopePair> DiscordantSentenceGrading = new List<ScopePair>();
+        public GradingType DiscordantSentenceGradingType { get; set; }
+
+        public double MissingSentenceCost { get; set; }
+        public double MissingSentenceErrorCost { get; set; }
+        public List<ScopePair> MissingSentenceGrading = new List<ScopePair>();
+        public GradingType MissingSentenceGradingType { get; set; }
+
         public double MaxScore { get; set; }
         public IEnumerable<ForbiddenWords> ForbiddenWords { get; set; }
         public double ForbiddenWordsCost { get; set; }

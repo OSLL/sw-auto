@@ -10,6 +10,9 @@ namespace AnalyzeResults.Presentation
     [Serializable]
     public class Sentence
     {
+        public Sentence()
+        {
+        }
         public Sentence(SentenceType type)
         {
             Words = new List<Word>();
@@ -20,6 +23,9 @@ namespace AnalyzeResults.Presentation
         {
             Words.AddRange(words);
         }
+
+        [BsonElement("sentId")]
+        public int SentenceIndex { get; set; }
 
         [BsonElement("words")]
         public List<Word> Words { get; set; }

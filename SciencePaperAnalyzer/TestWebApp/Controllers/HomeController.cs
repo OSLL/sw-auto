@@ -7,11 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using AnalyzeResults.Presentation;
 using AnalyzeResults.Settings;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MLSAnalysisWrapper;
+using MongoDB.Bson;
 using PaperAnalyzer;
 using PaperAnalyzer.Service;
 using TestWebApp.Models;
@@ -30,6 +33,8 @@ namespace WebPaperAnalyzer.Controllers
         private IViewRenderService _viewRenderService;
 
         private readonly IPaperAnalyzerService _analyzeService;
+        private readonly IMLSAnalysisService _mlsAnalysisService;
+        private readonly IBackgroundJobClient BackgroundJobs;
         protected IResultRepository Repository;
         protected MongoSettings MongoSettings { get; set; }
         public HomeController(
@@ -37,19 +42,25 @@ namespace WebPaperAnalyzer.Controllers
             IPaperAnalyzerService analyzeService,
             IResultRepository repository,
             IOptions<MongoSettings> mongoSettings = null,
-            IViewRenderService viewRenderService = null)
+            IViewRenderService viewRenderService = null,
+            IBackgroundJobClient backgroundJobs = null,
+            IMLSAnalysisService mlsAnalysisService = null
+            )
         {
             _viewRenderService = viewRenderService;
             MongoSettings = mongoSettings?.Value;
             Repository = repository;
+            BackgroundJobs = backgroundJobs;
             _context = new ApplicationContext(MongoSettings);
             _logger = logger;
             _analyzeService = analyzeService;
+            _mlsAnalysisService = mlsAnalysisService;
         }
 
-        private async Task ProcessFile(string resultId, IFormFile file, string titles, string paperName, string refsName,
+        private async Task ProcessFile(ObjectId resultId, IFormFile file, string titles, string paperName, string refsName,
                                                     string criterionName = null, string keywords = "")
         {
+            Console.OutputEncoding = Encoding.UTF8;
             _logger.LogInformation($"Received request UploadFile with criterionName {criterionName}");
             if (file == null)
             {
@@ -102,7 +113,7 @@ namespace WebPaperAnalyzer.Controllers
                 {
                     WaterCriteria = new BoundedCriteria
                     {
-                        Weight = 35,
+                        Weight = 30,
                         LowerBound = 14,
                         UpperBound = 20
                     },
@@ -117,6 +128,12 @@ namespace WebPaperAnalyzer.Controllers
                         Weight = 30,
                         LowerBound = 5.5,
                         UpperBound = 9.5,
+                    },
+                    KeywordsQuality = new BoundedCriteria
+                    {
+                        Weight = 5,
+                        LowerBound = 6,
+                        UpperBound = 14,
                     },
                     KeywordsMentioning = new BoundedCriteria
                     {
@@ -134,11 +151,15 @@ namespace WebPaperAnalyzer.Controllers
                     PictureNotReferencedErrorCost = 0,
                     TableNotReferencedCost = 0,
                     TableNotReferencedErrorCost = 0,
+                    DiscordantSentenceCost = 0,
+                    DiscordantSentenceErrorCost = 0,
+                    MissingSentenceCost = 0,
+                    MissingSentenceErrorCost = 0,
                     ForbiddenWords = new List<ForbiddenWords>()
                 };
             }
 
-            PaperAnalysisResult result=null;
+            PaperAnalysisResult result = null;
             try
             {
                 _logger.LogInformation($"Settings have {settings.ForbiddenWords.Count(x => true)} dictionary");
@@ -149,7 +170,7 @@ namespace WebPaperAnalyzer.Controllers
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
 
-                result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
+                result = new PaperAnalysisResult("", new List<Section>(), new List<Criterion>(),
                     new List<AnalyzeResults.Errors.Error>(), 0)
                 { Error = ex.Message };
                 throw;// Error(ex.Message);
@@ -182,6 +203,12 @@ namespace WebPaperAnalyzer.Controllers
 
                 _logger.LogDebug($"Result saved by Id {analysisResult.Id}");
                 Repository.AddResult(analysisResult);
+                // Start the task for additional MLS Analysis
+                if (file?.FileName != null && Path.GetExtension(file.FileName) == ".md") // currently only support md files for advanced analyzing
+                {
+                    if (BackgroundJobs != null)
+                        BackgroundJobs.Enqueue<IMLSAnalysisService>((service) => service.GetMLSAnalysisAsync(resultId.ToString(), result.Sections, result.Keywords.Keys.ToList()));
+                }
             }
 
         }
@@ -192,7 +219,7 @@ namespace WebPaperAnalyzer.Controllers
         {
             try
             {
-                string id = Guid.NewGuid().ToString();
+                ObjectId id = ObjectId.GenerateNewId(DateTime.Now); // Guid.NewGuid().ToString();
                 await ProcessFile(id, file, titles, paperName, refsName, criterionName, keywords);
                 return Ok(id);
             }
@@ -209,11 +236,12 @@ namespace WebPaperAnalyzer.Controllers
             byte[] buffer = new byte[stream.Length];
             stream.Read(buffer, 0, (int)stream.Length);
             Console.WriteLine(criteriaName);
-            string id = Guid.NewGuid().ToString();
+            ObjectId id = ObjectId.GenerateNewId(DateTime.Now); // Guid.NewGuid().ToString();
             Response.OnCompleted(async () =>
             {
                 try
                 {
+                    Console.WriteLine(Encoding.UTF8.GetString(buffer));
                     await ProcessFile(id, file, "", Encoding.UTF8.GetString(buffer), "", criteriaName);
                 }
                 catch (Exception ex)
@@ -224,29 +252,38 @@ namespace WebPaperAnalyzer.Controllers
             });
             return Ok(id);
         }
-
+        [HttpPost]
+        [Route("WebHook/{resultId}")]
+        public IActionResult ProcessWebHookResponse([FromRoute]string resultId, [FromBody] MLSAnalysisResult result)
+        {
+            Console.WriteLine(resultId);
+            Console.WriteLine(result.ToString());
+            // TODO: add result to database
+            _mlsAnalysisService.UpdateToDatabase(ObjectId.Parse(resultId), result);
+            return Ok();
+        }
         [HttpGet]
         public IActionResult Result(string id)
         {
             _logger.LogDebug($"Try to show result by ID: {id}");
-            AnalysisResult analysisResult = Repository.GetResult(id);
+            AnalysisResult analysisResult = Repository.GetResult(ObjectId.Parse(id));
             if (analysisResult != null)
             {
-                return View(analysisResult.Result);
+                return View(new Tuple<PaperAnalysisResult, MLSAnalysisResult>(analysisResult.Result, analysisResult.MLSResult));
             }
             else
             {
-                PaperAnalysisResult result = new PaperAnalysisResult(new List<Section>(), new List<Criterion>(),
+                PaperAnalysisResult result = new PaperAnalysisResult("", new List<Section>(), new List<Criterion>(),
                                                                 new List<AnalyzeResults.Errors.Error>(), 0)
                 { Error = "Your work is being processed..." };
-                return View(result);
+                return View(new Tuple<PaperAnalysisResult, MLSAnalysisResult>(result, null));
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> Badge(string id)
         {
-            AnalysisResult analysisResult = Repository.GetResult(id);
+            AnalysisResult analysisResult = Repository.GetResult(ObjectId.Parse(id));
             if (analysisResult != null)
             {
                 string criterion = string.IsNullOrEmpty(analysisResult.Criterion) ? "" : analysisResult.Criterion;
@@ -257,7 +294,9 @@ namespace WebPaperAnalyzer.Controllers
                     Criterion = criterion,
                     Score = score,
                     MaxScore = maxScore,
-                    IsProcessing = false
+                    IsProcessing = false,
+                    IsMLSProcessing = (analysisResult.MLSResult==null)
+                    
                 });
                 return Content(result, "image/svg+xml", Encoding.UTF8);
             }
@@ -268,7 +307,8 @@ namespace WebPaperAnalyzer.Controllers
                     Criterion = "",
                     Score = -1,
                     MaxScore = -1,
-                    IsProcessing = true
+                    IsProcessing = true,
+                    IsMLSProcessing = true
                 });
                 return Content(result, "image/svg+xml", Encoding.UTF8);
             }
@@ -278,7 +318,7 @@ namespace WebPaperAnalyzer.Controllers
         [Route("Home/ShortResult/{id}")]
         public IActionResult ShortResult(string id)
         {
-            return Content(Repository.GetResult(id)?.Result.GetShortSummary());
+            return Content(Repository.GetResult(ObjectId.Parse(id))?.Result.GetShortSummary());
         }
 
         public async Task<IActionResult> Index()

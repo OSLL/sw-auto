@@ -1,37 +1,37 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace AnalyzeResults.Helpers
 {
     [Serializable]
-    public struct Interval<T> where T : struct, IComparable
+    public class Interval<T> where T : struct, IComparable
     {
-        public T LowerBound { get; private set; }
-        public T UpperBound { get; private set; }
+        public T LowerBound { get; set; }
+        public T UpperBound { get; set; }
 
-        public IntervalType LowerBoundIntervalType { get; private set; }
-        public IntervalType UpperBoundIntervalType { get; private set; }
-
+        public IntervalType LowerBoundIntervalType { get; set; }
+        public IntervalType UpperBoundIntervalType { get; set; }
+        
         public Interval(
-            T lowerbound,
-            T upperbound,
-            IntervalType lowerboundIntervalType = IntervalType.Closed,
-            IntervalType upperboundIntervalType = IntervalType.Closed)
-            : this()
+            T lowerBound,
+            T upperBound,
+            IntervalType lowerBoundIntervalType = IntervalType.Closed,
+            IntervalType upperBoundIntervalType = IntervalType.Closed)
         {
-            var a = lowerbound;
-            var b = upperbound;
+            var a = lowerBound;
+            var b = upperBound;
             var comparison = a.CompareTo(b);
 
             if (comparison > 0)
             {
-                a = upperbound;
-                b = lowerbound;
+                a = lowerBound;
+                b = upperBound;
             }
 
             LowerBound = a;
             UpperBound = b;
-            LowerBoundIntervalType = lowerboundIntervalType;
-            UpperBoundIntervalType = upperboundIntervalType;
+            LowerBoundIntervalType = lowerBoundIntervalType;
+            UpperBoundIntervalType = upperBoundIntervalType;
         }
 
         public bool Contains(T point)
@@ -62,6 +62,14 @@ namespace AnalyzeResults.Helpers
                 UpperBoundIntervalType == IntervalType.Open ? ")" : "]"
             );
         }
+        //public Interval(SerializationInfo info, StreamingContext context)
+        //{
+        //    Console.WriteLine("called");
+        //}
+        //public void GetObjectData(SerializationInfo info, StreamingContext context)
+        //{
+        //    Console.WriteLine("called");
+        //}
     }
 
     public static class Interval

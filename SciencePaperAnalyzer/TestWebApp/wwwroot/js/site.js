@@ -132,7 +132,8 @@ function LoadResults() {
         }
     })
 
-    // NOTE: code ABOVE can be shorten by half, at least
+    // TODO: refactor the code above, too much repeating code
+
     $('.keyword-container, a.papername-word').click(function () {
         var currentStatus = $(this).hasClass('toggled-on')
         highlightKeyword.bind(this)(!currentStatus)
@@ -156,6 +157,40 @@ function LoadResults() {
         if (ids !== undefined) {
             var ids = ids.split(',')
             var selector = ids.map(id => `[wordId='${id}']`).join(',')
+            $(selector).each(function () {
+                let dir = state == true ? 1 : -1;
+                let sourceCount = $(this).attr('source-count');
+                sourceCount = sourceCount ? parseInt(sourceCount) : 0;
+                sourceCount += dir;
+                $(this).attr('source-count', sourceCount)
+                $(this).toggleClass('word-selected', (sourceCount > 0))
+            })
+        }
+    }
+
+    $('.error-container').click(function () {
+        var currentStatus = $(this).hasClass('toggled-on')
+        highlightKeyword.bind(this)(!currentStatus)
+        $(this).toggleClass('word-selected toggled-on', !currentStatus)
+    })
+
+    $('.error-container').hover(function () {
+        if (!$(this).hasClass('toggled-on')) {
+            highlightSentence.bind(this)(true)
+            $(this).toggleClass('word-selected', true)
+        }
+    }, function () {
+        if (!$(this).hasClass('toggled-on')) {
+            highlightSentence.bind(this)(false)
+            $(this).toggleClass('word-selected', false)
+        }
+    })
+
+    function highlightSentence(state) {
+        var ids = $(this).attr('sentId');
+        if (ids !== undefined) {
+            var ids = ids.split(',')
+            var selector = ids.map(id => `[sentId='${id}']`).join(',')
             $(selector).each(function () {
                 let dir = state == true ? 1 : -1;
                 let sourceCount = $(this).attr('source-count');

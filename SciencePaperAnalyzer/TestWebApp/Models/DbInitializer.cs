@@ -13,6 +13,7 @@ using TestWebApp.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using static WebPaperAnalyzer.DAL.ResultRepository;
+using AnalyzeResults.Presentation;
 
 namespace WebPaperAnalyzer.Models
 {
@@ -53,24 +54,24 @@ namespace WebPaperAnalyzer.Models
             {
                 var options = new CreateCollectionOptions
                 {
-                    Capped = true,
-                    MaxSize = resultCollectionInfo.GetValue<long>("MaxSize", 10485760),
-                    MaxDocuments = resultCollectionInfo.GetValue<long>("MaxDocuments", 5),
+                    //Capped = true,
+                    //MaxSize = resultCollectionInfo.GetValue<long>("MaxSize", 10485760),
+                    //MaxDocuments = resultCollectionInfo.GetValue<long>("MaxDocuments", 5),
                 };
                 await database.CreateCollectionAsync("results", options);
             }
-            else
-            {
-                // check if it's capped
-                var command = new BsonDocument { { "collStats", "results" }, { "scale", 1 } };
-                var result = database.RunCommand<BsonDocument>(command);
-                if (!result.GetValue("capped").AsBoolean)
-                {
-                    database.RunCommand<BsonDocument>(new BsonDocument {
-                        { "convertToCapped", "results" }, { "size", resultCollectionInfo.GetValue<long>("MaxSize", 10485760) }
-                    });
-                }
-            }
+            //else
+            //{
+            //    // check if it's capped
+            //    var command = new BsonDocument { { "collStats", "results" }, { "scale", 1 } };
+            //    var result = database.RunCommand<BsonDocument>(command);
+            //    if (!result.GetValue("capped").AsBoolean)
+            //    {
+            //        database.RunCommand<BsonDocument>(new BsonDocument {
+            //            { "convertToCapped", "results" }, { "size", resultCollectionInfo.GetValue<long>("MaxSize", 10485760) }
+            //        });
+            //    }
+            //}
 
 
         }
@@ -105,7 +106,29 @@ namespace WebPaperAnalyzer.Models
             {
                 Console.WriteLine("Admin account exists:");
                 Console.WriteLine("Login: " + login);
-                Console.WriteLine("Password: " + password);
+                Console.WriteLine("Password: " + password); // if the password is set somewhere else, this might not be correct
+            }
+        }
+
+  //        "ResultCollection": {
+  //  "MaxSize": 10485760,
+  //  "MaxDocuments": 5
+  //},
+        public async Task RemoveOldResults()
+        {
+            Console.WriteLine("Cron Fired");
+            var collectionNames = database.ListCollectionNames().ToList();
+            if (collectionNames.Contains("results"))
+            {
+                var maxDocuments = _appConfig.GetSection("ResultCollection").GetValue<int>("MaxDocuments", 2);
+                var collection = database.GetCollection<AnalysisResult>("results");
+                long documentCount = collection.CountDocuments(_=>true);
+                if (documentCount > maxDocuments)
+                {
+                    var list = collection.Find(_ => true).SortBy(d=>d.Id).Limit((int)documentCount- maxDocuments).Project(e=>e.Id).ToList();
+                    var filter = Builders<AnalysisResult>.Filter.In(d => d.Id, list);
+                    await collection.DeleteManyAsync(filter);
+                }
             }
         }
     }

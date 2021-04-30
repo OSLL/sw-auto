@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
+using AnalyzeResults.Presentation;
 using DocumentFormat.OpenXml.Packaging;
 
 namespace TextExtractor
 {
     public class DocxTextExtractor : ITextExtractor
     {
+        public List<Section> ExtractStructureFromFileStream(Stream fileStream, bool extractTitle)
+        {
+            throw new NotImplementedException();
+        }
+
         public string ExtractTextFromFileStream(Stream fileStream)
         {
             const string wordmlNamespace = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";

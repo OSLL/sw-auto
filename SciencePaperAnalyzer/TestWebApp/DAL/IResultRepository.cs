@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MLSAnalysisWrapper;
+using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using WebPaperAnalyzer.Models;
 
@@ -8,7 +10,9 @@ namespace WebPaperAnalyzer.DAL
     {
         void AddResult(AnalysisResult result);
 
-        AnalysisResult GetResult(string id);
+        void UpdateResult(ObjectId id, AnalysisResult result);
+
+        AnalysisResult GetResult(ObjectId id);
 
         IEnumerable<AnalysisResult> GetResultsByLogin(string login, bool type);
     }

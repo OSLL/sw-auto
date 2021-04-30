@@ -142,6 +142,19 @@ namespace TestWebApp.Controllers
                 {
                     new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
                 }.ToList(),
+
+                DiscordantSentenceGradingType = GradingType.ErrorCostSubtraction,
+                DiscordantSentenceGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+
+                MissingSentenceGradingType = GradingType.ErrorCostSubtraction,
+                MissingSentenceGrading = new[]
+                {
+                    new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}, new ScopePair(){Boarder = 0, Value = 0}
+                }.ToList(),
+
                 TableNotReferencedGradingType = GradingType.ErrorCostSubtraction,
                 TableNotReferencedGrading = new[]
                 {

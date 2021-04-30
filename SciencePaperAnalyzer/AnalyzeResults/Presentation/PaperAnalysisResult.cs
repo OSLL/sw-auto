@@ -10,8 +10,9 @@ namespace AnalyzeResults.Presentation
     [Serializable]
     public class PaperAnalysisResult
     {
-        public PaperAnalysisResult(IEnumerable<Section> sections, IEnumerable<Criterion> criteria, IEnumerable<Error> errors, double maxScore)
+        public PaperAnalysisResult(string originalText, List<Section> sections, List<Criterion> criteria, List<Error> errors, double maxScore)
         {
+            OriginalText = originalText;
             Sections = new List<Section>();
             Sections.AddRange(sections);
             Criteria = new List<Criterion>();
@@ -21,6 +22,9 @@ namespace AnalyzeResults.Presentation
             Error = "";
             MaxScore = maxScore;
         }
+
+        [BsonElement("originalText")]
+        public string OriginalText { get; set; }
 
         [BsonElement("sections")]
         public List<Section> Sections { get; set; }
@@ -75,6 +79,8 @@ namespace AnalyzeResults.Presentation
             var specialError = Errors.FirstOrDefault(e => e.ErrorType == type);
 
             if (specialError == null)
+                return 0;
+            if (specialError.IsPlaceholder)
                 return 0;
             var weight = specialError.Weight;
             if (specialError.ErrorCost < 0)

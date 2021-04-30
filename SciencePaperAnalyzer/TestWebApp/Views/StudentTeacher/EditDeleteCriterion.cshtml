@@ -172,6 +172,40 @@
                                     </div>
                                 </div>
                             </div>
+                            @* REQUIRE MLS ANALYSIS SERVICE*@
+                            <div class="criterion-add-edit">
+                                <h3>
+                                    <input type="checkbox" for="KeywordsQualityCriterionFactor" class="criteria-checkbox" />
+                                    Keywords Quality
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="KeywordsQualityCriterionFactor" />
+                                </div>
+                                <div class="my-3">
+                                    <h5>
+                                        Границы
+                                    </h5>
+                                    <div class="range-slider" txtLowerBound="KeywordsQualityCriterionLowerBound" txtUpperBound="KeywordsQualityCriterionUpperBound" min="0" max="50" step="0.5"></div>
+                                </div>
+                                <div class="criterion-add-bounds bounds-container d-none">
+                                    <div>
+                                        <h5>
+                                            Нижняя граница
+                                        </h5>
+                                        <input type="text" asp-for="KeywordsQualityCriterionLowerBound" />
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            Верхняя граница
+                                        </h5>
+                                        <input type="text" asp-for="KeywordsQualityCriterionUpperBound" />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="criterion-add-edit">
                                 <h3>
                                     <input type="checkbox" for="KeywordsMentioningFactor" class="criteria-checkbox" />
@@ -363,6 +397,79 @@
                                     </div>
                                 </div>
                             </div>
+                            @* REQUIRE MLS ANALYSIS SERVICE*@
+                            <div class="criterion-add-submit" style="margin-bottom: 3%">
+                                <h3>
+                                    <input type="checkbox" for="DiscordantSentenceCost" class="criteria-checkbox" />
+                                    Discordant Sentence
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="DiscordantSentenceCost" />
+                                </div>
+                                <div>
+                                    <label for="DiscordantSentenceGradingTypeVM">Использовать гибкую систему оценивания:</label>
+                                    <input type="checkbox" data-toggle-grading asp-for="DiscordantSentenceGradingTypeVM" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="ErrorCostSubtraction @(Model.DiscordantSentenceGradingTypeVM?"d-none":"")">
+                                        <div class="cost-slider my-3" txtCost="DiscordantSentenceErrorCost" step="0.1"></div>
+                                        <input class="cost-textbox d-none" type="text" asp-for="DiscordantSentenceErrorCost" />
+                                    </div>
+                                    <div class="GradingTable @(!Model.DiscordantSentenceGradingTypeVM?"d-none":"")">
+                                        <div class="error-cost" data-target-name="DiscordantSentenceGrading" data-initial-value='@Html.Raw(Json.Serialize(Model.DiscordantSentenceGrading))'>
+                                            <div class="bounds-slider my-3" step="0.1"></div>
+                                            <div class="cost-sliders d-flex flex-row">
+
+                                            </div>
+                                            <input type="button" value="+" />
+                                            <input type="button" value="-" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @* REQUIRE MLS ANALYSIS SERVICE*@
+                            <div class="criterion-add-submit" style="margin-bottom: 3%">
+                                <h3>
+                                    <input type="checkbox" for="MissingSentenceCost" class="criteria-checkbox" />
+                                    Missing Sentence
+                                </h3>
+                                <div class="weight-container d-none">
+                                    <h5>
+                                        Вес критерия
+                                    </h5>
+                                    <input type="text" asp-for="MissingSentenceCost" />
+                                </div>
+                                <div>
+                                    <label for="MissingSentenceGradingTypeVM">Использовать гибкую систему оценивания:</label>
+                                    <input type="checkbox" data-toggle-grading asp-for="MissingSentenceGradingTypeVM" />
+                                </div>
+                                <div>
+                                    <h5>
+                                        Штраф
+                                    </h5>
+                                    <div class="ErrorCostSubtraction @(Model.MissingSentenceGradingTypeVM?"d-none":"")">
+                                        <div class="cost-slider my-3" txtCost="MissingSentenceErrorCost" step="0.1"></div>
+                                        <input class="cost-textbox d-none" type="text" asp-for="MissingSentenceErrorCost" />
+                                    </div>
+                                    <div class="GradingTable @(!Model.MissingSentenceGradingTypeVM?"d-none":"")">
+                                        <div class="error-cost" data-target-name="MissingSentenceGrading" data-initial-value='@Html.Raw(Json.Serialize(Model.MissingSentenceGrading))'>
+                                            <div class="bounds-slider my-3" step="0.1"></div>
+                                            <div class="cost-sliders d-flex flex-row">
+
+                                            </div>
+                                            <input type="button" value="+" />
+                                            <input type="button" value="-" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="criterion-add-submit" style="margin-bottom: 3%">
                                 <h3>
                                     <input type="checkbox" for="ForbiddenWordsCost" class="criteria-checkbox" />
@@ -459,12 +566,15 @@
             { name: "Уровень водности", input: "WaterCriterionFactor", enabled: true },
             { name: "Тошнота", input: "KeyWordsCriterionFactor", enabled: true },
             { name: "Ципф", input: "ZipfFactor", enabled: true },
+            { name: "Keywords Quality", input: "KeywordsQualityCriterionFactor", enabled: true },
             { name: "Упоминание ключевых слов", input: "KeywordsMentioningFactor", enabled: true },
             { name: "Использование личных местоимений", input: "UseOfPersonalPronounsCost", enabled: true },
             { name: "Нет ссылки на источник", input: "SourceNotReferencedCost", enabled: true },
             { name: "Короткий раздел", input: "ShortSectionCost", enabled: true },
             { name: "Нет ссылки на рисунок", input: "PictureNotReferencedCost", enabled: true },
             { name: "Нет ссылки на таблицу", input: "TableNotReferencedCost", enabled: true },
+            { name: "Discordant Sentence", input: "DiscordantSentenceCost", enabled: true },
+            { name: "Missing Sentence", input: "MissingSentenceCost", enabled: true },
             { name: "Запрещенные словари", input: "ForbiddenWordsCost", enabled: true }
         ].reverse()
 

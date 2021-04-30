@@ -37,6 +37,14 @@ namespace WebPaperAnalyzer.Models
                     LowerBound = criteria.ZipfFactorLowerBound,
                     UpperBound = criteria.ZipfFactorUpperBound,
                 },
+
+                KeywordsQuality = new BoundedCriteria
+                {
+                    Weight = criteria.KeywordsQualityCriterionFactor,
+                    LowerBound = criteria.KeywordsQualityCriterionLowerBound,
+                    UpperBound = criteria.KeywordsQualityCriterionUpperBound,
+                },
+
                 KeywordsMentioning = new BoundedCriteria
                 {
                     Weight = criteria.KeywordsMentioningFactor,
@@ -63,6 +71,17 @@ namespace WebPaperAnalyzer.Models
                 TableNotReferencedErrorCost = criteria.TableNotReferencedErrorCost,
                 TableNotReferencedGrading = criteria.TableNotReferencedGrading,
                 TableNotReferencedGradingType = criteria.TableNotReferencedGradingType,
+
+                DiscordantSentenceCost = criteria.DiscordantSentenceCost,
+                DiscordantSentenceErrorCost = criteria.DiscordantSentenceErrorCost,
+                DiscordantSentenceGrading = criteria.DiscordantSentenceGrading,
+                DiscordantSentenceGradingType = criteria.DiscordantSentenceGradingType,
+
+                MissingSentenceCost = criteria.MissingSentenceCost,
+                MissingSentenceErrorCost = criteria.MissingSentenceErrorCost,
+                MissingSentenceGrading = criteria.MissingSentenceGrading,
+                MissingSentenceGradingType = criteria.MissingSentenceGradingType,
+
                 MaxScore = criteria.MaxScore,
                 ForbiddenWords = criteria.ForbiddenWords,
                 ForbiddenWordsCost = criteria.ForbiddenWordsCost,

@@ -12,9 +12,12 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "RecaptchaSettings__SecretKey": "",
-        "RecaptchaSettings__SiteKey": "",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "RecaptchaSettings__SecretKey": "6LfbsfkZAAAAACjzfOQ0sNSKE1y0h8BqZwxQHeS4",
+        "MLSAnalysisServiceBaseAddress": "http://localhost:6543/",
+        "AutoTitleExtractionToken": "#auto#",
+        "RecaptchaSettings__SiteKey": "6LfbsfkZAAAAAONr4OyCRDlXWzgoN8zqbKfPqKOC",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MongoSettings__Host": "localhost"
       }
     },
     "TestWebApp": {

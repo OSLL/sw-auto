@@ -3,26 +3,45 @@
 }
 @model WebPaperAnalyzer.ViewModels.BadgeModel
 <?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="@((Model.Criterion.Length+Model.ScoreString.Length)*9+20)" height="25">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="@((Model.Criterion.Length+Model.ScoreString.Length)*9+20+125)" height="25">
     @*<rect fill="rgb(0,0,0)" fill-opacity="0" stroke="none" width="134" height="22" />
         <path fill="rgb(68,68,68)" stroke="none" d="M0 18L0 4Q0 3.80349 0.0192611 3.60793Q0.0385222 3.41237 0.0768589 3.21964Q0.115196 3.02691 0.172239 2.83886Q0.229282 2.65082 0.304482 2.46927Q0.379682 2.28772 0.472315 2.11441Q0.564948 1.94111 0.674121 1.77772Q0.783295 1.61433 0.907958 1.46243Q1.03262 1.31052 1.17157 1.17157Q1.31052 1.03262 1.46243 0.907958Q1.61433 0.783295 1.77772 0.674121Q1.94111 0.564948 2.11441 0.472315Q2.28772 0.379682 2.46927 0.304482Q2.65082 0.229282 2.83886 0.172239Q3.02691 0.115196 3.21964 0.0768589Q3.41237 0.0385222 3.60793 0.0192611Q3.80349 0 4 0L77.4678 0Q77.6643 0 77.8598 0.0192611Q78.0554 0.0385222 78.2481 0.0768589Q78.4409 0.115196 78.6289 0.172239Q78.817 0.229282 78.9985 0.304482Q79.1801 0.379682 79.3534 0.472315Q79.5267 0.564948 79.69 0.674121Q79.8534 0.783295 80.0053 0.907958Q80.1572 1.03262 80.2962 1.17157Q80.4352 1.31052 80.5598 1.46243Q80.6845 1.61433 80.7936 1.77772Q80.9028 1.94111 80.9955 2.11441Q81.0881 2.28772 81.1633 2.46927Q81.2385 2.65082 81.2955 2.83886Q81.3526 3.02691 81.3909 3.21964Q81.4293 3.41237 81.4485 3.60793Q81.4678 3.80349 81.4678 4L81.4678 18Q81.4678 18.1965 81.4485 18.3921Q81.4293 18.5876 81.3909 18.7804Q81.3526 18.9731 81.2955 19.1611Q81.2385 19.3492 81.1633 19.5307Q81.0881 19.7123 80.9955 19.8856Q80.9028 20.0589 80.7936 20.2223Q80.6845 20.3857 80.5598 20.5376Q80.4352 20.6895 80.2962 20.8284Q80.1572 20.9674 80.0053 21.092Q79.8534 21.2167 79.69 21.3259Q79.5267 21.4351 79.3534 21.5277Q79.1801 21.6203 78.9985 21.6955Q78.817 21.7707 78.6289 21.8278Q78.4409 21.8848 78.2481 21.9231Q78.0554 21.9615 77.8598 21.9807Q77.6643 22 77.4678 22L4 22Q3.80349 22 3.60793 21.9807Q3.41237 21.9615 3.21964 21.9231Q3.02691 21.8848 2.83886 21.8278Q2.65082 21.7707 2.46927 21.6955Q2.28772 21.6203 2.11441 21.5277Q1.94111 21.4351 1.77772 21.3259Q1.61433 21.2167 1.46243 21.092Q1.31052 20.9674 1.17157 20.8284Q1.03262 20.6895 0.907958 20.5376Q0.783295 20.3857 0.674121 20.2223Q0.564948 20.0589 0.472315 19.8856Q0.379682 19.7123 0.304482 19.5307Q0.229282 19.3492 0.172239 19.1611Q0.115196 18.9731 0.0768589 18.7804Q0.0385222 18.5876 0.0192611 18.3921Q0 18.1965 0 18Z" />
         <rect fill="rgb(68,68,68)" stroke="none" x="77.467773" width="4" height="22" />
         <path fill="rgb(@Model.Color.R,@Model.Color.G,0)" stroke="none" d="M81.4678 18L81.4678 4Q81.4678 3.80349 81.487 3.60793Q81.5063 3.41237 81.5446 3.21964Q81.583 3.02691 81.64 2.83886Q81.6971 2.65082 81.7722 2.46927Q81.8475 2.28772 81.9401 2.11441Q82.0327 1.94111 82.1419 1.77772Q82.2511 1.61433 82.3757 1.46243Q82.5004 1.31052 82.6393 1.17157Q82.7783 1.03262 82.9302 0.907958Q83.0821 0.783295 83.2455 0.674121Q83.4089 0.564948 83.5822 0.472315Q83.7555 0.379682 83.937 0.304482Q84.1186 0.229282 84.3066 0.172239Q84.4947 0.115196 84.6874 0.0768589Q84.8801 0.0385222 85.0757 0.0192611Q85.2713 0 85.4678 0L129.11 0Q129.307 0 129.502 0.0192611Q129.698 0.0385222 129.891 0.0768589Q130.083 0.115196 130.271 0.172239Q130.46 0.229282 130.641 0.304482Q130.823 0.379682 130.996 0.472315Q131.169 0.564948 131.333 0.674121Q131.496 0.783295 131.648 0.907958Q131.8 1.03262 131.939 1.17157Q132.078 1.31052 132.202 1.46243Q132.327 1.61433 132.436 1.77772Q132.545 1.94111 132.638 2.11441Q132.731 2.28772 132.806 2.46927Q132.881 2.65082 132.938 2.83886Q132.995 3.02691 133.033 3.21964Q133.072 3.41237 133.091 3.60793Q133.11 3.80349 133.11 4L133.11 18Q133.11 18.1965 133.091 18.3921Q133.072 18.5876 133.033 18.7804Q132.995 18.9731 132.938 19.1611Q132.881 19.3492 132.806 19.5307Q132.731 19.7123 132.638 19.8856Q132.545 20.0589 132.436 20.2223Q132.327 20.3857 132.202 20.5376Q132.078 20.6895 131.939 20.8284Q131.8 20.9674 131.648 21.092Q131.496 21.2167 131.333 21.3259Q131.169 21.4351 130.996 21.5277Q130.823 21.6203 130.641 21.6955Q130.46 21.7707 130.271 21.8278Q130.083 21.8848 129.891 21.9231Q129.698 21.9615 129.502 21.9807Q129.307 22 129.11 22L85.4678 22Q85.2713 22 85.0757 21.9807Q84.8801 21.9615 84.6874 21.9231Q84.4947 21.8848 84.3066 21.8278Q84.1186 21.7707 83.937 21.6955Q83.7555 21.6203 83.5822 21.5277Q83.4089 21.4351 83.2455 21.3259Q83.0821 21.2167 82.9302 21.092Q82.7783 20.9674 82.6393 20.8284Q82.5004 20.6895 82.3757 20.5376Q82.2511 20.3857 82.1419 20.2223Q82.0327 20.0589 81.9401 19.8856Q81.8475 19.7123 81.7722 19.5307Q81.6971 19.3492 81.64 19.1611Q81.583 18.9731 81.5446 18.7804Q81.5063 18.5876 81.487 18.3921Q81.4678 18.1965 81.4678 18Z" />
         <rect fill="rgb(@Model.Color.R,@Model.Color.G,0)" stroke="none" x="81.467773" width="4" height="22" />*@
-    <rect fill="rgb(68,68,68)" x="0" y="0" rx="5" ry="5" width="@(Model.Criterion.Length*9+10)" height="25" />
-    <rect fill="rgb(68,68,68)" x="@(Model.Criterion.Length*9)" y="0" width="10" height="25" />
-    <rect fill="rgb(@Model.Color.R,@Model.Color.G,@Model.Color.B)" x="@(Model.Criterion.Length*9+10)" y="0" width="5" height="25" />
-    <rect fill="rgb(@Model.Color.R,@Model.Color.G,@Model.Color.B)" x="@(Model.Criterion.Length*9+10)" y="0" rx="5" ry="5" width="@(Model.ScoreString.Length*9+10)" height="25" />
+    <rect fill="rgb(68,68,68)" x="0" y="0" rx="5" ry="5" width="@(Model.CriterionStringWidth+10)" height="25" /> @*left rect with round corner *@
+    <rect fill="rgb(68,68,68)" x="@(Model.CriterionStringWidth)" y="0" width="10" height="25" /> @*rect in the middle left - to clear round corner*@
+    <rect fill="rgb(@Model.Color.R,@Model.Color.G,@Model.Color.B)" x="@(Model.CriterionStringWidth+10)" y="0" width="5" height="25" /> @*right rect with round corner*@
+    <rect fill="rgb(@Model.Color.R,@Model.Color.G,@Model.Color.B)" x="@(Model.CriterionStringWidth+10)" y="0" rx="5" ry="5" width="@(Model.ScoreStringWidth+10)" height="25" /> @*right rect with round corner*@
+
+
     <text fill="rgb(51,51,51)" stroke="none" font-size="14" font-family="Segoe UI" x="10" y="18">
         @Model.Criterion
     </text>
     <text fill="rgb(255,255,255)" stroke="none" font-size="14" font-family="Segoe UI" x="10" y="17">
         @Model.Criterion
     </text>
-    <text fill="rgb(51,51,51)" stroke="none" font-size="14" font-family="Segoe UI" x="@(Model.Criterion.Length*9+21)" y="18">
+    <text fill="rgb(51,51,51)" stroke="none" font-size="14" font-family="Segoe UI" x="@(Model.CriterionStringWidth+21)" y="18">
         @Model.ScoreString
     </text>
-    <text fill="rgb(255,255,255)" stroke="none" font-size="14" font-family="Segoe UI" x="@(Model.Criterion.Length*9+20)" y="17">
+    <text fill="rgb(255,255,255)" stroke="none" font-size="14" font-family="Segoe UI" x="@(Model.CriterionStringWidth+20)" y="17">
         @Model.ScoreString
     </text>
+
+    @if (Model.IsMLSProcessing && !Model.IsProcessing)
+    {
+
+        @*right rect with round corner*@
+        <rect fill="rgb(255,0,0)" x="@((Model.CriterionStringWidth+Model.ScoreStringWidth)+15)" y="0" width="5" height="25" />
+        @*right rect with round corner*@
+        <rect fill="rgb(255,0,0)" x="@((Model.CriterionStringWidth+Model.ScoreStringWidth)+15)" y="0" rx="5" ry="5" width="125" height="25" />
+        <svg>
+            <text fill="rgb(51,51,51)" stroke="none" font-size="14" font-family="Segoe UI" x="@((Model.CriterionStringWidth+Model.ScoreStringWidth)+20)" y="18">
+                Waiting for MLSS
+            </text>
+            <text fill="rgb(255,255,255)" stroke="none" font-size="14" font-family="Segoe UI" x="@((Model.CriterionStringWidth+Model.ScoreStringWidth)+20)" y="17">
+                Waiting for MLSS
+            </text>
+        </svg>
+    }
 </svg>

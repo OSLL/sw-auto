@@ -1,7 +1,7 @@
 ﻿@using AnalyzeResults.Errors
 @using AnalyzeResults.Presentation
 @using Microsoft.EntityFrameworkCore.Infrastructure
-@model AnalyzeResults.Presentation.PaperAnalysisResult
+@model Tuple<AnalyzeResults.Presentation.PaperAnalysisResult, MLSAnalysisWrapper.MLSAnalysisResult>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -24,8 +24,14 @@
 
 </head>
 <body>
+    <div style="text-align:center; color:burlywood; padding:5px; background-color:darkslategray">
+        @if (Model.Item2 == null && Model.Item1.Criteria.Find(e => e.IsPlaceholder) != null && Model.Item1.Errors.Find(e => e.IsPlaceholder) != null)
+        {
+            <span>Please come back after a few minutes for full scoring and more information, your paper is being further examined.</span>
+        }
+    </div>
     <div class="main-container">
-        @if (string.IsNullOrEmpty(Model.Error))
+        @if (string.IsNullOrEmpty(Model.Item1.Error))
         {
             <div class="results-container">
                 <div class="grade-container">
@@ -40,19 +46,19 @@
                         Оценка стиля статьи:
                     </div>
                     <div class="grade-value-container">
-                        <div class="grade-value @(Model.GetPaperGrade() > 0.9*@Model.MaxScore
+                        <div class="grade-value @(Model.Item1.GetPaperGrade() > 0.9*@Model.Item1.MaxScore
                                                     ? "grade-perfect"
-                                                    : Model.GetPaperGrade() > 0.7*@Model.MaxScore
+                                                    : Model.Item1.GetPaperGrade() > 0.7*@Model.Item1.MaxScore
                                                         ? "grade-good"
-                                                        : Model.GetPaperGrade() > 0.55*@Model.MaxScore
+                                                        : Model.Item1.GetPaperGrade() > 0.55*@Model.Item1.MaxScore
                                                             ? "grade-meh"
-                                                            : Model.GetPaperGrade() > 0.4*@Model.MaxScore
+                                                            : Model.Item1.GetPaperGrade() > 0.4*@Model.Item1.MaxScore
                                                                 ? "grade-bad"
                                                                 : "grade-awful")">
-                            @Model.GetPaperGrade()
+                            @Model.Item1.GetPaperGrade()
                         </div>
                         <div class="grade-label">
-                            из @Model.MaxScore
+                            из @Model.Item1.MaxScore
                         </div>
                     </div>
                 </div>
@@ -64,38 +70,58 @@
                         <div class="criteria-name">Проведенные проверки:</div>
                     </div>
                     <div class="criteria-data">
-                        @foreach (Criterion crit in Model.Criteria.Where(x => (x as Criterion)?.Factor > 0))
+                        @foreach (Criterion crit in Model.Item1.Criteria.Where(x => (x as Criterion)?.Factor > 0))
                         {
-                            var @res = @crit.IsMet() ? @crit.Factor : 0;
-                            <div class="criteria-data-row criterion-value">
-                                @crit.Name : Набрано @Math.Round(@res, 2) из @Math.Round(@crit.Factor, 2) баллов
-                            </div>
+                            if (crit.Name == "Keywords Quality" && (crit as NumericalCriterion).Value < 0)
+                            {
+                                <div class="criteria-data-row criterion-value">
+                                    @crit.Name: Waiting for mls service
+                                </div>
+                            }
+                            else
+                            {
+                                var @res = @crit.IsMet() ? @crit.Factor : 0;
+                                <div class="criteria-data-row criterion-value">
+                                    @crit.Name : Набрано @Math.Round(@res, 2) из @Math.Round(@crit.Factor, 2) баллов
+                                </div>
+                            }
                         }
                         @foreach (var error in Enum.GetValues(typeof(ErrorType)))
                         {
-                            var specialError = @Model.Errors.FirstOrDefault(e => e.ErrorType == (ErrorType)error);
+                            var specialError = @Model.Item1.Errors.FirstOrDefault(e => e.ErrorType == (ErrorType)error);
                             if (@specialError != null && @specialError.Weight > 0)
                             {
-                                var @res = @Model.GetSpecialGrade((ErrorType)error);
-                                <div class="criteria-data-row criterion-value">
-                                    @if (specialError.ErrorCost >= 0)
-                                    {
+                                if (specialError.IsPlaceholder)
+                                {
+                                    <div class="criteria-data-row criterion-value">
                                         <span>
-                                            @specialError.Name : Набрано @Math.Round(res, 2) из @Math.Round(@specialError.Weight, 2) баллов
+                                            @specialError.Name : Waiting for mls service
                                         </span>
-                                    }
-                                    else
-                                    {
-                                        <span>
-                                            @specialError.Name : Набрано @Math.Round(@specialError.Weight, 2) из @Math.Round(@specialError.Weight, 2) баллов
-                                        </span>
-                                    }
-                                </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    var @res = @Model.Item1.GetSpecialGrade((ErrorType)error);
+                                    <div class="criteria-data-row criterion-value">
+                                        @if (specialError.ErrorCost >= 0)
+                                        {
+                                            <span>
+                                                @specialError.Name : Набрано @Math.Round(res, 2) из @Math.Round(@specialError.Weight, 2) баллов
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @specialError.Name : Набрано @Math.Round(@specialError.Weight, 2) из @Math.Round(@specialError.Weight, 2) баллов
+                                            </span>
+                                        }
+                                    </div>
+                                }
                             }
                         }
                     </div>
                 </div>
-                @foreach (Criterion crit in Model.Criteria.Where(x => (x as Criterion)?.Factor > 0))
+                @foreach (Criterion crit in Model.Item1.Criteria.Where(x => (x as Criterion)?.Factor > 0))
                 {
                     <div class="criteria-container">
                         <div class="criteria-header">
@@ -116,57 +142,73 @@
                             }
                         </div>
                         <div class="criteria-data">
-                            <div class="criteria-data-row criteria-description">
-                                @crit.Description
-                            </div>
-                            <div class="criteria-data-row criterion-value">
-                                <span class="data-label">Значение: </span><span class="data-value">@crit.GetStringValue()</span>
-                            </div>
-                            <div class="criteria-data-row">
-                                <span class="data-label">Требования: </span><span class="data-value">@crit.GetStringRequirements()</span>
-                            </div>
-                            @if (crit.IsMet())
+                            @if (crit.IsPlaceholder)
                             {
                                 <div class="criteria-data-row criterion-value">
-                                    <span class="data-label">Набрано @Math.Round(@crit.Factor, 2) баллов </span>
+                                    Waiting for mls service
                                 </div>
                             }
                             else
                             {
+                                <div class="criteria-data-row criteria-description">
+                                    @crit.Description
+                                </div>
                                 <div class="criteria-data-row criterion-value">
-                                    <span class="data-label">Набрано 0 баллов </span>
+                                    <span class="data-label">Значение: </span><span class="data-value">@crit.GetStringValue()</span>
                                 </div>
-                            }
-                            @if (!crit.IsMet())
-                            {
                                 <div class="criteria-data-row">
-                                    <span class="data-label">Совет: </span><span class="data-value">@crit.GetAdvice()</span>
+                                    <span class="data-label">Требования: </span><span class="data-value">@crit.GetStringRequirements()</span>
                                 </div>
+                                @if (crit.IsMet())
+                                {
+                                    <div class="criteria-data-row criterion-value">
+                                        <span class="data-label">Набрано @Math.Round(@crit.Factor, 2) баллов </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="criteria-data-row criterion-value">
+                                        <span class="data-label">Набрано 0 баллов </span>
+                                    </div>
+                                }
+                                @if (!crit.IsMet())
+                                {
+                                    <div class="criteria-data-row">
+                                        <span class="data-label">Совет: </span><span class="data-value">@crit.GetAdvice()</span>
+                                    </div>
+                                }
                             }
                         </div>
                     </div>
                 }
             </div>
             <div class="paper-container">
-                @foreach (var sect in Model.Sections)
+                @for (int sectIndex = 0; sectIndex < Model.Item1.Sections.Count; sectIndex++)
                 {
+                    Section sect = Model.Item1.Sections[sectIndex];
+
+                    @*@foreach (var sect in Model.Item1.Sections)
+                        {*@
+                    @*<span>Section start</span>*@
                     @switch (sect.Type)
                     {
                         case AnalyzeResults.Presentation.SectionType.PaperTitle:
                             <div>
                                 <div class="paper-title">
 
-                                    @foreach (string word in Model.PaperTitle.Split(' '))
+                                    @foreach (string word in Model.Item1.PaperTitle.Split(' '))
                                     {
                                         @if (word.Length > 2)
                                         {
-                                            <a class="papername-word" wordIds="@(Model.PaperTitleRefs.ContainsKey(word.Trim().ToLower()) ? String.Join(',', Model.PaperTitleRefs[word.Trim().ToLower()]) :"")" href="#">
+                                            <a class="papername-word" wordIds="@(Model.Item1.PaperTitleRefs.ContainsKey(word.Trim().ToLower()) ? String.Join(',', Model.Item1.PaperTitleRefs[word.Trim().ToLower()]) :"")" href="#">
                                                 @word
                                             </a>
                                         }
                                         else if (word.Length > 1 && word.ToUpper() == word)
+
                                         {
-                                            <a class="papername-word" wordIds="@(Model.PaperTitleRefs.ContainsKey(word.Trim()) ? String.Join(',', Model.PaperTitleRefs[word.Trim()]) : "")" href="#">
+                                            // for Abbreviation and Acronym
+                                            <a class="papername-word" wordIds="@(Model.Item1.PaperTitleRefs.ContainsKey(word.Trim()) ? String.Join(',', Model.Item1.PaperTitleRefs[word.Trim()]) : "")" href="#">
                                                 @word
                                             </a>
                                         }
@@ -183,7 +225,7 @@
                             break;
                         case AnalyzeResults.Presentation.SectionType.SectionTitle:
                             <div>
-                                <div class="section-title @(sect.HasErrors && Model.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.ShortSection)?.Weight > 0 ? "section-error" : "")" sectId="@sect.Id" id="err_@sect.Id" errors="@((int)AnalyzeResults.Errors.ErrorType.ShortSection)">
+                                <div class="section-title @(sect.HasErrors && Model.Item1.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.ShortSection)?.Weight > 0 ? "section-error" : "")" sectId="@sect.Id" id="err_@sect.Id" errors="@((int)AnalyzeResults.Errors.ErrorType.ShortSection)">
                                     @Html.Raw(sect.ToStringVersion())
                                 </div>
                             </div>
@@ -192,9 +234,9 @@
                             <div class="reference-list">
                                 @foreach (var reference in sect.References)
                                 {
-                                    <span class="reference @(reference.ReferedTo || Model.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.SourceNotReferenced)?.Weight <= 0 ? "" : "ref-error")" number="@reference.Number" id="ref_@reference.Number" errors="@((int)AnalyzeResults.Errors.ErrorType.SourceNotReferenced)">
-                                        @reference.Original.Original
-                                        @if (@Model.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.SourceNotReferenced)?.Weight > 0)
+                                    <span class="reference @(reference.ReferedTo || Model.Item1.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.SourceNotReferenced)?.Weight <= 0 ? "" : "ref-error")" number="@reference.Number" id="ref_@reference.Number" errors="@((int)AnalyzeResults.Errors.ErrorType.SourceNotReferenced)">
+                                        @reference.Original.ToStringVersion()
+                                        @if (@Model.Item1.Errors.FirstOrDefault(e => e.ErrorType == ErrorType.SourceNotReferenced)?.Weight > 0)
                                         {
                                             @if (reference.ReferedTo)
                                             {
@@ -209,21 +251,27 @@
                                                 <span class="old-source">Устаревший источник</span>
                                             }
                                         }
-                                    </span>
+                                    </span><br />
                                 }
                             </div>
                             break;
                         case AnalyzeResults.Presentation.SectionType.Text:
                         default:
                             <div>
-                                @foreach (var sent in sect.Sentences)
+                                @for (int sentIndex = 0; sentIndex < sect.Sentences.Count; sentIndex++)
                                 {
-                                    @foreach (var word in sent.Words)
-                                    {
-                                        <span wordId="@word.StartIndex" id="@word.StartIndex" class="word @(word.HasErrors ? "word-error" : "")" errors="@word.ErrorCodes">
-                                            @word.Original
-                                        </span>
-                                    }
+                                    Sentence sent = sect.Sentences[sentIndex];
+                                    @*@foreach (var sent in sect.Sentences)
+                                        {*@
+                                    <span sentId="@sent.SentenceIndex">
+                                        @*<span>(@sent.SentenceIndex count @sent.Words.Count @Model.Item2?.Coherence?[sectIndex]?.IncoherentSentences?[sentIndex] @(sentIndex<sect.Sentences.Count-1?Model.Item2?.Coherence?[sectIndex]?.MissingSentences?[sentIndex].ToString():""))</span>*@
+                                        @foreach (var word in sent.Words)
+                                        {
+                                            <span wordId="@word.StartIndex" id="@word.StartIndex" class="word @(word.HasErrors ? "word-error" : "")" errors="@word.ErrorCodes">
+                                                @word.Original
+                                            </span>
+                                        }
+                                    </span>
                                 }
                             </div>
                             break;
@@ -233,7 +281,7 @@
             </div>
 
             <div class="errors-container">
-                @if (Model.Keywords.Count > 0)
+                @if (Model.Item1.Keywords.Count > 0)
                 {
                     <div class="keywords-container">
                         <button class="keywords-collapsible">
@@ -245,51 +293,83 @@
                         </button>
                         <div class="keywords-content">
                             <div class="keywords-content-collapsible">
-                                @foreach (KeyValuePair<string, List<int>> keyword in Model.Keywords)
+                                @foreach (KeyValuePair<string, List<int>> keyword in Model.Item1.Keywords)
                                 {
                                     <a class="keyword-container" wordIds="@String.Join(',', keyword.Value)" href="#">
                                         <div class="criteria-data-row italic">
-                                            @keyword.Key
+                                            @keyword.Key @Model.Item2?.UserPhrases?.Find(e => e.Text == keyword.Key)?.Score.ToString("0.00")
                                         </div>
                                     </a>
                                 }
                             </div>
                         </div>
-
+                    </div>
+                }
+                @if (Model.Item2?.KeywordCandidates?.Count > 0)
+                {
+                    <div class="keywords-container">
+                        <button class="keywords-collapsible">
+                            <div class="keyword-button-container">
+                                <div class="keyword-button-name">
+                                    Keyword candidates
+                                </div>
+                            </div>
+                        </button>
+                        <div class="keywords-content">
+                            <div class="keywords-content-collapsible">
+                                @foreach (var entry in Model.Item2.KeywordCandidates)
+                                {
+                                    <a class="keyword-container" href="#">
+                                        <div class="criteria-data-row italic">
+                                            @entry.Text @entry.Score.ToString("0.00")
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        </div>
                     </div>
                 }
                 @foreach (ErrorType errorType in Enum.GetValues(typeof(ErrorType)))
                 {
-                    @if (Model.Errors.Any(x => x.ErrorType == errorType) && Model.Errors.FirstOrDefault(x => x.ErrorType == errorType)?.Weight > 0)
+                    @if (Model.Item1.Errors.Any(x => x.ErrorType == errorType) && Model.Item1.Errors.FirstOrDefault(x => x.ErrorType == errorType)?.Weight > 0)
                     {
-                        var @specifiedError = @Model.Errors.First(x => x.ErrorType == errorType);
+                        var @specifiedError = @Model.Item1.Errors.First(x => x.ErrorType == errorType);
                         <div class="error-type-container">
                             <button class="errors-collapsible" errorcode="@((int)specifiedError.ErrorType)">
                                 <div class="error-button-container">
                                     <div class="error-button-name">
-                                        @Model.Errors.First(x => x.ErrorType == errorType).Name
+                                        @Model.Item1.Errors.First(x => x.ErrorType == errorType).Name
                                     </div>
-                                    <div class="error-button-name">
-                                        @if (@specifiedError.ErrorCost >= 0)
-                                        {
-                                            <span>Набрано @Math.Round(@Model.GetSpecialGrade(errorType), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов</span>
-                                        }
-                                        else
-                                        {
-                                            <span>Набрано @Math.Round(@specifiedError.Weight, 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов</span>
-                                        }
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row italic">
-                                            <span class="data-label">Найдено ошибок: </span>
-                                            @Model.Errors.Count(x => x.ErrorType == errorType && x.ErrorCost >= 0)
+                                    @if (specifiedError.IsPlaceholder)
+                                    {
+                                        //these 2 errors required external service to populate, so with default value, a message should show
+                                        <span>Waiting for mls service</span>
+                                    }
+                                    else
+                                    {
+                                        <div class="error-button-name">
+
+                                            @if (@specifiedError.ErrorCost >= 0)
+                                            {
+                                                <span>Набрано @Math.Round(@Model.Item1.GetSpecialGrade(errorType), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Набрано @Math.Round(@specifiedError.Weight, 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов</span>
+                                            }
                                         </div>
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row">
-                                            @specifiedError.Tip
+                                        <div class="error-button-data">
+                                            <div class="error-button-data-row italic">
+                                                <span class="data-label">Найдено ошибок: </span>
+                                                @Model.Item1.Errors.Count(x => x.ErrorType == errorType && x.ErrorCost >= 0)
+                                            </div>
                                         </div>
-                                    </div>
+                                        <div class="error-button-data">
+                                            <div class="error-button-data-row">
+                                                @specifiedError.Tip
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                             </button>
                             @if (@specifiedError.ErrorCost >= 0)
@@ -300,7 +380,7 @@
                                         {
                                             <div class="errors-content" errorcode="@((int)specifiedError.ErrorType)">
                                                 <div class="errors-content-collapsible">
-                                                    @foreach (var error1 in Model.Errors.Where(x => x.ErrorType == ErrorType.UseOfPersonalPronouns))
+                                                    @foreach (var error1 in Model.Item1.Errors.Where(x => x.ErrorType == ErrorType.UseOfPersonalPronouns))
                                                     {
                                                         var error = (UseOfPersonalPronounsError)error1;
                                                         <a class="error-container" wordId="@error.ErrorWord.StartIndex" href="#@error.ErrorWord.StartIndex">
@@ -315,9 +395,9 @@
                                         break;
                                     case ErrorType.UseOfForbiddenWord:
                                         {
-                                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord).ErrorType)">
+                                            <div class="errors-content" errorcode="@((int)Model.Item1.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord).ErrorType)">
                                                 <div class="errors-content-collapsible">
-                                                    @foreach (AnalyzeResults.Errors.UseOfForbiddenWordsError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord))
+                                                    @foreach (AnalyzeResults.Errors.UseOfForbiddenWordsError error in Model.Item1.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord))
                                                     {
                                                         <a class="error-container" wordId="@error.ErrorWord.StartIndex" href="#@error.ErrorWord.StartIndex">
                                                             <div class="criteria-data-row italic">
@@ -331,9 +411,9 @@
                                         break;
                                     case ErrorType.SourceNotReferenced:
                                         {
-                                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced).ErrorType)">
+                                            <div class="errors-content" errorcode="@((int)Model.Item1.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced).ErrorType)">
                                                 <div class="errors-content-collapsible">
-                                                    @foreach (AnalyzeResults.Errors.SourceNotReferencedError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced))
+                                                    @foreach (AnalyzeResults.Errors.SourceNotReferencedError error in Model.Item1.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced))
                                                     {
                                                         <a class="error-container" refnum="@error.Number" href="#ref_@error.Number">
                                                             <div class="criteria-data-row italic">
@@ -347,9 +427,9 @@
                                         break;
                                     case ErrorType.PictureNotReferenced:
                                         {
-                                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced).ErrorType)">
+                                            <div class="errors-content" errorcode="@((int)Model.Item1.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced).ErrorType)">
                                                 <div class="errors-content-collapsible">
-                                                    @foreach (AnalyzeResults.Errors.PictureNotReferencedError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced))
+                                                    @foreach (AnalyzeResults.Errors.PictureNotReferencedError error in Model.Item1.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced))
                                                     {
                                                         <a class="error-container">
                                                             <div class="criteria-data-row italic">
@@ -363,9 +443,9 @@
                                         break;
                                     case ErrorType.TableNotReferenced:
                                         {
-                                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced).ErrorType)">
+                                            <div class="errors-content" errorcode="@((int)Model.Item1.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced).ErrorType)">
                                                 <div class="errors-content-collapsible">
-                                                    @foreach (AnalyzeResults.Errors.TableNotReferencedError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced))
+                                                    @foreach (AnalyzeResults.Errors.TableNotReferencedError error in Model.Item1.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced))
                                                     {
                                                         <a class="error-container">
                                                             <div class="criteria-data-row italic">
@@ -379,9 +459,9 @@
                                         break;
                                     case ErrorType.ShortSection:
                                         {
-                                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection).ErrorType)">
+                                            <div class="errors-content" errorcode="@((int)Model.Item1.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection).ErrorType)">
                                                 <div class="errors-content-collapsible">
-                                                    @foreach (AnalyzeResults.Errors.ShortSectionError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection))
+                                                    @foreach (AnalyzeResults.Errors.ShortSectionError error in Model.Item1.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection))
                                                     {
                                                         <a class="error-container" sectId="@error.SectionId" href="#err_@error.SectionId">
                                                             <div class="criteria-data-row italic">
@@ -393,6 +473,45 @@
                                             </div>
                                         }
                                         break;
+                                    case ErrorType.DiscordantSentence:
+                                        {
+                                            <div class="errors-content" errorcode="@((int)Model.Item1.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.DiscordantSentence).ErrorType)">
+                                                @if ((specifiedError as DiscordantSentenceError).ErrorSentence != null)
+                                                {
+                                                    <div class="errors-content-collapsible">
+                                                        @foreach (AnalyzeResults.Errors.DiscordantSentenceError error in Model.Item1.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.DiscordantSentence && x.ErrorCost >= 0))
+                                                        {
+                                                            <a class="error-container" sentId="@error.ErrorSentence.SentenceIndex" href="#senterr_@error.ErrorSentence.SentenceIndex">
+                                                                @*TODO: add identifier for sentence and implement UI for highlighting sentence*@
+                                                                <div class="criteria-data-row italic">
+                                                                    @error.Explanation
+                                                                </div>
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        break;
+                                    case ErrorType.MissingSentence:
+                                        {
+                                            <div class="errors-content" errorcode="@((int)Model.Item1.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.MissingSentence).ErrorType)">
+                                                @if ((specifiedError as MissingSentenceError).ErrorSentence != null)
+                                                {
+                                                    <div class="errors-content-collapsible">
+                                                        @foreach (AnalyzeResults.Errors.MissingSentenceError error in Model.Item1.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.MissingSentence && x.ErrorCost >= 0))
+                                                        {
+                                                            <a class="error-container" sentId="@error.ErrorSentence.SentenceIndex" href="#senterr_@error.ErrorSentence.SentenceIndex">
+                                                                <div class="criteria-data-row italic">
+                                                                    @error.Explanation
+                                                                </div>
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        break;
                                 }
                             }
 
@@ -400,250 +519,12 @@
                     }
 
                 }
-
-                @*<div class="error-type-container">
-                        @if (Model.Errors.Any(x => x.ErrorType == ErrorType.UseOfPersonalPronouns) && Model.Errors.FirstOrDefault(x => x.ErrorType == ErrorType.UseOfPersonalPronouns)?.Weight > 0)
-                        {
-                            var @specifiedError = @Model.Errors.First(x => x.ErrorType == ErrorType.UseOfPersonalPronouns);
-                            <button class="errors-collapsible" errorcode="@((int)specifiedError.ErrorType)">
-                                <div class="error-button-container">
-                                    <div class="error-button-name">
-                                        @Model.Errors.First(x => x.ErrorType == ErrorType.UseOfPersonalPronouns).Name
-                                    </div>
-                                    <div class="error-button-name">
-                                        Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.UseOfPersonalPronouns), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row italic">
-                                            <span class="data-label">Найдено ошибок: </span>
-                                            @Model.Errors.Count(x => x.ErrorType == ErrorType.UseOfPersonalPronouns)
-                                        </div>
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row">
-                                            @specifiedError.Tip
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            <div class="errors-content" errorcode="@((int)specifiedError.ErrorType)">
-                                <div class="errors-content-collapsible">
-                                    @foreach (var error1 in Model.Errors.Where(x => x.ErrorType == ErrorType.UseOfPersonalPronouns))
-                                    {
-                                        var error = (UseOfPersonalPronounsError)error1;
-                                        <a class="error-container" wordId="@error.ErrorWord.StartIndex" href="#@error.ErrorWord.StartIndex">
-                                            <div class="criteria-data-row italic">
-                                                @error.ErrorWord.Original
-                                            </div>
-                                        </a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    <div class="error-type-container">
-                        @if (Model.Errors.Any(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord) && Model.Errors.FirstOrDefault(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord)?.Weight > 0)
-                        {
-                            var @specifiedError = @Model.Errors.First(x => x.ErrorType == ErrorType.UseOfForbiddenWord);
-                            <button class="errors-collapsible" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord).ErrorType)">
-                                <div class="error-button-container">
-                                    <div class="error-button-name">
-                                        @Model.Errors.First(x => x.ErrorType == ErrorType.UseOfForbiddenWord).Name
-                                    </div>
-                                    <div class="error-button-name">
-                                        Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.UseOfForbiddenWord), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row italic">
-                                            <span class="data-label">Найдено ошибок: </span>
-                                            @Model.Errors.Count(x => x.ErrorType == ErrorType.UseOfForbiddenWord)
-                                        </div>
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row">
-                                            @Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord).Tip
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord).ErrorType)">
-                                <div class="errors-content-collapsible">
-                                    @foreach (AnalyzeResults.Errors.UseOfForbiddenWordsError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.UseOfForbiddenWord))
-                                    {
-                                        <a class="error-container" wordId="@error.ErrorWord.StartIndex" href="#@error.ErrorWord.StartIndex">
-                                            <div class="criteria-data-row italic">
-                                                '@error.ErrorWord.Original' из словаря <b>@error.DictionaryName</b>
-                                            </div>
-                                        </a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-
-                    <div class="error-type-container">
-                        @if (Model.Errors.Any(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced) && Model.Errors.FirstOrDefault(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced)?.Weight > 0)
-                        {
-                            var @specifiedError = @Model.Errors.First(x => x.ErrorType == ErrorType.SourceNotReferenced);
-                            <button class="errors-collapsible" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced).ErrorType)">
-                                <div class="error-button-container">
-                                    <div class="error-button-name">
-                                        @Model.Errors.First(x => x.ErrorType == ErrorType.SourceNotReferenced).Name
-                                    </div>
-                                    <div class="error-button-name">
-                                        Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.SourceNotReferenced), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row italic">
-                                            <span class="data-label">Найдено ошибок: </span>
-                                            @Model.Errors.Count(x => x.ErrorType == ErrorType.SourceNotReferenced)
-                                        </div>
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row">
-                                            @Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced).Tip
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced).ErrorType)">
-                                <div class="errors-content-collapsible">
-                                    @foreach (AnalyzeResults.Errors.SourceNotReferencedError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.SourceNotReferenced))
-                                    {
-                                        <a class="error-container" refnum="@error.Number" href="#ref_@error.Number">
-                                            <div class="criteria-data-row italic">
-                                                @error.Explanation
-                                            </div>
-                                        </a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div class="error-type-container">
-                        @if (Model.Errors.Any(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced) && Model.Errors.FirstOrDefault(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced)?.Weight > 0)
-                        {
-                            var @specifiedError = @Model.Errors.First(x => x.ErrorType == ErrorType.PictureNotReferenced);
-                            <button class="errors-collapsible" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced).ErrorType)">
-                                <div class="error-button-container">
-                                    <div class="error-button-name">
-                                        @Model.Errors.First(x => x.ErrorType == ErrorType.PictureNotReferenced).Name
-                                    </div>
-                                    <div class="error-button-name">
-                                        Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.PictureNotReferenced), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row italic">
-                                            <span class="data-label">Найдено ошибок: </span>
-                                            @Model.Errors.Count(x => x.ErrorType == ErrorType.PictureNotReferenced)
-                                        </div>
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row">
-                                            @Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced).Tip
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced).ErrorType)">
-                                <div class="errors-content-collapsible">
-                                    @foreach (AnalyzeResults.Errors.PictureNotReferencedError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.PictureNotReferenced))
-                                    {
-                                        <a class="error-container">
-                                            <div class="criteria-data-row italic">
-                                                @error.Explanation
-                                            </div>
-                                        </a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div class="error-type-container">
-                        @if (Model.Errors.Any(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced) && Model.Errors.FirstOrDefault(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced)?.Weight > 0)
-                        {
-                            var @specifiedError = @Model.Errors.First(x => x.ErrorType == ErrorType.TableNotReferenced);
-                            <button class="errors-collapsible" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced).ErrorType)">
-                                <div class="error-button-container">
-                                    <div class="error-button-name">
-                                        @Model.Errors.First(x => x.ErrorType == ErrorType.TableNotReferenced).Name
-                                    </div>
-                                    <div class="error-button-name">
-                                        Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.TableNotReferenced), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row italic">
-                                            <span class="data-label">Найдено ошибок: </span>
-                                            @Model.Errors.Count(x => x.ErrorType == ErrorType.TableNotReferenced)
-                                        </div>
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row">
-                                            @Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced).Tip
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced).ErrorType)">
-                                <div class="errors-content-collapsible">
-                                    @foreach (AnalyzeResults.Errors.TableNotReferencedError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.TableNotReferenced))
-                                    {
-                                        <a class="error-container">
-                                            <div class="criteria-data-row italic">
-                                                @error.Explanation
-                                            </div>
-                                        </a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div class="error-type-container">
-                        @if (Model.Errors.Any(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection) && Model.Errors.FirstOrDefault(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection)?.Weight > 0)
-                        {
-                            var @specifiedError = @Model.Errors.First(x => x.ErrorType == ErrorType.ShortSection);
-                            <button class="errors-collapsible" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection).ErrorType)">
-                                <div class="error-button-container">
-                                    <div class="error-button-name">
-                                        @Model.Errors.First(x => x.ErrorType == ErrorType.ShortSection).Name
-                                    </div>
-                                    <div class="error-button-name">
-                                        Набрано @Math.Round(@Model.GetSpecialGrade(ErrorType.ShortSection), 2) из @Math.Round(@specifiedError.Weight, 2) возможных баллов
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row italic">
-                                            <span class="data-label">Найдено ошибок: </span>
-                                            @Model.Errors.Count(x => x.ErrorType == ErrorType.ShortSection)
-                                        </div>
-                                    </div>
-                                    <div class="error-button-data">
-                                        <div class="error-button-data-row">
-                                            @Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection).Tip
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                            <div class="errors-content" errorcode="@((int)Model.Errors.First(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection).ErrorType)">
-                                <div class="errors-content-collapsible">
-                                    @foreach (AnalyzeResults.Errors.ShortSectionError error in Model.Errors.Where(x => x.ErrorType == AnalyzeResults.Errors.ErrorType.ShortSection))
-                                    {
-                                        <a class="error-container" sectId="@error.SectionId" href="#err_@error.SectionId">
-                                            <div class="criteria-data-row italic">
-                                                @error.Explanation
-                                            </div>
-                                        </a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>*@
             </div>
         }
         else
         {
             <div>
-                @Model.Error
+                @Model.Item1.Error
             </div>
         }
     </div>

@@ -22,8 +22,8 @@ WORKDIR "/src/TestWebApp"
 
 FROM build AS publish
 RUN dotnet publish "WebPaperAnalyzer.csproj" -c Release -o /app
-RUN rm /app/NLog.config
-RUN cp NLog.config /app/NLog.config
+# RUN rm /app/NLog.config
+# RUN cp NLog.config /app/NLog.config
 RUN cp -avr resources /app/resources
 FROM base AS final
 WORKDIR /app

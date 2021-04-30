@@ -17,6 +17,7 @@ namespace WebPaperAnalyzer.ViewModels
         public int MaxScore { get; set; }
         public int Score { get; set; }
         public bool IsProcessing { get; set; }
+        public bool IsMLSProcessing { get; set; }
         public string ScoreString
         {
             get
@@ -26,6 +27,21 @@ namespace WebPaperAnalyzer.ViewModels
                 else return "Processing";
             }
         }
+        public int ScoreStringWidth
+        {
+            get
+            {
+                return ScoreString.Length * 9;
+            }
+        }
+        public int CriterionStringWidth
+        {
+            get
+            {
+                return Criterion.Length * 9;
+            }
+        }
+
         public Color Color
         {
             get

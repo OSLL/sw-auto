@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using AnalyzeResults.Presentation;
+using System.Collections.Generic;
+using System.IO;
 
 namespace TextExtractor
 {
@@ -11,5 +13,7 @@ namespace TextExtractor
         /// Возвращает текст из файлового потока
         /// </summary>
         string ExtractTextFromFileStream(Stream fileStream);
+
+        List<Section> ExtractStructureFromFileStream(Stream fileStream, bool extractTitle);
     }
 }

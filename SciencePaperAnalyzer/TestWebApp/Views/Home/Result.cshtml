@@ -27,7 +27,7 @@
     <div style="text-align:center; color:burlywood; padding:5px; background-color:darkslategray">
         @if (Model.Item2 == null && Model.Item1.Criteria.Find(e => e.IsPlaceholder) != null && Model.Item1.Errors.Find(e => e.IsPlaceholder) != null)
         {
-            <span>Please come back after a few minutes for full scoring and more information, your paper is being further examined.</span>
+        <span>Пожалуйста, вернитесь через несколько минут для получения полной оценки и дополнительной информации, ваша статья находится в процессе дополнительного изучения.</span>
         }
     </div>
     <div class="main-container">
@@ -72,10 +72,10 @@
                     <div class="criteria-data">
                         @foreach (Criterion crit in Model.Item1.Criteria.Where(x => (x as Criterion)?.Factor > 0))
                         {
-                            if (crit.Name == "Keywords Quality" && (crit as NumericalCriterion).Value < 0)
+                            if (crit.Name == "Качество ключевых слов" && (crit as NumericalCriterion).Value < 0)
                             {
                                 <div class="criteria-data-row criterion-value">
-                                    @crit.Name: Waiting for mls service
+                                    @crit.Name: Ожидание сервиса MLS-Analysis
                                 </div>
                             }
                             else
@@ -95,7 +95,7 @@
                                 {
                                     <div class="criteria-data-row criterion-value">
                                         <span>
-                                            @specialError.Name : Waiting for mls service
+                                            @specialError.Name : Ожидание сервиса MLS-Analysis
                                         </span>
                                     </div>
                                 }
@@ -145,7 +145,7 @@
                             @if (crit.IsPlaceholder)
                             {
                                 <div class="criteria-data-row criterion-value">
-                                    Waiting for mls service
+                                    Ожидание сервиса MLS-Analysis
                                 </div>
                             }
                             else
@@ -311,7 +311,7 @@
                         <button class="keywords-collapsible">
                             <div class="keyword-button-container">
                                 <div class="keyword-button-name">
-                                    Keyword candidates
+                                    Кандидаты ключевых слов
                                 </div>
                             </div>
                         </button>
@@ -343,7 +343,7 @@
                                     @if (specifiedError.IsPlaceholder)
                                     {
                                         //these 2 errors required external service to populate, so with default value, a message should show
-                                        <span>Waiting for mls service</span>
+                                        <span>Ожидание сервиса MLS-Analysis</span>
                                     }
                                     else
                                     {

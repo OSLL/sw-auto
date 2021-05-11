@@ -107,7 +107,7 @@ namespace WebPaperAnalyzer.Services
                 var criteriaList = result.Result.Criteria;
                 var errorList = result.Result.Errors;
 
-                var baseKeywordsQualityCriterion = criteriaList.Find(e => e.Name == "Keywords Quality");
+                var baseKeywordsQualityCriterion = criteriaList.Find(e => e.Name == "Качество ключевых слов");
 
                 // TODO: somehow e.ErrorType is incorrectly deserialized (all set to default value of UseOfPersonalPronouns), but type check still works
                 foreach (var error in errorList)
@@ -158,9 +158,9 @@ namespace WebPaperAnalyzer.Services
                 baseCriterion.Interval.LowerBound,
                 baseCriterion.Interval.UpperBound,
                 baseCriterion.Factor,
-                "description",
-                "adviceToLower",
-                "adviceToHigher");
+                baseCriterion.Description,
+                "",
+                "");
             return criterion;
         }
 

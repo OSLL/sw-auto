@@ -34,6 +34,7 @@ services:
         MongoSettings__User: root
         MongoSettings__Password: example
         Domain: http://web-analyzer/
+        MLSAnalysisServiceBaseAddress: http://mls-analysis-service:6543/
       depends_on:
         - mongo
       links:

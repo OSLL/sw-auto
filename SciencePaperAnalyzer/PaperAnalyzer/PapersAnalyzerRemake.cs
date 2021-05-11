@@ -259,11 +259,11 @@ namespace PaperAnalyzer
                         "Значение отклонения текста статьи от идеальной кривой по Ципфу",
                         "Постарайтесь разнообразить текст, добавить связки между разделами, возможно, увеличить количество прилагательных.",
                         "Постарайтесь увеличить частоту употребления ключевых слов, возможно, снизить количество прилагательных."),
-                    new NumericalCriterion("Keywords Quality", -1,
+                    new NumericalCriterion("Качество ключевых слов", -1, // in case of changing criterion name, must change the name accordingly in MLSAnalysisService.cs
                         settings.KeywordsQuality.LowerBound, settings.KeywordsQuality.UpperBound, settings.KeywordsQuality.Weight,
-                        "description",
-                        "advice on lower value",
-                        "advice on higher value",isPlaceholder:true),
+                        "Критерий отражает стастическую и смысловую важность ключевого слова относительно текста работы.",
+                        "",
+                        "",isPlaceholder:true),
                     CreateKeywordMentioningCriterion(keywordMarks,keywordDict, settings)
                 };
 

@@ -10,8 +10,8 @@ namespace AnalyzeResults.Errors
     public class MissingSentenceError : Error
     {
         public MissingSentenceError(Sentence errorSentence, double errorCost, double weight, List<ScopePair> grading, GradingType gType, bool isPlaceholder = false)
-            : base(ErrorType.MissingSentence, "Missing Sentence", errorSentence?.ToStringVersion(),
-                  "tip for Missing Sentence", errorCost, weight, grading, gType, isPlaceholder)
+            : base(ErrorType.MissingSentence, "Отсутствуют предложения-связки", errorSentence?.ToStringVersion(),
+                  "Добавьте предложения-связки, которые привяжут предложение к абзацу/разделу", errorCost, weight, grading, gType, isPlaceholder)
         {
             ErrorSentence = errorSentence;
         }

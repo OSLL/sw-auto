@@ -1,13 +1,14 @@
 version: '3.1'
 services:
   mongo:
-      image: mongo
+      image: mongo:4.4.1
       restart: always
       env_file:
         - ../.env
       environment:
         MONGO_INITDB_ROOT_USERNAME: root
-
+      volumes:
+        - mongo_data:/data/db
 
   web-analyzer:
       build: .
@@ -22,3 +23,7 @@ services:
         - mongo
       links:
         - mongo
+
+
+volumes:
+  mongo_data:

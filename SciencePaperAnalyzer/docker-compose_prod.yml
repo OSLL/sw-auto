@@ -7,7 +7,8 @@ services:
         - ../.env
       environment:
         MONGO_INITDB_ROOT_USERNAME: root
-
+      volumes:
+        - mongo_data:/data/db
 
   web-analyzer:
       build: .
@@ -22,3 +23,7 @@ services:
         - mongo
       links:
         - mongo
+
+
+volumes:
+  mongo_data:

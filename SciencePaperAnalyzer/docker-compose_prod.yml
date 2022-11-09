@@ -5,6 +5,8 @@ services:
       restart: always
       env_file:
         - ../.env
+      command:
+        - '--wiredTigerCacheSizeGB=1'
       environment:
         MONGO_INITDB_ROOT_USERNAME: root
       volumes:

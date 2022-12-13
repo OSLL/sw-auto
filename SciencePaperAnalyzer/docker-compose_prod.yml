@@ -15,6 +15,7 @@ services:
   web-analyzer:
       build: .
       restart: always
+      command: "dotnet WebPaperAnalyzer.dll --environment 'Development'"
       ports:
         - 4444:80
       env_file:
